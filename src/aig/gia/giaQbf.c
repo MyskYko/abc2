@@ -882,6 +882,7 @@ int Gia_QbfSolve( Gia_Man_t * pGia, int nPars, int nIterLimit, int nConfLimit, i
             assert( Vec_IntSize(p->vValues) == (1 << nEncVars) * nBits );
             Gia_Gen2CodePrint( nEncVars, nBits, p->vValues );
         }
+        pGia->pCexComb = Abc_CexCreate(0, nPars, p->vValues->pArray, 0, 0, 0);
     }
     if ( RetValue == -1 && nTimeOut && (Abc_Clock() - p->clkStart)/CLOCKS_PER_SEC >= nTimeOut )
         printf( "The problem timed out after %d sec.  ", nTimeOut );
