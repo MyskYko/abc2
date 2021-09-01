@@ -521,7 +521,7 @@ Qbf_Man_t * Gia_QbfAlloc( Gia_Man_t * pGia, int nPars, int fGlucose, int fVerbos
 }
 void Gia_QbfFree( Qbf_Man_t * p )
 {
-    sat_solver_delete( p->pSatVer );
+    if ( p->pSatVer ) sat_solver_delete( p->pSatVer );
     sat_solver_delete( p->pSatSyn );
     if ( p->pSatSynG ) bmcg_sat_solver_stop( p->pSatSynG );
     Vec_IntFree( p->vLits );
@@ -832,6 +832,10 @@ void Gia_QbfLearnConstraint( Qbf_Man_t * p, Vec_Int_t * vValues )
 int Gia_QbfSolve( Gia_Man_t * pGia, int nPars, int nIterLimit, int nConfLimit, int nTimeOut, int nEncVars, int fGlucose, int fVerbose )
 {
     Qbf_Man_t * p = Gia_QbfAlloc( pGia, nPars, fGlucose, fVerbose );
+    if(!p->pSatVer) {
+      Gia_QbfFree( p );
+      return 2;
+    }
     Gia_Man_t * pCof;
     int i, status, RetValue = 0;
     abctime clk;
