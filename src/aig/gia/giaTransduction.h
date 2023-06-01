@@ -467,10 +467,12 @@ private: // Level calculation
   }
 
 private: // Cost function
-  inline void ShufflePis(int seed) {
-    srand(seed);
-    for(int i = (int)vPis.size() - 1; i > 0; i--)
-      std::swap(vPis[i], vPis[rand() % (i + 1)]);
+  inline void ShufflePis(unsigned seed) {
+    if(!seed) seed = 2174103536u;
+    for(int i = (int)vPis.size() - 1; i > 0; i--) {
+      seed = 36969 * (seed & 65535) + (seed >> 16);
+      std::swap(vPis[i], vPis[seed % (i + 1)]);
+    }
   }
   inline bool CostCompare(int a, int b) const { // return (cost(a) > cost(b))
     int a0 = a >> 1;

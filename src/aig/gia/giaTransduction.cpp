@@ -12,10 +12,14 @@ ABC_NAMESPACE_IMPL_START
 
 Gia_Man_t *Gia_ManTransductionBdd(Gia_Man_t *pGia, int nType, int fMspf, int nRandom, int nSortType, int nPiShuffle, int nParameter, int fLevel, Gia_Man_t *pExdc, int fNewLine, int nVerbose) {
   if(nRandom) {
-    srand(nRandom);
-    nSortType = rand() % 4;
-    nPiShuffle = rand();
-    nParameter = rand() % 16;
+    unsigned seed = nRandom;
+    for(int i = 0; i < 5; i++)
+      seed = 36969 * (seed & 65535) + (seed >> 16);
+    nSortType = seed % 4;
+    seed = 36969 * (seed & 65535) + (seed >> 16);
+    nPiShuffle = seed;
+    seed = 36969 * (seed & 65535) + (seed >> 16);
+    nParameter = seed % 16;
   }
   NewBdd::Param p;
   Transduction::Transduction<NewBdd::Man, NewBdd::Param, NewBdd::lit, 0xffffffff> t(pGia, nVerbose, fNewLine, nSortType, nPiShuffle, fLevel, pExdc, p);
@@ -68,10 +72,14 @@ Gia_Man_t *Gia_ManTransductionBdd(Gia_Man_t *pGia, int nType, int fMspf, int nRa
 
 Gia_Man_t *Gia_ManTransductionTt(Gia_Man_t *pGia, int nType, int fMspf, int nRandom, int nSortType, int nPiShuffle, int nParameter, int fLevel, Gia_Man_t *pExdc, int fNewLine, int nVerbose) {
   if(nRandom) {
-    srand(nRandom);
-    nSortType = rand() % 4;
-    nPiShuffle = rand();
-    nParameter = rand() % 16;
+    unsigned seed = nRandom;
+    for(int i = 0; i < 5; i++)
+      seed = 36969 * (seed & 65535) + (seed >> 16);
+    nSortType = seed % 4;
+    seed = 36969 * (seed & 65535) + (seed >> 16);
+    nPiShuffle = seed;
+    seed = 36969 * (seed & 65535) + (seed >> 16);
+    nParameter = seed % 16;
   }
   NewTt::Param p;
   Transduction::Transduction<NewTt::Man, NewTt::Param, NewTt::lit, 0xffffffff> t(pGia, nVerbose, fNewLine, nSortType, nPiShuffle, fLevel, pExdc, p);
