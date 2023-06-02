@@ -1378,6 +1378,116 @@ public: // Resubs
       PrintStats("ResubShared", true, 11);
     return count;
   }
+  int ResubDual(bool fMspf) {
+    int count = fMspf? Mspf(true): Cspf(true);
+    int nodes = CountNodes();
+    TransductionBackup<Man, lit, LitMax> b2;
+    Save(b2);
+    int count2 = count;
+    int pos = vPis.size() + 1;
+    NewGate(pos);
+    int dummypo = pos;
+    pos = nObjsAlloc;
+    std::list<int> targets = vObjs;
+    targets.insert(targets.begin(), vPis.begin(), vPis.end());
+    for(std::list<int>::iterator it0 = targets.begin(); it0 != targets.end(); it0++) {
+      if(vvFos[*it0].empty())
+        continue;
+      std::list<int>::iterator it1 = it0;
+      it1++;
+      for(; it1 != targets.end(); it1++) {
+        if(vvFos[*it0].empty())
+          break;
+        if(vvFos[*it1].empty())
+          continue;
+        if(nVerbose > 1) {
+          std::stringstream ss;
+          ss << "[ResubDual] processing Gate " << std::setw(5) << *it0
+             << " (" << std::setw(5) << std::distance(targets.begin(), it0) + 1
+             << "/" << std::setw(5) << targets.size() << ")"
+             << " and " << std::setw(5) << *it1
+             << " (" << std::setw(5) << std::distance(targets.begin(), it1) + 1
+             << "/" << std::setw(5) << targets.size() << ")";
+          PrintStats(ss.str(), nVerbose > 2);
+        }
+        for(int c0 = 0; c0 < 2; c0++)
+          for(int c1 = 0; c1 < 2; c1++) {
+            lit x = this->man->Or(this->man->LitNotCond(vFs[*it0], !c0), this->man->LitNotCond(vFs[*it1], c1));
+            if(this->man->IsConst1(x))
+              continue;
+            x = this->man->Or(this->man->LitNotCond(vFs[*it0], c0), this->man->LitNotCond(vFs[*it1], !c1));
+            if(this->man->IsConst1(x))
+              continue;
+            NewGate(pos);
+            assert(vvFis[pos].empty());
+            vObjs.push_back(pos);
+            Connect(pos, (*it0 << 1) ^ c0, true, false);
+            count--;
+            Connect(pos, (*it1 << 1) ^ c1, true, false);
+            count--;
+            Connect(dummypo, pos << 1, false, false, this->man->Const0());
+            Build(pos, vFs);
+            if(fMspf) {
+              vPos.push_back(dummypo);
+              vPoFs.push_back(vFs[pos]);
+            }
+            vPfUpdates[pos] = true;
+            assert(vFs[pos] != LitMax);
+            count += fMspf? Mspf(true): Cspf(true);
+            assert(vFs[pos] != LitMax);
+            TransductionBackup<Man, lit, LitMax> b;
+            Save(b);
+            int count_ = count;
+            std::vector<bool> vMarks(nObjsAlloc);
+            MarkFiCone_rec(vMarks, pos);
+            std::list<int> targets2 = vObjs;
+            for(std::list<int>::reverse_iterator it2 = targets2.rbegin(); it2 != targets2.rend(); it2++) {
+              if(!vMarks[*it2] && !vvFos[*it2].empty())
+                if(TryConnect(*it2, pos, false) || TryConnect(*it2, pos, true)) {
+                  count--;
+                  int diff;
+                  if(fMspf) {
+                    Build();
+                    diff = Mspf(true, *it2, pos);
+                  } else {
+                    vPfUpdates[*it2] = true;
+                    diff = Cspf(true, *it2, pos);
+                  }
+                  if(diff) {
+                    count += diff;
+                    if(!vvFos[*it2].empty()) {
+                      vPfUpdates[*it2] = true;
+                      count += fMspf? Mspf(true): Cspf(true);
+                    }
+                    Save(b);
+                    count_ = count;
+                  } else {
+                    Load(b);
+                    count = count_;
+                  }
+                }
+            }
+            Disconnect(dummypo, pos, 0);
+            if(fMspf) {
+              vPos.pop_back();
+              vPoFs.pop_back();
+            }
+            count += fMspf? Mspf(true): Cspf(true);
+            if(nodes < CountNodes()) {
+              Load(b2);
+              count = count2;
+            } else {
+              nodes = CountNodes();
+              Save(b2);
+              count2 = count;
+            }
+          }
+      }
+    }
+    if(nVerbose)
+      PrintStats("ResubDual", true, 11);
+    return count;
+  }
 
 public: // Optimization scripts
   int RepeatResub(bool fMono, bool fMspf) {

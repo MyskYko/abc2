@@ -58,6 +58,9 @@ Gia_Man_t *Gia_ManTransductionBdd(Gia_Man_t *pGia, int nType, int fMspf, int nRa
     count -= t.RepeatAll(fFirstMerge, fMspfMerge, fMspf, fInner, fOuter);
     break;
   }
+  case 9:
+    count -= t.ResubDual(fMspf);
+    break;
   default:
     std::cout << "Unknown transduction type " << nType << std::endl;
   }
@@ -114,6 +117,9 @@ Gia_Man_t *Gia_ManTransductionTt(Gia_Man_t *pGia, int nType, int fMspf, int nRan
     count -= t.RepeatAll(fFirstMerge, fMspfMerge, fMspf, fInner, fOuter);
     break;
   }
+  case 9:
+    count -= t.ResubDual(fMspf);
+    break;
   default:
     std::cout << "Unknown transduction type " << nType << std::endl;
   }
