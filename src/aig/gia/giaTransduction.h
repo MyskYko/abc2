@@ -1412,6 +1412,8 @@ public: // Resubs
         }
         for(int c0 = 0; c0 < 2; c0++)
           for(int c1 = 0; c1 < 2; c1++) {
+            if(vvFos[*it0].empty() || vvFos[*it1].empty())
+              break;
             lit x = this->man->Or(this->man->LitNotCond(vFs[*it0], !c0), this->man->LitNotCond(vFs[*it1], c1));
             if(this->man->IsConst1(x))
               continue;
