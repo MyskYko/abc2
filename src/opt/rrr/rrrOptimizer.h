@@ -1,6 +1,5 @@
 #pragma once
 
-#include <vector>
 #include <map>
 #include <iterator>
 #include <random>
@@ -8,7 +7,7 @@
 #include <limits>
 
 #include "rrrParameter.h"
-#include "rrrTypes.h"
+#include "rrrUtils.h"
 
 ABC_NAMESPACE_CXX_HEADER_START
 
@@ -31,10 +30,11 @@ namespace rrr {
     std::function<double(Ntk *)> CostFunction;
     int nSortType;
     int nFlow;
+    int nDistance;
     seconds nTimeout; // assigned upon Run
 
     // data
-    Ana *pAna;
+    Ana ana;
     std::mt19937 rng;
     std::vector<int> vTmp;
     std::map<int, std::set<int>> mapNewFanins;
@@ -46,7 +46,7 @@ namespace rrr {
 
     // marks
     int target;
-    std::vector<bool> vMarks;
+    std::vector<bool> vTfoMarks;
     
     // callback
     void ActionCallback(Action const &action);
@@ -88,13 +88,13 @@ namespace rrr {
     
   public:
     // constructors
-    Optimizer(Ntk *pNtk, Parameter const *pPar, std::function<double(Ntk *)> CostFunction);
-    ~Optimizer();
-    void UpdateNetwork(Ntk *pNtk_, bool fSame);
+    Optimizer(Parameter const *pPar, std::function<double(Ntk *)> CostFunction);
+    void UpdateNetwork(Ntk *pNtk_, bool fSame = false);
 
     // run
     void Run(seconds nTimeout_ = 0);
-    void Randomize();
+    void ResetSeed(int iSeed);
+    void Randomize(int iSeed);
     
   };
 
@@ -154,11 +154,11 @@ namespace rrr {
       return;
     }
     target = id;
-    vMarks.clear();
-    vMarks.resize(pNtk->GetNumNodes());
-    vMarks[id] = true;
+    vTfoMarks.clear();
+    vTfoMarks.resize(pNtk->GetNumNodes());
+    vTfoMarks[id] = true;
     pNtk->ForEachTfo(id, false, [&](int fo) {
-      vMarks[fo] = true;
+      vTfoMarks[fo] = true;
     });
   }
 
@@ -448,7 +448,7 @@ namespace rrr {
         }
       }
       // reduce
-      if(pAna->CheckRedundancy(id, idx)) {
+      if(ana.CheckRedundancy(id, idx)) {
         int fi = pNtk->GetFanin(id, idx);
         pNtk->RemoveFanin(id, idx);
         fRemoved = true;
@@ -477,7 +477,7 @@ namespace rrr {
         }
       }
       // reduce
-      if(pAna->CheckRedundancy(id, idx)) {
+      if(ana.CheckRedundancy(id, idx)) {
         int fi = pNtk->GetFanin(id, idx);
         pNtk->RemoveFanin(id, idx);
         if(fRemoveUnused && pNtk->GetNumFanouts(fi) == 0) {
@@ -607,19 +607,19 @@ namespace rrr {
   T Optimizer<Ntk, Ana>::SingleAdd(int id, T begin, T end) {
     MarkTfo(id);
     pNtk->ForEachFanin(id, [&](int fi, bool c) {
-      vMarks[fi] = true;
+      vTfoMarks[fi] = true;
     });
     T it = begin;
     for(; it != end; it++) {
       if(!pNtk->IsInt(*it) && !pNtk->IsPi(*it)) {
         continue;
       }
-      if(vMarks[*it]) {
+      if(vTfoMarks[*it]) {
         continue;
       }
-      if(pAna->CheckFeasibility(id, *it, false)) {
+      if(ana.CheckFeasibility(id, *it, false)) {
         pNtk->AddFanin(id, *it, false);
-      } else if(pNtk->UseComplementedEdges() && pAna->CheckFeasibility(id, *it, true)) {
+      } else if(pNtk->UseComplementedEdges() && ana.CheckFeasibility(id, *it, true)) {
         pNtk->AddFanin(id, *it, true);
       } else {
         continue;
@@ -628,7 +628,7 @@ namespace rrr {
       break;
     }
     pNtk->ForEachFanin(id, [&](int fi, bool c) {
-      vMarks[fi] = false;
+      vTfoMarks[fi] = false;
     });
     return it;
   }
@@ -637,19 +637,19 @@ namespace rrr {
   int Optimizer<Ntk, Ana>::MultiAdd(int id, std::vector<int> const &vCands, int nMax) {
     MarkTfo(id);
     pNtk->ForEachFanin(id, [&](int fi, bool c) {
-      vMarks[fi] = true;
+      vTfoMarks[fi] = true;
     });
     int nAdded = 0;
     for(int cand: vCands) {
       if(!pNtk->IsInt(cand) && !pNtk->IsPi(cand)) {
         continue;
       }
-      if(vMarks[cand]) {
+      if(vTfoMarks[cand]) {
         continue;
       }
-      if(pAna->CheckFeasibility(id, cand, false)) {
+      if(ana.CheckFeasibility(id, cand, false)) {
         pNtk->AddFanin(id, cand, false);
-      } else if(pNtk->UseComplementedEdges() && pAna->CheckFeasibility(id, cand, true)) {
+      } else if(pNtk->UseComplementedEdges() && ana.CheckFeasibility(id, cand, true)) {
         pNtk->AddFanin(id, cand, true);
       } else {
         continue;
@@ -661,7 +661,7 @@ namespace rrr {
       }
     }
     pNtk->ForEachFanin(id, [&](int fi, bool c) {
-      vMarks[fi] = false;
+      vTfoMarks[fi] = false;
     });
     return nAdded;
   }
@@ -781,21 +781,15 @@ namespace rrr {
   /* {{{ Constructors */
   
   template <typename Ntk, typename Ana>
-  Optimizer<Ntk, Ana>::Optimizer(Ntk *pNtk, Parameter const *pPar, std::function<double(Ntk *)> CostFunction) :
-    pNtk(pNtk),
+  Optimizer<Ntk, Ana>::Optimizer(Parameter const *pPar, std::function<double(Ntk *)> CostFunction) :
+    pNtk(NULL),
     nVerbose(pPar->nOptimizerVerbose),
     CostFunction(CostFunction),
     nSortType(pPar->nSortType),
     nFlow(pPar->nOptimizerFlow),
+    nDistance(pPar->nDistance),
+    ana(pPar),
     target(-1) {
-    pNtk->AddCallback(std::bind(&Optimizer<Ntk, Ana>::ActionCallback, this, std::placeholders::_1));
-    pAna = new Ana(pNtk, pPar);
-    rng.seed(pPar->iSeed);
-  }
-  
-  template <typename Ntk, typename Ana>
-  Optimizer<Ntk, Ana>::~Optimizer() {
-    delete pAna;
   }
   
   template <typename Ntk, typename Ana>
@@ -803,7 +797,7 @@ namespace rrr {
     pNtk = pNtk_;
     target = -1;
     pNtk->AddCallback(std::bind(&Optimizer<Ntk, Ana>::ActionCallback, this, std::placeholders::_1));
-    pAna->UpdateNetwork(pNtk, fSame);
+    ana.UpdateNetwork(pNtk, fSame);
   }
   
   /* }}} */
@@ -818,14 +812,24 @@ namespace rrr {
     case 0:
       RemoveRedundancy();
       ApplyReverseTopologically([&](int id) {
-        std::vector<int> vCands = pNtk->GetPisInts();
+        std::vector<int> vCands;
+        if(nDistance) {
+          vCands = pNtk->GetNeighbors(id, true, nDistance);
+        } else {
+          vCands = pNtk->GetPisInts();
+        }
         SingleResub(id, vCands);
       });
       break;
     case 1:
       RemoveRedundancy();
       ApplyReverseTopologically([&](int id) {
-        std::vector<int> vCands = pNtk->GetInts();
+        std::vector<int> vCands;
+        if(nDistance) {
+          vCands = pNtk->GetNeighbors(id, true, nDistance);
+        } else {
+          vCands = pNtk->GetPisInts();
+        }
         MultiResub(id, vCands);
       });
       break;
@@ -834,11 +838,22 @@ namespace rrr {
       double dCost = CostFunction(pNtk);
       while(true) {
         ApplyReverseTopologically([&](int id) {
-          std::vector<int> vCands = pNtk->GetPisInts();
+          std::vector<int> vCands;
+          if(nDistance) {
+            vCands = pNtk->GetNeighbors(id, true, nDistance);
+          } else {
+            vCands = pNtk->GetPisInts();
+          }
           SingleResub(id, vCands);
         });
         ApplyReverseTopologically([&](int id) {
-          std::vector<int> vCands = pNtk->GetInts();
+          std::vector<int> vCands;
+          if(nDistance) {
+            vCands = pNtk->GetNeighbors(id, true, nDistance);
+          } else {
+            vCands = pNtk->GetPisInts();
+            // vCands = pNtk->GetInts();
+          }
           MultiResub(id, vCands);
         });
         double dNewCost = CostFunction(pNtk);
@@ -856,10 +871,16 @@ namespace rrr {
   }
 
   template <typename Ntk, typename Ana>
-  void Optimizer<Ntk, Ana>::Randomize() {
-    nSortType = rng() % 18;
+  void Optimizer<Ntk, Ana>::ResetSeed(int iSeed) {
+    rng.seed(iSeed);
     vRandPiOrder.clear();
     vRandCosts.clear();
+  }
+  
+  template <typename Ntk, typename Ana>
+  void Optimizer<Ntk, Ana>::Randomize(int iSeed) {
+    ResetSeed(iSeed);
+    nSortType = rng() % 18;
   }
   
   /* }}} */
