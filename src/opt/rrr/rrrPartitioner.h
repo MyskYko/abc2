@@ -50,11 +50,11 @@ namespace rrr {
     }
     int nRadius = 2;
     std::vector<int> vNodes = pNtk->GetNeighbors(id, false, nRadius);
-    int nSize = vNodes.size();
+    int nSize = int_size(vNodes);
     // gradually increase radius until it hits window size limit
     while(nSize < nWindowSize) {
       std::vector<int> vNodesNew = pNtk->GetNeighbors(id, false, nRadius + 1);
-      int nSizeNew = vNodesNew.size();
+      int nSizeNew = int_size(vNodesNew);
       if(nSize == nSizeNew) { // already maximum
         break;
       }
@@ -81,13 +81,13 @@ namespace rrr {
     // get tentative window IO
     std::set<int> sInputs, sOutputs;
     for(int id: sNodes) {
-      pNtk->ForEachFanin(id, [&](int fi, bool c) {
+      pNtk->ForEachFanin(id, [&](int fi) {
         if(!sNodes.count(fi)) {
           sInputs.insert(fi);
         }
       });
       bool fOutput = false;
-      pNtk->ForEachFanout(id, true, [&](int fo, bool c) {
+      pNtk->ForEachFanout(id, true, [&](int fo) {
         if(!sNodes.count(fo)) {
           fOutput = true;
         }
@@ -104,7 +104,7 @@ namespace rrr {
     // first by including inner nodes
     std::set<int> sFanouts;
     for(int id: sOutputs) {
-      pNtk->ForEachFanout(id, false, [&](int fo, bool c) {
+      pNtk->ForEachFanout(id, false, [&](int fo) {
         if(!sNodes.count(fo)) {
           sFanouts.insert(fo);
         }
@@ -132,13 +132,13 @@ namespace rrr {
       sInputs.clear();
       sOutputs.clear();
       for(int id: sNodes) {
-        pNtk->ForEachFanin(id, [&](int fi, bool c) {
+        pNtk->ForEachFanin(id, [&](int fi) {
           if(!sNodes.count(fi)) {
             sInputs.insert(fi);
           }
         });
         bool fOutput = false;
-        pNtk->ForEachFanout(id, true, [&](int fo, bool c) {
+        pNtk->ForEachFanout(id, true, [&](int fo) {
           if(!sNodes.count(fo)) {
             fOutput = true;
           }
@@ -153,7 +153,7 @@ namespace rrr {
       }
       sFanouts.clear();
       for(int id: sOutputs) {
-        pNtk->ForEachFanout(id, false, [&](int fo, bool c) {
+        pNtk->ForEachFanout(id, false, [&](int fo) {
           if(!sNodes.count(fo)) {
             sFanouts.insert(fo);
           }
@@ -168,7 +168,7 @@ namespace rrr {
           continue;
         }
         sFanouts.clear();
-        pNtk->ForEachFanout(id, false, [&](int fo, bool c) {
+        pNtk->ForEachFanout(id, false, [&](int fo) {
           if(!sNodes.count(fo)) {
             sFanouts.insert(fo);
           }
@@ -194,7 +194,7 @@ namespace rrr {
           // recompute inputs
           sInputs.clear();
           for(int id: sNodes) {
-            pNtk->ForEachFanin(id, [&](int fi, bool c) {
+            pNtk->ForEachFanin(id, [&](int fi) {
               if(!sNodes.count(fi)) {
                 sInputs.insert(fi);
               }
@@ -230,7 +230,7 @@ namespace rrr {
       }
       return NULL;
     }
-    if(sNodes.size() < nWindowSize / 2) {
+    if(int_size(sNodes) < nWindowSize / 2) {
       // too small
       // TODO: fix this parameterized
       return NULL;
@@ -294,14 +294,14 @@ namespace rrr {
     std::vector<bool> &vNewCompls = vNewSignals.second;
     // need to remap updated outputs that are used as inputs in other windows
     std::map<int, int> mOutput2Idx;
-    for(int idx = 0; idx < (int)vOldOutputs.size(); idx++) {
+    for(int idx = 0; idx < int_size(vOldOutputs); idx++) {
       mOutput2Idx[vOldOutputs[idx]] = idx;
     }
     for(auto &entry: mSubNtk2Io) {
       if(entry.first != pSubNtk) {
         std::vector<int> &vInputs = std::get<1>(entry.second);
         std::vector<bool> &vCompls = std::get<2>(entry.second);
-        for(int i = 0; i < (int)vInputs.size(); i++) {
+        for(int i = 0; i < int_size(vInputs); i++) {
           if(mOutput2Idx.count(vInputs[i])) {
             int idx = mOutput2Idx[vInputs[i]];
             vInputs[i] = vNewOutputs[idx];

@@ -263,7 +263,7 @@ namespace rrr {
   void Simulator<Ntk>::SimulateNode(std::vector<word> &v, int id, int to_negate) {
     itr x = v.end();
     itr y = v.begin() + id * nWords;
-    bool cx;
+    bool cx = false;
     switch(pNtk->GetNodeType(id)) {
     case AND:
       pNtk->ForEachFanin(id, [&](int fi, bool c) {
@@ -288,7 +288,7 @@ namespace rrr {
   template <typename Ntk>
   bool Simulator<Ntk>::ResimulateNode(std::vector<word> &v, int id, int to_negate) {
     itr x = v.end();
-    bool cx;
+    bool cx = false;
     switch(pNtk->GetNodeType(id)) {
     case AND:
       pNtk->ForEachFanin(id, [&](int fi, bool c) {
@@ -320,7 +320,7 @@ namespace rrr {
   void Simulator<Ntk>::SimulateOneWordNode(std::vector<word> &v, int id, int offset, int to_negate) {
     itr x = v.end();
     itr y = v.begin() + id * nWords + offset;
-    bool cx;
+    bool cx = false;
     switch(pNtk->GetNodeType(id)) {
     case AND:
       pNtk->ForEachFanin(id, [&](int fi, bool c) {
@@ -472,7 +472,7 @@ namespace rrr {
     });
     */
     Clear(nWords, care.begin());
-    pNtk->ForEachPoDriver([&](int fi, bool c) {
+    pNtk->ForEachPoDriver([&](int fi) {
       assert(fi != target);
       for(int i = 0; i < nWords; i++) {
         care[i] = care[i] | (vValues[fi * nWords + i] ^ vValues2[fi * nWords + i]);
@@ -491,7 +491,9 @@ namespace rrr {
 
   template <typename Ntk>
   void Simulator<Ntk>::Save(int slot) {
-    if(slot >= vBackups.size()) {
+    assert(slot >= 0);
+    assert(!check_int_max(slot));
+    if(slot >= int_size(vBackups)) {
       vBackups.resize(slot + 1);
     }
     vBackups[slot].nWords = nWords;
@@ -518,7 +520,8 @@ namespace rrr {
 
   template <typename Ntk>
   void Simulator<Ntk>::Load(int slot) {
-    assert(slot < vBackups.size());
+    assert(slot >= 0);
+    assert(slot < int_size(vBackups));
     nWords  = vBackups[slot].nWords;
     target  = vBackups[slot].target;
     vValues = vBackups[slot].vValues;
@@ -594,7 +597,7 @@ namespace rrr {
     switch(pNtk->GetNodeType(id)) {
     case AND: {
       itr x = vValues.end();
-      bool cx;
+      bool cx = false;
       pNtk->ForEachFaninIdx(id, [&](int idx2, int fi, bool c) {
         if(idx == idx2) {
           return;
@@ -631,7 +634,7 @@ namespace rrr {
     switch(pNtk->GetNodeType(id)) {
     case AND: {
       itr x = vValues.end();
-      bool cx;
+      bool cx = false;
       pNtk->ForEachFanin(id, [&](int fi, bool c) {
         if(x == vValues.end()) {
           x = vValues.begin() + fi * nWords;
@@ -671,7 +674,7 @@ namespace rrr {
       std::cout << std::endl;
     }
     // record care pi indices
-    assert((int)vCex.size() == pNtk->GetNumPis());
+    assert(int_size(vCex) == pNtk->GetNumPis());
     std::vector<int> vCarePiIdxs;
     for(int idx = 0; idx < pNtk->GetNumPis(); idx++) {
       switch(vCex[idx]) {
@@ -783,7 +786,7 @@ namespace rrr {
         }
       });
       Clear(1, care.begin() + iWord);
-      pNtk->ForEachPoDriver([&](int fi, bool c) {
+      pNtk->ForEachPoDriver([&](int fi) {
         assert(fi != target);
         care[iWord] = care[iWord] | (vValues[fi * nWords + iWord] ^ vValues2[fi * nWords + iWord]);
       });

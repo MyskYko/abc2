@@ -329,7 +329,7 @@ namespace rrr {
     pNtk->ForEachInt([&](int id) {
       if(vUpdates[id]) {
         if(SimulateNode(id, vFs)) {
-          pNtk->ForEachFanout(id, false, [&](int fo, bool c) {
+          pNtk->ForEachFanout(id, false, [&](int fo) {
             vUpdates[fo] = true;
             vCUpdates[fo] = true;
           });
@@ -353,7 +353,7 @@ namespace rrr {
     });
     lit x = pBdd->Const1();
     IncRef(x);
-    pNtk->ForEachPoDriver([&](int fi, bool c) {
+    pNtk->ForEachPoDriver([&](int fi) {
       lit y = Xor(vFs[fi], v[fi]);
       IncRef(y);
       Assign(x, pBdd->And(x, pBdd->LitNot(y)));
@@ -381,7 +381,7 @@ namespace rrr {
     }
     lit x = pBdd->Const1();
     IncRef(x);
-    pNtk->ForEachFanoutRidx(id, true, [&](int fo, bool c, int idx) {
+    pNtk->ForEachFanoutRidx(id, true, [&](int fo, int idx) {
       Assign(x, pBdd->And(x, vvCs[fo][idx]));
     });
     if(pBdd->LitIsEq(vGs[id], x)) {
@@ -529,7 +529,7 @@ namespace rrr {
 
   template <typename Ntk>
   void BddMspfAnalyzer<Ntk>::Save(int slot) {
-    if(slot >= vBackups.size()) {
+    if(slot >= int_size(vBackups)) {
       vBackups.resize(slot + 1);
     }
     CopyVec(vBackups[slot].vFs, vFs);
@@ -544,7 +544,7 @@ namespace rrr {
 
   template <typename Ntk>
   void BddMspfAnalyzer<Ntk>::Load(int slot) {
-    assert(slot < vBackups.size());
+    assert(slot < int_size(vBackups));
     CopyVec(vFs, vBackups[slot].vFs);
     CopyVec(vGs, vBackups[slot].vGs);
     CopyVecVec(vvCs, vBackups[slot].vvCs);

@@ -6,6 +6,7 @@
 #include <set>
 #include <string>
 #include <functional>
+#include <limits>
 #include <cassert>
 
 #include "rrrTypes.h"
@@ -14,6 +15,25 @@ ABC_NAMESPACE_CXX_HEADER_START
 
 namespace rrr {
 
+  /* {{{ Int size */
+  
+  template <template <typename...> typename Container, typename ... Ts>
+  static inline int int_size(Container<Ts...> const &c) {
+    assert(c.size() <= (typename Container<Ts...>::size_type)std::numeric_limits<int>::max());
+    return c.size();
+  }
+
+  template <template <typename...> typename Container, typename ... Ts>
+  static inline bool check_int_size(Container<Ts...> const &c) {
+    return c.size() <= (typename Container<Ts...>::size_type)std::numeric_limits<int>::max();
+  }
+
+  static inline bool check_int_max(int i) {
+    return i == std::numeric_limits<int>::max();
+  }
+  
+  /* }}} */
+  
   /* {{{ Print helpers */
 
   template <typename T>

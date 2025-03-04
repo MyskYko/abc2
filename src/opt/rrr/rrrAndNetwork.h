@@ -4,7 +4,7 @@
 #include <list>
 #include <map>
 #include <algorithm>
-#include <limits>
+#include <type_traits>
 
 #include "rrrParameter.h"
 #include "rrrUtils.h"
@@ -53,7 +53,7 @@ namespace rrr {
     // other private functions
     int  CreateNode();
     void SortInts(itr it);
-    void StartTraversal();
+    unsigned StartTraversal(int n = 1);
     void EndTraversal();
     void ForEachTfiRec(int id, std::function<void(int)> const &f);
     void TakenAction(Action const &action) const;
@@ -114,11 +114,16 @@ namespace rrr {
     void ForEachIntReverse(std::function<void(int)> const &func) const;
     void ForEachPiInt(std::function<void(int)> const &func) const;
     void ForEachPo(std::function<void(int)> const &func) const;
-    void ForEachPoDriver(std::function<void(int, bool)> const &func) const;
-    void ForEachFanin(int id, std::function<void(int, bool)> const &func) const;
-    void ForEachFaninIdx(int id, std::function<void(int, int, bool)> const &func) const; // func(index of fi in fanin list of id, fi, c)
-    void ForEachFanout(int id, bool fPos, std::function<void(int, bool)> const &func) const;
-    void ForEachFanoutRidx(int id, bool fPos, std::function<void(int, bool, int)> const &func) const; // func(fo, c, index of id in fanin list of fo)
+    template <typename Func>
+    void ForEachPoDriver(Func const &func) const;
+    template <typename Func>
+    void ForEachFanin(int id, Func const &func) const;
+    template <typename Func>
+    void ForEachFaninIdx(int id, Func const &func) const; // func(index of fi in fanin list of id, fi[, c])
+    template <typename Func>
+    void ForEachFanout(int id, bool fPos, Func const &func) const;
+    template <typename Func>
+    void ForEachFanoutRidx(int id, bool fPos, Func const &func) const; // func(fo[, c], index of id in fanin list of fo)
     void ForEachTfi(int id, bool fPis, std::function<void(int)> const &func);
     template <template <typename...> typename Container, typename ... Ts>
     void ForEachTfiEnd(int id, Container<Ts...> const &ends, std::function<void(int)> const &func);
@@ -142,7 +147,8 @@ namespace rrr {
     void AddFanin(int id, int fi, bool c);
     void TrivialCollapse(int id);
     void TrivialDecompose(int id);
-    void SortFanins(int id, std::function<bool(int, bool, int, bool)> const &cost);
+    template <typename Func>
+    void SortFanins(int id, Func const &cost);
     std::pair<std::vector<int>, std::vector<bool>> Insert(AndNetwork *pNtk, std::vector<int> const &vInputs, std::vector<bool> const &vCompls, std::vector<int> const &vOutputs);
 
     // Network cleanup
@@ -165,12 +171,12 @@ namespace rrr {
     // TODO: reuse already allocated but dead nodes? or perform garbage collection?
     vvFaninEdges.emplace_back();
     vRefs.push_back(0);
-    assert(nNodes != std::numeric_limits<int>::max());
+    assert(!check_int_max(nNodes));
     return nNodes++;
   }
 
   void AndNetwork::SortInts(itr it) {
-    ForEachFanin(*it, [&](int fi, bool c) {
+    ForEachFanin(*it, [&](int fi) {
       itr it2 = std::find(it, lInts.end(), fi);
       if(it2 != lInts.end()) {
         lInts.erase(it2);
@@ -180,12 +186,20 @@ namespace rrr {
     });
   }
 
-  inline void AndNetwork::StartTraversal() {
+  inline unsigned AndNetwork::StartTraversal(int n) {
     assert(!fLockTrav);
     fLockTrav = true;
+    do {
+      for(int i = 0; i < n; i++) {
+        iTrav++;
+        if(iTrav == 0) {
+          vTrav.clear();
+          break;
+        }
+      }
+    } while(iTrav == 0);
     vTrav.resize(nNodes);
-    iTrav++;
-    assert(iTrav != 0); //TODO: handle this overflow
+    return iTrav - n + 1;
   }
   
   inline void AndNetwork::EndTraversal() {
@@ -283,7 +297,7 @@ namespace rrr {
     vPis.push_back(nNodes);
     vvFaninEdges.emplace_back();
     vRefs.push_back(0);
-    assert(nNodes != std::numeric_limits<int>::max());
+    assert(!check_int_max(nNodes));
     return nNodes++;
   }
   
@@ -297,7 +311,7 @@ namespace rrr {
     vRefs[id1]++;
     vvFaninEdges.emplace_back(std::initializer_list<int>({Node2Edge(id0, c0), Node2Edge(id1, c1)}));
     vRefs.push_back(0);
-    assert(nNodes != std::numeric_limits<int>::max());
+    assert(!check_int_max(nNodes));
     return nNodes++;
   }
 
@@ -307,7 +321,7 @@ namespace rrr {
     vRefs[id]++;
     vvFaninEdges.emplace_back(std::initializer_list<int>({Node2Edge(id, c)}));
     vRefs.push_back(0);
-    assert(nNodes != std::numeric_limits<int>::max());
+    assert(!check_int_max(nNodes));
     return nNodes++;
   }
 
@@ -330,18 +344,15 @@ namespace rrr {
   }
 
   inline int AndNetwork::GetNumPis() const {
-    assert(vPis.size() <= (std::vector<int>::size_type)std::numeric_limits<int>::max());
-    return vPis.size();
+    return int_size(vPis);
   }
   
   inline int AndNetwork::GetNumInts() const {
-    assert(lInts.size() <= (std::vector<int>::size_type)std::numeric_limits<int>::max());
-    return lInts.size();
+    return int_size(lInts);
   }
   
   inline int AndNetwork::GetNumPos() const {
-    assert(vPos.size() <= (std::vector<int>::size_type)std::numeric_limits<int>::max());
-    return vPos.size();
+    return int_size(vPos);
   }
 
   inline int AndNetwork::GetConst0() const {
@@ -411,20 +422,20 @@ namespace rrr {
 
   inline int AndNetwork::GetPiIndex(int id) const {
     assert(IsPi(id));
-    assert(vPis.size() <= (std::vector<int>::size_type)std::numeric_limits<int>::max());
+    assert(check_int_size(vPis));
     std::vector<int>::const_iterator it = std::find(vPis.begin(), vPis.end(), id);
     assert(it != vPis.end());
     return std::distance(vPis.begin(), it);
   }
   
   inline int AndNetwork::GetIntIndex(int id) const {
+    assert(check_int_size(lInts));
     int index = 0;
     citr it = lInts.begin();
     for(; it != lInts.end(); it++) {
       if(*it == id) {
         break;
       }
-      assert(index < (std::vector<int>::size_type)std::numeric_limits<int>::max());
       index++;
     }
     assert(it != lInts.end());
@@ -433,15 +444,14 @@ namespace rrr {
 
   inline int AndNetwork::GetPoIndex(int id) const {
     assert(IsPo(id));
-    assert(vPos.size() <= (std::vector<int>::size_type)std::numeric_limits<int>::max());
+    assert(check_int_size(vPos));
     std::vector<int>::const_iterator it = std::find(vPos.begin(), vPos.end(), id);
     assert(it != vPos.end());
     return std::distance(vPos.begin(), it);
   }
   
   inline int AndNetwork::GetNumFanins(int id) const {
-    //assert(vvFaninEdges[id].size() <= (std::vector<int>::size_type)std::numeric_limits<int>::max());
-    return vvFaninEdges[id].size();
+    return int_size(vvFaninEdges[id]);
   }
 
   inline int AndNetwork::GetNumFanouts(int id) const {
@@ -469,16 +479,14 @@ namespace rrr {
     if(GetNumFanouts(id) <= 1) {
       return false;
     }
-    StartTraversal();
-    unsigned iTravStart = iTrav;
-    ForEachFanout(id, false, [&](int fo, bool c) {
-      vTrav[fo] = iTrav;
-      iTrav++;
-      assert(iTrav != 0); //TODO: handle this overflow
+    unsigned iTravStart = StartTraversal(GetNumFanouts(id));
+    int idx = 0;
+    ForEachFanout(id, false, [&](int fo) {
+      vTrav[fo] = iTravStart + idx;
+      idx++;
     });
-    iTrav--;
-    if(iTrav <= iTravStart) {
-      // less than one fanouts excluding POs
+    if(idx <= 1) {
+      // less than two fanouts excluding POs
       EndTraversal();
       return false;
     }
@@ -511,13 +519,13 @@ namespace rrr {
     for(int i = 0; i < nHops; i++) {
       vPrevs.swap(vNexts);
       for(int id: vPrevs) {
-        ForEachFanin(id, [&](int fi, bool c) {
+        ForEachFanin(id, [&](int fi) {
           if(vTrav[fi] != iTrav) {
             vNexts.push_back(fi);
             vTrav[fi] = iTrav;
           }
         });
-        ForEachFanout(id, false, [&](int fo, bool c) {
+        ForEachFanout(id, false, [&](int fo) {
           if(vTrav[fo] != iTrav) {
             vNexts.push_back(fo);
             vTrav[fo] = iTrav;
@@ -551,13 +559,10 @@ namespace rrr {
       return false;
     }
     // mark destinations
-    StartTraversal();
+    unsigned iTravStart = StartTraversal(2);
     for(int id: dsts) {
-      vTrav[id] = iTrav;
+      vTrav[id] = iTravStart;
     }
-    unsigned iTravStart = iTrav;
-    iTrav++;
-    assert(iTrav != 0); //TODO: handle this overflow
     // mark sources
     for(int id: srcs) {
       if(vTrav[id] == iTravStart) {
@@ -609,16 +614,10 @@ namespace rrr {
     if(srcs.empty() || dsts.empty()) {
       return std::vector<int>();
     }
-    StartTraversal();
-    unsigned iDst = iTrav;
-    iTrav++;
-    assert(iTrav != 0); //TODO: handle this overflow
-    unsigned iTfo = iTrav;
-    iTrav++;
-    assert(iTrav != 0); //TODO: handle this overflow
-    unsigned iInner = iTrav;
-    iTrav++;
-    assert(iTrav != 0); //TODO: handle this overflow
+    unsigned iTravStart = StartTraversal(4);
+    unsigned iDst = iTravStart;
+    unsigned iTfo = iTravStart + 1;
+    unsigned iInner = iTravStart + 2;
     // mark destinations (to prevent nodes between destinations to sources being included)
     for(int id: dsts) {
       vTrav[id] = iDst;
@@ -703,26 +702,46 @@ namespace rrr {
       func(po);
     }
   }
-  
-  inline void AndNetwork::ForEachPoDriver(std::function<void(int, bool)> const &func) const {
+
+  template <typename Func>
+  inline void AndNetwork::ForEachPoDriver(Func const &func) const {
+    static_assert(std::is_invocable_v<Func, int> || std::is_invocable_v<Func, int, bool>);
     for(int po: vPos) {
-      func(GetFanin(po, 0), GetCompl(po, 0));
-    }
-  }
-  
-  inline void AndNetwork::ForEachFanin(int id, std::function<void(int, bool)> const &func) const {
-    for(int fi_edge: vvFaninEdges[id]) {
-      func(Edge2Node(fi_edge), EdgeIsCompl(fi_edge));
+      if constexpr(std::is_invocable_v<Func, int>) {
+        func(GetFanin(po, 0));
+      } else if constexpr(std::is_invocable_v<Func, int, bool>) {
+        func(GetFanin(po, 0), GetCompl(po, 0));
+      }
     }
   }
 
-  inline void AndNetwork::ForEachFaninIdx(int id, std::function<void(int, int, bool)> const &func) const {
+  template <typename Func>
+  inline void AndNetwork::ForEachFanin(int id, Func const &func) const {
+    static_assert(std::is_invocable_v<Func, int> || std::is_invocable_v<Func, int, bool>);
+    for(int fi_edge: vvFaninEdges[id]) {
+      if constexpr(std::is_invocable_v<Func, int>) {
+        func(Edge2Node(fi_edge));
+      } else if constexpr(std::is_invocable_v<Func, int, bool>) {
+        func(Edge2Node(fi_edge), EdgeIsCompl(fi_edge));
+      }
+    }
+  }
+
+  template <typename Func>
+  inline void AndNetwork::ForEachFaninIdx(int id, Func const &func) const {
+    static_assert(std::is_invocable_v<Func, int, int> || std::is_invocable_v<Func, int, int, bool>);
     for(int idx = 0; idx < GetNumFanins(id); idx++) {
-      func(idx, GetFanin(id, idx), GetCompl(id, idx));
+      if constexpr(std::is_invocable_v<Func, int, int>) {
+        func(idx, GetFanin(id, idx));
+      } else if constexpr(std::is_invocable_v<Func, int, int, bool>) {
+        func(idx, GetFanin(id, idx), GetCompl(id, idx));
+      }
     }
   }
   
-  inline void AndNetwork::ForEachFanout(int id, bool fPos, std::function<void(int, bool)> const &func) const {
+  template <typename Func>
+  inline void AndNetwork::ForEachFanout(int id, bool fPos, Func const &func) const {
+    static_assert(std::is_invocable_v<Func, int> || std::is_invocable_v<Func, int, bool>);
     if(vRefs[id] == 0) {
       return;
     }
@@ -736,14 +755,22 @@ namespace rrr {
     for(; nRefs != 0 && it != lInts.end(); it++) {
       int idx = FindFanin(*it, id);
       if(idx >= 0) {
-        func(*it, GetCompl(*it, idx));
+        if constexpr(std::is_invocable_v<Func, int>) {
+          func(*it);
+        } else if constexpr(std::is_invocable_v<Func, int, bool>) {
+          func(*it, GetCompl(*it, idx));
+        }
         nRefs--;
       }
     }
     if(fPos && nRefs != 0) {
       for(int po: vPos) {
         if(GetFanin(po, 0) == id) {
-          func(po, GetCompl(po, 0));
+          if constexpr(std::is_invocable_v<Func, int>) {
+            func(po);
+          } else if constexpr(std::is_invocable_v<Func, int, bool>) {
+            func(po, GetCompl(po, 0));
+          }
           nRefs--;
           if(nRefs == 0) {
             break;
@@ -753,8 +780,10 @@ namespace rrr {
     }
     assert(!fPos || nRefs == 0);
   }
-  
-  inline void AndNetwork::ForEachFanoutRidx(int id, bool fPos, std::function<void(int, bool, int)> const &func) const {
+
+  template <typename Func>
+  inline void AndNetwork::ForEachFanoutRidx(int id, bool fPos, Func const &func) const {
+    static_assert(std::is_invocable_v<Func, int, int> || std::is_invocable_v<Func, int, bool, int>);
     if(vRefs[id] == 0) {
       return;
     }
@@ -768,14 +797,22 @@ namespace rrr {
     for(; nRefs != 0 && it != lInts.end(); it++) {
       int idx = FindFanin(*it, id);
       if(idx >= 0) {
-        func(*it, GetCompl(*it, idx), idx);
+        if constexpr(std::is_invocable_v<Func, int, int>) {
+          func(*it, idx);
+        } else if constexpr(std::is_invocable_v<Func, int, bool, int>) {
+          func(*it, GetCompl(*it, idx), idx);
+        }
         nRefs--;
       }
     }
     if(fPos && nRefs != 0) {
       for(int po: vPos) {
         if(GetFanin(po, 0) == id) {
-          func(po, GetCompl(po, 0), 0);
+          if constexpr(std::is_invocable_v<Func, int, int>) {
+            func(po, 0);
+          } else if constexpr(std::is_invocable_v<Func, int, bool, int>) {
+            func(po, GetCompl(po, 0), 0);
+          }
           nRefs--;
           if(nRefs == 0) {
             break;
@@ -1000,7 +1037,7 @@ namespace rrr {
   template <template <typename...> typename Container, typename ... Ts>
   AndNetwork *AndNetwork::Extract(Container<Ts...> const &ids, std::vector<int> const &vInputs, std::vector<int> const &vOutputs) {
     AndNetwork *pNtk = new AndNetwork;
-    pNtk->Reserve(vInputs.size() + ids.size() + vOutputs.size());
+    pNtk->Reserve(int_size(vInputs) + int_size(ids) + int_size(vOutputs));
     std::map<int, int> m;
     m[GetConst0()] = pNtk->GetConst0();
     for(int id: vInputs) {
@@ -1054,7 +1091,7 @@ namespace rrr {
     Action action;
     action.type = REMOVE_UNUSED;
     action.id = id;
-    ForEachFanin(id, [&](int fi, bool c) {
+    ForEachFanin(id, [&](int fi) {
       action.vFanins.push_back(fi);
       vRefs[fi]--;
     });
@@ -1155,7 +1192,7 @@ namespace rrr {
     });
     // remove node
     vRefs[id] = 0;
-    ForEachFanin(id, [&](int fi, bool c) {
+    ForEachFanin(id, [&](int fi) {
       vRefs[fi]--;
       action.vFanins.push_back(fi);
     });
@@ -1174,7 +1211,7 @@ namespace rrr {
     Action action;
     action.type = ADD_FANIN;
     action.id = id;
-    action.idx = vvFaninEdges[id].size();
+    action.idx = GetNumFanins(id);
     action.fi = fi;
     action.c = c;
     itr it = std::find(lInts.begin(), lInts.end(), id);
@@ -1204,7 +1241,7 @@ namespace rrr {
         std::vector<int>::iterator it = vvFaninEdges[id].begin() + idx;
         it = vvFaninEdges[id].erase(it);
         vvFaninEdges[id].insert(it, vvFaninEdges[fi].begin(), vvFaninEdges[fi].end());
-        ForEachFanin(fi, [&](int fi, bool c) {
+        ForEachFanin(fi, [&](int fi) {
           action.vFanins.push_back(fi);
         });
         // remove collapsed fanin
@@ -1224,7 +1261,7 @@ namespace rrr {
       Action action;
       action.type = TRIVIAL_DECOMPOSE;
       action.id = id;
-      action.idx = vvFaninEdges[id].size() - 2;
+      action.idx = GetNumFanins(id) - 2;
       int new_fi = CreateNode();
       action.fi = new_fi;
       int fi_edge1 = vvFaninEdges[id].back();
@@ -1244,10 +1281,16 @@ namespace rrr {
     }
   }
 
-  void AndNetwork::SortFanins(int id, std::function<bool(int, bool, int, bool)> const &comp) {
+  template <typename Func>
+  void AndNetwork::SortFanins(int id, Func const &comp) {
+    static_assert(std::is_invocable_v<Func, int, int> || std::is_invocable_v<Func, int, bool, int, bool>);
     std::vector<int> vFaninEdges = vvFaninEdges[id];
     std::sort(vvFaninEdges[id].begin(), vvFaninEdges[id].end(), [&](int i, int j) {
-      return comp(Edge2Node(i), EdgeIsCompl(i), Edge2Node(j), EdgeIsCompl(j));
+      if constexpr(std::is_invocable_v<Func, int, int>) {
+        return comp(Edge2Node(i), Edge2Node(j));
+      } else if constexpr(std::is_invocable_v<Func, int, bool, int, bool>) {
+        return comp(Edge2Node(i), EdgeIsCompl(i), Edge2Node(j), EdgeIsCompl(j));
+      }
     });
     if(vFaninEdges == vvFaninEdges[id]) {
       return;
@@ -1255,7 +1298,7 @@ namespace rrr {
     Action action;
     action.type = SORT_FANINS;
     action.id = id;
-    assert(vFaninEdges.size() <= (std::vector<int>::size_type)std::numeric_limits<int>::max());
+    assert(check_int_size(vFaninEdges));
     for(int fanin_edge: vvFaninEdges[id]) {
       std::vector<int>::const_iterator it = std::find(vFaninEdges.begin(), vFaninEdges.end(), fanin_edge);
       action.vIndices.push_back(std::distance(vFaninEdges.cbegin(), it));
@@ -1267,7 +1310,7 @@ namespace rrr {
     Reserve(nNodes + pNtk->GetNumInts());
     std::map<int, std::pair<int, bool>> m;
     m[pNtk->GetConst0()] = std::make_pair(GetConst0(), false);
-    assert(pNtk->GetNumPis() == (int)vInputs.size());
+    assert(pNtk->GetNumPis() == int_size(vInputs));
     assert(vInputs.size() == vCompls.size());
     for(int i = 0; i < pNtk->GetNumPis(); i++) {
       assert(IsInt(vInputs[i]) || IsPi(vInputs[i]));
@@ -1285,7 +1328,7 @@ namespace rrr {
       });
       m[id] = std::make_pair(id2, false);
     });
-    assert(pNtk->GetNumPos() == (int)vOutputs.size());
+    assert(pNtk->GetNumPos() == int_size(vOutputs));
     std::vector<int> vNewOutputs(pNtk->GetNumPos());
     std::vector<bool> vNewCompls(pNtk->GetNumPos());
     for(int i = 0; i < pNtk->GetNumPos(); i++) {
@@ -1396,10 +1439,11 @@ namespace rrr {
     Action action;
     action.type = SAVE;
     if(slot < 0) {
-      slot = vBackups.size();
+      slot = int_size(vBackups);
       vBackups.push_back(*this);
+      assert(check_int_size(vBackups));
     } else {
-      assert(slot < vBackups.size());
+      assert(slot < int_size(vBackups));
       vBackups[slot] = *this;
     }
     action.idx = slot;
@@ -1408,7 +1452,8 @@ namespace rrr {
   }
 
   void AndNetwork::Load(int slot) {
-    assert(slot < vBackups.size());
+    assert(slot >= 0);
+    assert(slot < int_size(vBackups));
     Action action;
     action.type = LOAD;
     action.idx = slot;
@@ -1420,7 +1465,7 @@ namespace rrr {
     assert(!vBackups.empty());
     Action action;
     action.type = POP_BACK;
-    action.idx = vBackups.size() - 1;
+    action.idx = int_size(vBackups) - 1;
     vBackups.pop_back();
     TakenAction(action);
   }
@@ -1437,12 +1482,12 @@ namespace rrr {
     std::cout << "inputs: " << vPis << std::endl;
     ForEachInt([&](int id) {
       std::cout << "node " << id << ": ";
-      PrintComplementedEdges(std::bind(&AndNetwork::ForEachFanin, this, id, std::placeholders::_1));
+      PrintComplementedEdges(std::bind(&AndNetwork::ForEachFanin<std::function<void(int, bool)>>, this, id, std::placeholders::_1));
       std::cout << " (ref = " << vRefs[id] << ")";
       std::cout << std::endl;
     });
     std::cout << "outputs: ";
-    PrintComplementedEdges(std::bind(&AndNetwork::ForEachPoDriver, this, std::placeholders::_1));
+    PrintComplementedEdges(std::bind(&AndNetwork::ForEachPoDriver<std::function<void(int, bool)>>, this, std::placeholders::_1));
     std::cout << std::endl;
   }
 
