@@ -4,7 +4,6 @@
 #include <list>
 #include <map>
 #include <algorithm>
-#include <type_traits>
 
 #include "rrrParameter.h"
 #include "rrrUtils.h"
@@ -705,11 +704,11 @@ namespace rrr {
 
   template <typename Func>
   inline void AndNetwork::ForEachPoDriver(Func const &func) const {
-    static_assert(std::is_invocable_v<Func, int> || std::is_invocable_v<Func, int, bool>);
+    static_assert(is_invokable<Func, int>::value || is_invokable<Func, int, bool>::value, "for each edge function format error");
     for(int po: vPos) {
-      if constexpr(std::is_invocable_v<Func, int>) {
+      if constexpr(is_invokable<Func, int>::value) {
         func(GetFanin(po, 0));
-      } else if constexpr(std::is_invocable_v<Func, int, bool>) {
+      } else if constexpr(is_invokable<Func, int, bool>::value) {
         func(GetFanin(po, 0), GetCompl(po, 0));
       }
     }
@@ -717,11 +716,11 @@ namespace rrr {
 
   template <typename Func>
   inline void AndNetwork::ForEachFanin(int id, Func const &func) const {
-    static_assert(std::is_invocable_v<Func, int> || std::is_invocable_v<Func, int, bool>);
+    static_assert(is_invokable<Func, int>::value || is_invokable<Func, int, bool>::value, "for each edge function format error");
     for(int fi_edge: vvFaninEdges[id]) {
-      if constexpr(std::is_invocable_v<Func, int>) {
+      if constexpr(is_invokable<Func, int>::value) {
         func(Edge2Node(fi_edge));
-      } else if constexpr(std::is_invocable_v<Func, int, bool>) {
+      } else if constexpr(is_invokable<Func, int, bool>::value) {
         func(Edge2Node(fi_edge), EdgeIsCompl(fi_edge));
       }
     }
@@ -729,11 +728,11 @@ namespace rrr {
 
   template <typename Func>
   inline void AndNetwork::ForEachFaninIdx(int id, Func const &func) const {
-    static_assert(std::is_invocable_v<Func, int, int> || std::is_invocable_v<Func, int, int, bool>);
+    static_assert(is_invokable<Func, int, int>::value || is_invokable<Func, int, int, bool>::value, "for each edge function format error");
     for(int idx = 0; idx < GetNumFanins(id); idx++) {
-      if constexpr(std::is_invocable_v<Func, int, int>) {
+      if constexpr(is_invokable<Func, int, int>::value) {
         func(idx, GetFanin(id, idx));
-      } else if constexpr(std::is_invocable_v<Func, int, int, bool>) {
+      } else if constexpr(is_invokable<Func, int, int, bool>::value) {
         func(idx, GetFanin(id, idx), GetCompl(id, idx));
       }
     }
@@ -741,7 +740,7 @@ namespace rrr {
   
   template <typename Func>
   inline void AndNetwork::ForEachFanout(int id, bool fPos, Func const &func) const {
-    static_assert(std::is_invocable_v<Func, int> || std::is_invocable_v<Func, int, bool>);
+    static_assert(is_invokable<Func, int>::value || is_invokable<Func, int, bool>::value, "for each edge function format error");
     if(vRefs[id] == 0) {
       return;
     }
@@ -755,9 +754,9 @@ namespace rrr {
     for(; nRefs != 0 && it != lInts.end(); it++) {
       int idx = FindFanin(*it, id);
       if(idx >= 0) {
-        if constexpr(std::is_invocable_v<Func, int>) {
+        if constexpr(is_invokable<Func, int>::value) {
           func(*it);
-        } else if constexpr(std::is_invocable_v<Func, int, bool>) {
+        } else if constexpr(is_invokable<Func, int, bool>::value) {
           func(*it, GetCompl(*it, idx));
         }
         nRefs--;
@@ -766,9 +765,9 @@ namespace rrr {
     if(fPos && nRefs != 0) {
       for(int po: vPos) {
         if(GetFanin(po, 0) == id) {
-          if constexpr(std::is_invocable_v<Func, int>) {
+          if constexpr(is_invokable<Func, int>::value) {
             func(po);
-          } else if constexpr(std::is_invocable_v<Func, int, bool>) {
+          } else if constexpr(is_invokable<Func, int, bool>::value) {
             func(po, GetCompl(po, 0));
           }
           nRefs--;
@@ -783,7 +782,7 @@ namespace rrr {
 
   template <typename Func>
   inline void AndNetwork::ForEachFanoutRidx(int id, bool fPos, Func const &func) const {
-    static_assert(std::is_invocable_v<Func, int, int> || std::is_invocable_v<Func, int, bool, int>);
+    static_assert(is_invokable<Func, int, int>::value || is_invokable<Func, int, bool, int>::value, "for each edge function format error");
     if(vRefs[id] == 0) {
       return;
     }
@@ -797,9 +796,9 @@ namespace rrr {
     for(; nRefs != 0 && it != lInts.end(); it++) {
       int idx = FindFanin(*it, id);
       if(idx >= 0) {
-        if constexpr(std::is_invocable_v<Func, int, int>) {
+        if constexpr(is_invokable<Func, int, int>::value) {
           func(*it, idx);
-        } else if constexpr(std::is_invocable_v<Func, int, bool, int>) {
+        } else if constexpr(is_invokable<Func, int, bool, int>::value) {
           func(*it, GetCompl(*it, idx), idx);
         }
         nRefs--;
@@ -808,9 +807,9 @@ namespace rrr {
     if(fPos && nRefs != 0) {
       for(int po: vPos) {
         if(GetFanin(po, 0) == id) {
-          if constexpr(std::is_invocable_v<Func, int, int>) {
+          if constexpr(is_invokable<Func, int, int>::value) {
             func(po, 0);
-          } else if constexpr(std::is_invocable_v<Func, int, bool, int>) {
+          } else if constexpr(is_invokable<Func, int, bool, int>::value) {
             func(po, GetCompl(po, 0), 0);
           }
           nRefs--;
@@ -1283,12 +1282,12 @@ namespace rrr {
 
   template <typename Func>
   void AndNetwork::SortFanins(int id, Func const &comp) {
-    static_assert(std::is_invocable_v<Func, int, int> || std::is_invocable_v<Func, int, bool, int, bool>);
+    static_assert(is_invokable<Func, int, int>::value || is_invokable<Func, int, bool, int, bool>::value, "fanin cost function format error");
     std::vector<int> vFaninEdges = vvFaninEdges[id];
     std::sort(vvFaninEdges[id].begin(), vvFaninEdges[id].end(), [&](int i, int j) {
-      if constexpr(std::is_invocable_v<Func, int, int>) {
+      if constexpr(is_invokable<Func, int, int>::value) {
         return comp(Edge2Node(i), Edge2Node(j));
-      } else if constexpr(std::is_invocable_v<Func, int, bool, int, bool>) {
+      } else if constexpr(is_invokable<Func, int, bool, int, bool>::value) {
         return comp(Edge2Node(i), EdgeIsCompl(i), Edge2Node(j), EdgeIsCompl(j));
       }
     });

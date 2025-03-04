@@ -15,6 +15,18 @@ ABC_NAMESPACE_CXX_HEADER_START
 
 namespace rrr {
 
+  /* {{{ Invocable */
+
+#if defined(__cpp_lib_is_invocable)
+  template <typename Fn, typename... Args>
+  using is_invokable = std::is_invocable<Fn, Args...>;
+#else
+  template <typename Fn, typename... Args>
+  struct is_invokable: std::is_constructible<std::function<void(Args...)>, std::reference_wrapper<typename std::remove_reference<Fn>::type>> {};
+#endif
+
+  /* }}} */
+
   /* {{{ Int size */
   
   template <template <typename...> typename Container, typename ... Ts>
