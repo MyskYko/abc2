@@ -7,6 +7,7 @@
 #include <string>
 #include <functional>
 #include <limits>
+#include <type_traits>
 #include <cassert>
 
 #include "rrrTypes.h"
