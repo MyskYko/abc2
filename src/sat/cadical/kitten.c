@@ -33,9 +33,9 @@ static inline void *cadical_kitten_calloc (size_t n, size_t size) {
   return res;
 }
 
-#define CALLOC(P, N) \
+#define CALLOC(T, P, N)                          \
   do { \
-    (P) = cadical_kitten_calloc (N, sizeof *(P)); \
+    (P) = (T*)cadical_kitten_calloc (N, sizeof *(P));   \
   } while (0)
 #define DEALLOC(P, N) free (P)
 
@@ -490,10 +490,10 @@ static void clear_cadical_kitten (cadical_kitten *cadical_kitten) {
   initialize_cadical_kitten (cadical_kitten);
 }
 
-#define RESIZE1(P) \
+#define RESIZE1(T, P)                            \
   do { \
     void *OLD_PTR = (P); \
-    CALLOC ((P), new_size / 2); \
+    CALLOC (T, (P), new_size / 2);                \
     const size_t BYTES = old_vars * sizeof *(P); \
     memcpy ((P), OLD_PTR, BYTES); \
     void *NEW_PTR = (P); \
@@ -502,10 +502,10 @@ static void clear_cadical_kitten (cadical_kitten *cadical_kitten) {
     (P) = NEW_PTR; \
   } while (0)
 
-#define RESIZE2(P) \
+#define RESIZE2(T, P)                            \
   do { \
     void *OLD_PTR = (P); \
-    CALLOC ((P), new_size); \
+    CALLOC (T, (P), new_size);                    \
     const size_t BYTES = old_lits * sizeof *(P); \
     memcpy ((P), OLD_PTR, BYTES); \
     void *NEW_PTR = (P); \
@@ -531,13 +531,13 @@ static void enlarge_internal (cadical_kitten *cadical_kitten, size_t lit) {
     LOG ("internal literals resized to %zu from %zu (requested %zu)",
          new_size, old_size, new_lits);
 
-    RESIZE1 (cadical_kitten->marks);
-    RESIZE1 (cadical_kitten->phases);
-    RESIZE2 (cadical_kitten->values);
-    RESIZE2 (cadical_kitten->failed);
-    RESIZE1 (cadical_kitten->vars);
-    RESIZE1 (cadical_kitten->links);
-    RESIZE2 (cadical_kitten->watches);
+    RESIZE1 (value, cadical_kitten->marks);
+    RESIZE1 (unsigned char, cadical_kitten->phases);
+    RESIZE2 (value, cadical_kitten->values);
+    RESIZE2 (bool, cadical_kitten->failed);
+    RESIZE1 (kar, cadical_kitten->vars);
+    RESIZE1 (kink, cadical_kitten->links);
+    RESIZE2 (katches, cadical_kitten->watches);
 
     cadical_kitten->size = new_size;
   }
@@ -603,7 +603,7 @@ static void invalid_api_usage (const char *fun, const char *fmt, ...) {
 
 cadical_kitten *cadical_kitten_init (void) {
   cadical_kitten *cadical_kitten;
-  CALLOC (cadical_kitten, 1);
+  CALLOC (struct cadical_kitten, cadical_kitten, 1);
   initialize_cadical_kitten (cadical_kitten);
   return cadical_kitten;
 }
@@ -835,7 +835,7 @@ static void enlarge_external (cadical_kitten *cadical_kitten, size_t eidx) {
     LOG ("external resizing to %zu variables from %zu (requested %u)",
          new_size, old_size, new_evars);
     unsigned *old_import = cadical_kitten->import;
-    CALLOC (cadical_kitten->import, new_size);
+    CALLOC (unsigned, cadical_kitten->import, new_size);
     const size_t bytes = old_evars * sizeof *cadical_kitten->import;
     memcpy (cadical_kitten->import, old_import, bytes);
     DEALLOC (old_import, old_size);
