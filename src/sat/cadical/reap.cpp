@@ -5,6 +5,15 @@
 #include <climits>
 #include <cstring>
 
+#ifdef _MSC_VER
+#include <intrin.h>
+static inline int __builtin_clz(unsigned x) {
+  unsigned long r;
+  _BitScanReverse(&r, x);
+  return (int)(r ^ 31);
+}
+#endif
+
 void Reap::init () {
   for (auto &bucket : buckets)
     bucket = {0};

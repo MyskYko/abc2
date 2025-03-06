@@ -163,7 +163,9 @@ inline void Internal::search_assign (int lit, Clause *reason) {
     const Watches &ws = watches (-lit);
     if (!ws.empty ()) {
       const Watch &w = ws[0];
+#ifndef WIN32
       __builtin_prefetch (&w, 0, 1);
+#endif
     }
   }
   lrat_chain.clear ();
