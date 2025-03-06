@@ -15,7 +15,14 @@ extern "C" {
 #include <sys/types.h>
 }
 
-#ifndef _WIN32
+#ifdef WIN32
+
+#define unlink _unlink
+#define access _access
+#define R_OK 4
+#define W_OK 2
+
+#else
 
 extern "C" {
 #include <sys/wait.h>

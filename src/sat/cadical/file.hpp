@@ -14,12 +14,17 @@
 #endif
 
 /*------------------------------------------------------------------------*/
+#ifdef WIN32
+#define cadical_putc_unlocked putc
+#define cadical_getc_unlocked getc
+#else
 #ifndef NUNLOCKED
 #define cadical_putc_unlocked putc_unlocked
 #define cadical_getc_unlocked getc_unlocked
 #else
 #define cadical_putc_unlocked putc
 #define cadical_getc_unlocked getc
+#endif
 #endif
 /*------------------------------------------------------------------------*/
 
