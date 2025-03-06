@@ -3,6 +3,7 @@
 #include "internal.hpp"
 
 #ifdef WIN32
+#include <io.h>
 #define isatty _isatty
 #endif
 

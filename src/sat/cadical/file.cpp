@@ -18,10 +18,16 @@ extern "C" {
 #ifdef WIN32
 
 #include <windows.h>
+#include <io.h>
+#include <cstdio>
 
 #define access _access
+#define popen _popen
+#define pclose _pclose
 #define R_OK 4
 #define W_OK 2
+//#define	S_ISFIFO(mode) (((mode) & S_IFMT) == S_IFIFO)
+//#define	S_ISDIR(mode)  (((mode) & S_IFMT) == S_IFDIR)
 
 #else
 
