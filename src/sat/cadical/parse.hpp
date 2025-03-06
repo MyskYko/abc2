@@ -1,7 +1,7 @@
 #ifndef _parse_hpp_INCLUDED
 #define _parse_hpp_INCLUDED
 
-#include <cassert>
+#include <cCADICAL_assert>
 #include <vector>
 
 namespace CaDiCaL {

@@ -10,15 +10,15 @@ inline void Internal::init_enqueue (int idx) {
   if (opts.reverse) {
     l.prev = 0;
     if (queue.first) {
-      assert (!links[queue.first].prev);
+      CADICAL_assert (!links[queue.first].prev);
       links[queue.first].prev = idx;
       btab[idx] = btab[queue.first] - 1;
     } else {
-      assert (!queue.last);
+      CADICAL_assert (!queue.last);
       queue.last = idx;
       btab[idx] = 0;
     }
-    assert (btab[idx] <= stats.bumped);
+    CADICAL_assert (btab[idx] <= stats.bumped);
     l.next = queue.first;
     queue.first = idx;
     if (!queue.unassigned)
@@ -26,10 +26,10 @@ inline void Internal::init_enqueue (int idx) {
   } else {
     l.next = 0;
     if (queue.last) {
-      assert (!links[queue.last].next);
+      CADICAL_assert (!links[queue.last].next);
       links[queue.last].next = idx;
     } else {
-      assert (!queue.first);
+      CADICAL_assert (!queue.first);
       queue.first = idx;
     }
     btab[idx] = ++stats.bumped;
@@ -47,7 +47,7 @@ inline void Internal::init_enqueue (int idx) {
 void Internal::init_queue (int old_max_var, int new_max_var) {
   LOG ("initializing VMTF queue from %d to %d", old_max_var + 1,
        new_max_var);
-  assert (old_max_var < new_max_var);
+  CADICAL_assert (old_max_var < new_max_var);
   // New variables can be created that can invoke enlarge anytime (eg via
   // calls during ipasir-up call-backs), thus assuming (!level) is not
   // correct

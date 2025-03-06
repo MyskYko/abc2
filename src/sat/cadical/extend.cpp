@@ -16,18 +16,18 @@ void External::push_id_on_extension_stack (int64_t id) {
 }
 
 void External::push_clause_literal_on_extension_stack (int ilit) {
-  assert (ilit);
+  CADICAL_assert (ilit);
   const int elit = internal->externalize (ilit);
-  assert (elit);
+  CADICAL_assert (elit);
   extension.push_back (elit);
   LOG ("pushing clause literal %d on extension stack (internal %d)", elit,
        ilit);
 }
 
 void External::push_witness_literal_on_extension_stack (int ilit) {
-  assert (ilit);
+  CADICAL_assert (ilit);
   const int elit = internal->externalize (ilit);
-  assert (elit);
+  CADICAL_assert (elit);
   extension.push_back (elit);
   LOG ("pushing witness literal %d on extension stack (internal %d)", elit,
        ilit);
@@ -77,10 +77,10 @@ void External::push_binary_clause_on_extension_stack (int64_t id, int pivot,
 
 void External::push_external_clause_and_witness_on_extension_stack (
     const vector<int> &c, const vector<int> &w, int64_t id) {
-  assert (id);
+  CADICAL_assert (id);
   extension.push_back (0);
   for (const auto &elit : w) {
-    assert (elit != INT_MIN);
+    CADICAL_assert (elit != INT_MIN);
     init (abs (elit));
     extension.push_back (elit);
     mark (witness, elit);
@@ -92,7 +92,7 @@ void External::push_external_clause_and_witness_on_extension_stack (
   extension.push_back (lower_bits);
   extension.push_back (0);
   for (const auto &elit : c) {
-    assert (elit != INT_MIN);
+    CADICAL_assert (elit != INT_MIN);
     init (abs (elit));
     extension.push_back (elit);
   }
@@ -112,7 +112,7 @@ void External::push_external_clause_and_witness_on_extension_stack (
 
 void External::extend () {
 
-  assert (!extended);
+  CADICAL_assert (!extended);
   START (extend);
   internal->stats.extensions++;
 
@@ -147,34 +147,34 @@ void External::extend () {
   while (i != begin) {
     bool satisfied = false;
     int lit;
-    assert (i != begin);
+    CADICAL_assert (i != begin);
     while ((lit = *--i)) {
       if (satisfied)
         continue;
       if (ival (lit) == lit)
         satisfied = true;
-      assert (i != begin);
+      CADICAL_assert (i != begin);
     }
-    assert (i != begin);
+    CADICAL_assert (i != begin);
     LOG ("id=%" PRId64, ((int64_t) *i << 32) + *(i - 1));
-    assert (*i || *(i - 1));
+    CADICAL_assert (*i || *(i - 1));
     --i;
-    assert (i != begin);
+    CADICAL_assert (i != begin);
     --i;
-    assert (i != begin);
-    assert (!*i);
+    CADICAL_assert (i != begin);
+    CADICAL_assert (!*i);
     --i;
-    assert (i != begin);
+    CADICAL_assert (i != begin);
     if (satisfied)
       while (*--i)
-        assert (i != begin);
+        CADICAL_assert (i != begin);
     else {
       while ((lit = *--i)) {
         const int tmp = ival (lit); // not 'signed char'!!!
         if (tmp != lit) {
           LOG ("flipping blocking literal %d", lit);
-          assert (lit);
-          assert (lit != INT_MIN);
+          CADICAL_assert (lit);
+          CADICAL_assert (lit != INT_MIN);
           size_t idx = abs (lit);
           if (idx >= vals.size ())
             vals.resize (idx + 1, false);
@@ -184,7 +184,7 @@ void External::extend () {
           flipped++;
 #endif
         }
-        assert (i != begin);
+        CADICAL_assert (i != begin);
       }
     }
   }
@@ -207,14 +207,14 @@ bool External::traverse_witnesses_backward (WitnessIterator &it) {
     int lit;
     while ((lit = *--i))
       clause.push_back (lit);
-    assert (!lit);
+    CADICAL_assert (!lit);
     --i;
     const int64_t id =
         ((int64_t) * (i - 1) << 32) + static_cast<int64_t> (*i);
-    assert (id);
+    CADICAL_assert (id);
     i -= 2;
-    assert (!*i);
-    assert (i != begin);
+    CADICAL_assert (!*i);
+    CADICAL_assert (i != begin);
     while ((lit = *--i))
       witness.push_back (lit);
     reverse (clause.begin (), clause.end ());
@@ -237,18 +237,18 @@ bool External::traverse_witnesses_forward (WitnessIterator &it) {
   if (i != end) {
     int lit = *i++;
     do {
-      assert (!lit), (void) lit;
+      CADICAL_assert (!lit), (void) lit;
       while ((lit = *i++))
         witness.push_back (lit);
-      assert (!lit);
-      assert (i != end);
-      assert (!*i);
+      CADICAL_assert (!lit);
+      CADICAL_assert (i != end);
+      CADICAL_assert (!*i);
       const int64_t id =
           ((int64_t) *i << 32) + static_cast<int64_t> (*(i + 1));
-      assert (id > 0);
+      CADICAL_assert (id > 0);
       i += 3;
-      assert (*i);
-      assert (i != end);
+      CADICAL_assert (*i);
+      CADICAL_assert (i != end);
       while (i != end && (lit = *i++))
         clause.push_back (lit);
       if (!it.witness (clause, witness, id))

@@ -23,7 +23,7 @@ void Internal::resize_unit_clauses_idx () {
 void Internal::force_lrat () {
   if (lrat)
     return;
-  assert (proof);
+  CADICAL_assert (proof);
   lrat = true;
 }
 
@@ -83,7 +83,7 @@ bool Internal::disconnect_proof_tracer (Tracer *tracer) {
   auto it = std::find (tracers.begin (), tracers.end (), tracer);
   if (it != tracers.end ()) {
     tracers.erase (it);
-    assert (proof);
+    CADICAL_assert (proof);
     proof->disconnect (tracer);
     return true;
   }
@@ -94,7 +94,7 @@ bool Internal::disconnect_proof_tracer (StatTracer *tracer) {
   auto it = std::find (stat_tracers.begin (), stat_tracers.end (), tracer);
   if (it != stat_tracers.end ()) {
     stat_tracers.erase (it);
-    assert (proof);
+    CADICAL_assert (proof);
     proof->disconnect (tracer);
     return true;
   }
@@ -105,7 +105,7 @@ bool Internal::disconnect_proof_tracer (FileTracer *tracer) {
   auto it = std::find (file_tracers.begin (), file_tracers.end (), tracer);
   if (it != file_tracers.end ()) {
     file_tracers.erase (it);
-    assert (proof);
+    CADICAL_assert (proof);
     proof->disconnect (tracer);
     return true;
   }
@@ -230,7 +230,7 @@ void Proof::add_external_original_clause (int64_t id, bool r,
                                           const vector<int> &c,
                                           bool restore) {
   // literals of c are already external
-  assert (clause.empty ());
+  CADICAL_assert (clause.empty ());
   for (auto const &lit : c)
     clause.push_back (lit);
   clause_id = id;
@@ -241,7 +241,7 @@ void Proof::add_external_original_clause (int64_t id, bool r,
 void Proof::delete_external_original_clause (int64_t id, bool r,
                                              const vector<int> &c) {
   // literals of c are already external
-  assert (clause.empty ());
+  CADICAL_assert (clause.empty ());
   for (auto const &lit : c)
     clause.push_back (lit);
   clause_id = id;
@@ -252,8 +252,8 @@ void Proof::delete_external_original_clause (int64_t id, bool r,
 void Proof::add_derived_empty_clause (int64_t id,
                                       const vector<int64_t> &chain) {
   LOG ("PROOF adding empty clause");
-  assert (clause.empty ());
-  assert (proof_chain.empty ());
+  CADICAL_assert (clause.empty ());
+  CADICAL_assert (proof_chain.empty ());
   for (const auto &cid : chain)
     proof_chain.push_back (cid);
   clause_id = id;
@@ -264,8 +264,8 @@ void Proof::add_derived_empty_clause (int64_t id,
 void Proof::add_derived_unit_clause (int64_t id, int internal_unit,
                                      const vector<int64_t> &chain) {
   LOG ("PROOF adding unit clause %d", internal_unit);
-  assert (proof_chain.empty ());
-  assert (clause.empty ());
+  CADICAL_assert (proof_chain.empty ());
+  CADICAL_assert (clause.empty ());
   add_literal (internal_unit);
   for (const auto &cid : chain)
     proof_chain.push_back (cid);
@@ -278,8 +278,8 @@ void Proof::add_derived_unit_clause (int64_t id, int internal_unit,
 
 void Proof::add_derived_clause (Clause *c, const vector<int64_t> &chain) {
   LOG (c, "PROOF adding to proof derived");
-  assert (clause.empty ());
-  assert (proof_chain.empty ());
+  CADICAL_assert (clause.empty ());
+  CADICAL_assert (proof_chain.empty ());
   add_literals (c);
   for (const auto &cid : chain)
     proof_chain.push_back (cid);
@@ -291,8 +291,8 @@ void Proof::add_derived_clause (Clause *c, const vector<int64_t> &chain) {
 void Proof::add_derived_clause (int64_t id, bool r, const vector<int> &c,
                                 const vector<int64_t> &chain) {
   LOG (c, "PROOF adding derived clause");
-  assert (clause.empty ());
-  assert (proof_chain.empty ());
+  CADICAL_assert (clause.empty ());
+  CADICAL_assert (proof_chain.empty ());
   for (const auto &lit : c)
     add_literal (lit);
   for (const auto &cid : chain)
@@ -305,8 +305,8 @@ void Proof::add_derived_clause (int64_t id, bool r, const vector<int> &c,
 void Proof::add_assumption_clause (int64_t id, const vector<int> &c,
                                    const vector<int64_t> &chain) {
   // literals of c are already external
-  assert (clause.empty ());
-  assert (proof_chain.empty ());
+  CADICAL_assert (clause.empty ());
+  CADICAL_assert (proof_chain.empty ());
   for (const auto &lit : c)
     clause.push_back (lit);
   for (const auto &cid : chain)
@@ -317,16 +317,16 @@ void Proof::add_assumption_clause (int64_t id, const vector<int> &c,
 
 void Proof::add_assumption (int a) {
   // a is already external
-  assert (clause.empty ());
-  assert (proof_chain.empty ());
+  CADICAL_assert (clause.empty ());
+  CADICAL_assert (proof_chain.empty ());
   clause.push_back (a);
   add_assumption ();
 }
 
 void Proof::add_constraint (const vector<int> &c) {
   // literals of c are already external
-  assert (clause.empty ());
-  assert (proof_chain.empty ());
+  CADICAL_assert (clause.empty ());
+  CADICAL_assert (proof_chain.empty ());
   for (const auto &lit : c)
     clause.push_back (lit);
   add_constraint ();
@@ -334,8 +334,8 @@ void Proof::add_constraint (const vector<int> &c) {
 
 void Proof::add_assumption_clause (int64_t id, int lit,
                                    const vector<int64_t> &chain) {
-  assert (clause.empty ());
-  assert (proof_chain.empty ());
+  CADICAL_assert (clause.empty ());
+  CADICAL_assert (proof_chain.empty ());
   clause.push_back (lit);
   for (const auto &cid : chain)
     proof_chain.push_back (cid);
@@ -354,7 +354,7 @@ void Proof::delete_clause (Clause *c) {
 
 void Proof::delete_clause (int64_t id, bool r, const vector<int> &c) {
   LOG (c, "PROOF deleting from proof");
-  assert (clause.empty ());
+  CADICAL_assert (clause.empty ());
   add_literals (c);
   clause_id = id;
   redundant = r;
@@ -363,7 +363,7 @@ void Proof::delete_clause (int64_t id, bool r, const vector<int> &c) {
 
 void Proof::weaken_minus (Clause *c) {
   LOG (c, "PROOF weaken minus of");
-  assert (clause.empty ());
+  CADICAL_assert (clause.empty ());
   add_literals (c);
   clause_id = c->id;
   weaken_minus ();
@@ -371,7 +371,7 @@ void Proof::weaken_minus (Clause *c) {
 
 void Proof::weaken_minus (int64_t id, const vector<int> &c) {
   LOG (c, "PROOF deleting from proof");
-  assert (clause.empty ());
+  CADICAL_assert (clause.empty ());
   add_literals (c);
   clause_id = id;
   weaken_minus ();
@@ -389,7 +389,7 @@ void Proof::weaken_plus (int64_t id, const vector<int> &c) {
 
 void Proof::delete_unit_clause (int64_t id, const int lit) {
   LOG ("PROOF deleting unit from proof %d", lit);
-  assert (clause.empty ());
+  CADICAL_assert (clause.empty ());
   add_literal (lit);
   clause_id = id;
   redundant = false;
@@ -398,7 +398,7 @@ void Proof::delete_unit_clause (int64_t id, const int lit) {
 
 void Proof::finalize_clause (Clause *c) {
   LOG (c, "PROOF finalizing clause");
-  assert (clause.empty ());
+  CADICAL_assert (clause.empty ());
   add_literals (c);
   clause_id = c->id;
   finalize_clause ();
@@ -406,7 +406,7 @@ void Proof::finalize_clause (Clause *c) {
 
 void Proof::finalize_clause (int64_t id, const vector<int> &c) {
   LOG (c, "PROOF finalizing clause");
-  assert (clause.empty ());
+  CADICAL_assert (clause.empty ());
   for (const auto &lit : c)
     add_literal (lit);
   clause_id = id;
@@ -415,7 +415,7 @@ void Proof::finalize_clause (int64_t id, const vector<int> &c) {
 
 void Proof::finalize_unit (int64_t id, int lit) {
   LOG ("PROOF finalizing clause %d", lit);
-  assert (clause.empty ());
+  CADICAL_assert (clause.empty ());
   add_literal (lit);
   clause_id = id;
   finalize_clause ();
@@ -423,7 +423,7 @@ void Proof::finalize_unit (int64_t id, int lit) {
 
 void Proof::finalize_external_unit (int64_t id, int lit) {
   LOG ("PROOF finalizing clause %d", lit);
-  assert (clause.empty ());
+  CADICAL_assert (clause.empty ());
   clause.push_back (lit);
   clause_id = id;
   finalize_clause ();
@@ -437,7 +437,7 @@ void Proof::finalize_external_unit (int64_t id, int lit) {
 
 void Proof::flush_clause (Clause *c) {
   LOG (c, "PROOF flushing falsified literals in");
-  assert (clause.empty ());
+  CADICAL_assert (clause.empty ());
   const bool antecedents = (internal->lrat || internal->frat);
   for (int i = 0; i < c->size; i++) {
     int internal_lit = c->literals[i];
@@ -468,7 +468,7 @@ void Proof::flush_clause (Clause *c) {
 void Proof::strengthen_clause (Clause *c, int remove,
                                const vector<int64_t> &chain) {
   LOG (c, "PROOF strengthen by removing %d in", remove);
-  assert (clause.empty ());
+  CADICAL_assert (clause.empty ());
   for (int i = 0; i < c->size; i++) {
     int internal_lit = c->literals[i];
     if (internal_lit == remove)
@@ -488,7 +488,7 @@ void Proof::strengthen_clause (Clause *c, int remove,
 void Proof::otfs_strengthen_clause (Clause *c, const std::vector<int> &old,
                                     const vector<int64_t> &chain) {
   LOG (c, "PROOF otfs strengthen");
-  assert (clause.empty ());
+  CADICAL_assert (clause.empty ());
   for (int i = 0; i < c->size; i++) {
     int internal_lit = c->literals[i];
     add_literal (internal_lit);
@@ -512,7 +512,7 @@ void Proof::strengthen (int64_t id) {
 
 void Proof::add_original_clause (bool restore) {
   LOG (clause, "PROOF adding original external clause");
-  assert (clause_id);
+  CADICAL_assert (clause_id);
 
   for (auto &tracer : tracers) {
     tracer->add_original_clause (clause_id, false, clause, restore);
@@ -524,7 +524,7 @@ void Proof::add_original_clause (bool restore) {
 void Proof::add_derived_clause () {
   LOG (clause, "PROOF adding derived external clause (redundant: %d)",
        redundant);
-  assert (clause_id);
+  CADICAL_assert (clause_id);
   for (auto &tracer : tracers) {
     tracer->add_derived_clause (clause_id, redundant, clause, proof_chain);
   }
@@ -544,7 +544,7 @@ void Proof::delete_clause () {
 
 void Proof::demote_clause () {
   LOG (clause, "PROOF demoting external clause");
-  assert (!redundant);
+  CADICAL_assert (!redundant);
   for (auto &tracer : tracers) {
     tracer->demote_clause (clause_id, clause);
   }
@@ -589,7 +589,7 @@ void Proof::add_assumption_clause () {
 
 void Proof::add_assumption () {
   LOG (clause, "PROOF adding assumption");
-  assert (clause.size () == 1);
+  CADICAL_assert (clause.size () == 1);
   for (auto &tracer : tracers) {
     tracer->add_assumption (clause.back ());
   }

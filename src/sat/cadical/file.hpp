@@ -1,13 +1,13 @@
 #ifndef _file_hpp_INCLUDED
 #define _file_hpp_INCLUDED
 
-#include <cassert>
+#include <cCADICAL_assert>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <vector>
 
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
 #include <climits>
 #endif
 
@@ -33,7 +33,7 @@ struct Internal;
 class File {
 
   Internal *internal;
-#if !defined(QUIET) || !defined(NDEBUG)
+#if !defined(QUIET) || !defined(CADICAL_NDEBUG)
   bool writing;
 #endif
 
@@ -95,7 +95,7 @@ public:
   // threads, which on the other hand currently is impossible.
 
   int get () {
-    assert (!writing);
+    CADICAL_assert (!writing);
     int res = cadical_getc_unlocked (file);
     if (res == '\n')
       _lineno++;
@@ -105,7 +105,7 @@ public:
   }
 
   bool put (char ch) {
-    assert (writing);
+    CADICAL_assert (writing);
     if (cadical_putc_unlocked (ch, file) == EOF)
       return false;
     _bytes++;
@@ -115,7 +115,7 @@ public:
   bool endl () { return put ('\n'); }
 
   bool put (unsigned char ch) {
-    assert (writing);
+    CADICAL_assert (writing);
     if (cadical_putc_unlocked (ch, file) == EOF)
       return false;
     _bytes++;
@@ -130,20 +130,20 @@ public:
   }
 
   bool put (int lit) {
-    assert (writing);
+    CADICAL_assert (writing);
     if (!lit)
       return put ('0');
     else if (lit == -2147483648) {
-      assert (lit == INT_MIN);
+      CADICAL_assert (lit == INT_MIN);
       return put ("-2147483648");
     } else {
       char buffer[11];
       int i = sizeof buffer;
       buffer[--i] = 0;
-      assert (lit != INT_MIN);
+      CADICAL_assert (lit != INT_MIN);
       unsigned idx = abs (lit);
       while (idx) {
-        assert (i > 0);
+        CADICAL_assert (i > 0);
         buffer[--i] = '0' + idx % 10;
         idx /= 10;
       }
@@ -154,20 +154,20 @@ public:
   }
 
   bool put (int64_t l) {
-    assert (writing);
+    CADICAL_assert (writing);
     if (!l)
       return put ('0');
     else if (l == INT64_MIN) {
-      assert (sizeof l == 8);
+      CADICAL_assert (sizeof l == 8);
       return put ("-9223372036854775808");
     } else {
       char buffer[21];
       int i = sizeof buffer;
       buffer[--i] = 0;
-      assert (l != INT64_MIN);
+      CADICAL_assert (l != INT64_MIN);
       uint64_t k = l < 0 ? -l : l;
       while (k) {
-        assert (i > 0);
+        CADICAL_assert (i > 0);
         buffer[--i] = '0' + k % 10;
         k /= 10;
       }
@@ -178,7 +178,7 @@ public:
   }
 
   bool put (uint64_t l) {
-    assert (writing);
+    CADICAL_assert (writing);
     if (!l)
       return put ('0');
     else {
@@ -186,7 +186,7 @@ public:
       int i = sizeof buffer;
       buffer[--i] = 0;
       while (l) {
-        assert (i > 0);
+        CADICAL_assert (i > 0);
         buffer[--i] = '0' + l % 10;
         l /= 10;
       }

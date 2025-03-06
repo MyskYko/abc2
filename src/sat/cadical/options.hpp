@@ -357,7 +357,7 @@ public:
   // that the following options are really allocated directly after it.
   //
   inline int &val (size_t idx) {
-    assert (idx < number_of_options);
+    CADICAL_assert (idx < number_of_options);
     return (&__start_of_options__ + 1)[idx];
   }
 
@@ -406,7 +406,7 @@ public:
 };
 
 inline int &Option::val (Options *opts) {
-  assert (Options::table <= this &&
+  CADICAL_assert (Options::table <= this &&
           this < Options::table + number_of_options);
   return opts->val (this - Options::table);
 }

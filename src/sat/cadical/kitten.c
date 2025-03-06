@@ -2,7 +2,7 @@
 #include "random.h"
 #include "stack.h"
 
-#include <assert.h>
+#include <CADICAL_assert.h>
 #include <inttypes.h>
 #include <limits.h>
 #include <stdarg.h>
@@ -41,7 +41,7 @@ static inline void *kitten_calloc (size_t n, size_t size) {
 
 #define ENLARGE_STACK(S) \
   do { \
-    assert (FULL_STACK (S)); \
+    CADICAL_assert (FULL_STACK (S)); \
     const size_t SIZE = SIZE_STACK (S); \
     const size_t OLD_CAPACITY = CAPACITY_STACK (S); \
     const size_t NEW_CAPACITY = OLD_CAPACITY ? 2 * OLD_CAPACITY : 1; \
@@ -58,14 +58,14 @@ static inline void *kitten_calloc (size_t n, size_t size) {
 #define INC(NAME) \
   do { \
     statistics *statistics = &kitten->statistics; \
-    assert (statistics->NAME < UINT64_MAX); \
+    CADICAL_assert (statistics->NAME < UINT64_MAX); \
     statistics->NAME++; \
   } while (0)
 
 #define ADD(NAME, DELTA) \
   do { \
     statistics *statistics = &kitten->statistics; \
-    assert (statistics->NAME <= UINT64_MAX - (DELTA)); \
+    CADICAL_assert (statistics->NAME <= UINT64_MAX - (DELTA)); \
     statistics->NAME += (DELTA); \
   } while (0)
 
@@ -210,22 +210,22 @@ static inline void unset_core_klause (klause *c) { c->flags &= ~CORE_FLAG; }
 
 static inline klause *dereference_klause (kitten *kitten, unsigned ref) {
   unsigned *res = BEGIN_STACK (kitten->klauses) + ref;
-  assert (res < END_STACK (kitten->klauses));
+  CADICAL_assert (res < END_STACK (kitten->klauses));
   return (klause *) res;
 }
 
 static inline unsigned reference_klause (kitten *kitten, const klause *c) {
   const unsigned *const begin = BEGIN_STACK (kitten->klauses);
   const unsigned *p = (const unsigned *) c;
-  assert (begin <= p);
-  assert (p < END_STACK (kitten->klauses));
+  CADICAL_assert (begin <= p);
+  CADICAL_assert (p < END_STACK (kitten->klauses));
   const unsigned res = p - begin;
   return res;
 }
 
 /*------------------------------------------------------------------------*/
 
-#define KATCHES(KIT) (kitten->watches[assert ((KIT) < kitten->lits), (KIT)])
+#define KATCHES(KIT) (kitten->watches[CADICAL_assert ((KIT) < kitten->lits), (KIT)])
 
 #define all_klauses(C) \
   klause *C = begin_klauses (kitten), *end_##C = end_klauses (kitten); \
@@ -273,7 +273,7 @@ static void log_basic (kitten *, const char *, ...)
     __attribute__ ((format (printf, 2, 3)));
 
 static void log_basic (kitten *kitten, const char *fmt, ...) {
-  assert (logging);
+  CADICAL_assert (logging);
   printf ("c KITTEN %u ", kitten->level);
   va_list ap;
   va_start (ap, fmt);
@@ -289,7 +289,7 @@ static void log_reference (kitten *, unsigned, const char *, ...)
 static void log_reference (kitten *kitten, unsigned ref, const char *fmt,
                            ...) {
   klause *c = dereference_klause (kitten, ref);
-  assert (logging);
+  CADICAL_assert (logging);
   printf ("c KITTEN %u ", kitten->level);
   va_list ap;
   va_start (ap, fmt);
@@ -322,7 +322,7 @@ static void log_literals (kitten *, unsigned *, unsigned, const char *, ...)
 
 static void log_literals (kitten *kitten, unsigned *lits, unsigned size,
                           const char *fmt, ...) {
-  assert (logging);
+  CADICAL_assert (logging);
   printf ("c KITTEN %u ", kitten->level);
   va_list ap;
   va_start (ap, fmt);
@@ -382,26 +382,26 @@ static void check_queue (kitten *kitten) {
   for (unsigned idx = kitten->queue.first, next; idx != INVALID;
        idx = next) {
     kink *link = links + idx;
-    assert (link->prev == prev);
-    assert (!found || stamp < link->stamp);
-    assert (link->stamp < kitten->queue.stamp);
+    CADICAL_assert (link->prev == prev);
+    CADICAL_assert (!found || stamp < link->stamp);
+    CADICAL_assert (link->stamp < kitten->queue.stamp);
     stamp = link->stamp;
     next = link->next;
     prev = idx;
     found++;
   }
-  assert (found == vars);
+  CADICAL_assert (found == vars);
   unsigned next = INVALID;
   found = 0;
   for (unsigned idx = kitten->queue.last, prev; idx != INVALID;
        idx = prev) {
     kink *link = links + idx;
-    assert (link->next == next);
+    CADICAL_assert (link->next == next);
     prev = link->prev;
     next = idx;
     found++;
   }
-  assert (found == vars);
+  CADICAL_assert (found == vars);
   value *values = kitten->values;
   bool first = true;
   for (unsigned idx = kitten->queue.search, next; idx != INVALID;
@@ -409,7 +409,7 @@ static void check_queue (kitten *kitten) {
     kink *link = links + idx;
     next = link->next;
     const unsigned lit = 2 * idx;
-    assert (first || values[lit]);
+    CADICAL_assert (first || values[lit]);
     first = false;
   }
 #else
@@ -459,8 +459,8 @@ static void dequeue (kitten *kitten, unsigned idx) {
 
 static void init_queue (kitten *kitten, size_t old_vars, size_t new_vars) {
   for (size_t idx = old_vars; idx < new_vars; idx++) {
-    assert (!kitten->values[2 * idx]);
-    assert (kitten->unassigned < UINT_MAX);
+    CADICAL_assert (!kitten->values[2 * idx]);
+    CADICAL_assert (kitten->unassigned < UINT_MAX);
     kitten->unassigned++;
     enqueue (kitten, idx);
   }
@@ -515,10 +515,10 @@ static void clear_kitten (kitten *kitten) {
 static void enlarge_internal (kitten *kitten, size_t lit) {
   const size_t new_lits = (lit | 1) + 1;
   const size_t old_lits = kitten->lits;
-  assert (old_lits <= lit);
-  assert (old_lits < new_lits);
-  assert ((lit ^ 1) < new_lits);
-  assert (lit < new_lits);
+  CADICAL_assert (old_lits <= lit);
+  CADICAL_assert (old_lits < new_lits);
+  CADICAL_assert ((lit ^ 1) < new_lits);
+  CADICAL_assert (lit < new_lits);
   const size_t old_size = kitten->size;
   const unsigned new_vars = new_lits / 2;
   const unsigned old_vars = old_lits / 2;
@@ -556,7 +556,7 @@ static const char *status_to_string (int status) {
   case 21:
     return "formula inconsistent and core computed";
   default:
-    assert (!status);
+    CADICAL_assert (!status);
     return "formula unsolved";
   }
 }
@@ -765,7 +765,7 @@ void kitten_shuffle_clauses (kitten *kitten) {
 }
 
 static inline unsigned *antecedents (klause *c) {
-  assert (is_learned_klause (c));
+  CADICAL_assert (is_learned_klause (c));
   return c->lits + c->size;
 }
 
@@ -802,7 +802,7 @@ static unsigned new_reference (kitten *kitten) {
     die ("maximum number of literals exhausted");
   }
   const unsigned res = (unsigned) ref;
-  assert (res != INVALID);
+  CADICAL_assert (res != INVALID);
   INC (kitten_ticks);
   return res;
 }
@@ -824,7 +824,7 @@ static void new_original_klause (kitten *kitten, unsigned id) {
 static void enlarge_external (kitten *kitten, size_t eidx) {
   const size_t old_size = kitten->esize;
   const unsigned old_evars = kitten->evars;
-  assert (old_evars <= eidx);
+  CADICAL_assert (old_evars <= eidx);
   const unsigned new_evars = eidx + 1;
   if (old_size <= eidx) {
     size_t new_size = old_size ? 2 * old_size : 1;
@@ -864,7 +864,7 @@ static unsigned import_literal (kitten *kitten, unsigned elit) {
 
 static unsigned export_literal (kitten *kitten, unsigned ilit) {
   const unsigned iidx = ilit / 2;
-  assert (iidx < SIZE_STACK (kitten->export));
+  CADICAL_assert (iidx < SIZE_STACK (kitten->export));
   const unsigned eidx = PEEK_STACK (kitten->export, iidx);
   const unsigned elit = 2 * eidx + (ilit & 1);
   return elit;
@@ -874,10 +874,10 @@ unsigned new_learned_klause (kitten *kitten) {
   unsigned res = new_reference (kitten);
   unsigneds *klauses = &kitten->klauses;
   const size_t size = SIZE_STACK (kitten->klause);
-  assert (size <= UINT_MAX);
+  CADICAL_assert (size <= UINT_MAX);
   const size_t aux =
       kitten->antecedents ? SIZE_STACK (kitten->resolved) : 0;
-  assert (aux <= UINT_MAX);
+  CADICAL_assert (aux <= UINT_MAX);
   PUSH_STACK (*klauses, (unsigned) aux);
   PUSH_STACK (*klauses, (unsigned) size);
   PUSH_STACK (*klauses, LEARNED_FLAG);
@@ -895,9 +895,9 @@ unsigned new_learned_klause (kitten *kitten) {
 void kitten_clear (kitten *kitten) {
   LOG ("clear kitten of size %zu", kitten->size);
 
-  assert (EMPTY_STACK (kitten->analyzed));
-  assert (EMPTY_STACK (kitten->eclause));
-  assert (EMPTY_STACK (kitten->resolved));
+  CADICAL_assert (EMPTY_STACK (kitten->analyzed));
+  CADICAL_assert (EMPTY_STACK (kitten->eclause));
+  CADICAL_assert (EMPTY_STACK (kitten->resolved));
 
   CLEAR_STACK (kitten->assumptions);
   CLEAR_STACK (kitten->core);
@@ -918,9 +918,9 @@ void kitten_clear (kitten *kitten) {
   const size_t lits = kitten->size;
   const unsigned vars = lits / 2;
 
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
   for (unsigned i = 0; i < vars; i++)
-    assert (!kitten->marks[i]);
+    CADICAL_assert (!kitten->marks[i]);
 #endif
 
   memset (kitten->phases, 0, vars);
@@ -970,7 +970,7 @@ static inline void move_to_front (kitten *kitten, unsigned idx) {
   LOG ("move to front variable %u", idx);
   dequeue (kitten, idx);
   enqueue (kitten, idx);
-  assert (kitten->values[2 * idx]);
+  CADICAL_assert (kitten->values[2 * idx]);
 }
 
 static inline void assign (kitten *kitten, unsigned lit, unsigned reason) {
@@ -982,8 +982,8 @@ static inline void assign (kitten *kitten, unsigned lit, unsigned reason) {
 #endif
   value *values = kitten->values;
   const unsigned not_lit = lit ^ 1;
-  assert (!values[lit]);
-  assert (!values[not_lit]);
+  CADICAL_assert (!values[lit]);
+  CADICAL_assert (!values[not_lit]);
   values[lit] = 1;
   values[not_lit] = -1;
   const unsigned idx = lit / 2;
@@ -993,7 +993,7 @@ static inline void assign (kitten *kitten, unsigned lit, unsigned reason) {
   kar *v = kitten->vars + idx;
   v->level = kitten->level;
   if (!v->level) {
-    assert (reason != INVALID);
+    CADICAL_assert (reason != INVALID);
     klause *c = dereference_klause (kitten, reason);
     if (c->size > 1) {
       if (kitten->antecedents) {
@@ -1002,7 +1002,7 @@ static inline void assign (kitten *kitten, unsigned lit, unsigned reason) {
           if (other != lit) {
             const unsigned other_idx = other / 2;
             const unsigned other_ref = kitten->vars[other_idx].reason;
-            assert (other_ref != INVALID);
+            CADICAL_assert (other_ref != INVALID);
             PUSH_STACK (kitten->resolved, other_ref);
           }
       }
@@ -1013,14 +1013,14 @@ static inline void assign (kitten *kitten, unsigned lit, unsigned reason) {
     }
   }
   v->reason = reason;
-  assert (kitten->unassigned);
+  CADICAL_assert (kitten->unassigned);
   kitten->unassigned--;
 }
 
 static inline unsigned propagate_literal (kitten *kitten, unsigned lit) {
   LOG ("propagating %u", lit);
   value *values = kitten->values;
-  assert (values[lit] > 0);
+  CADICAL_assert (values[lit] > 0);
   const unsigned not_lit = lit ^ 1;
   katches *watches = kitten->watches + not_lit;
   unsigned conflict = INVALID;
@@ -1031,7 +1031,7 @@ static inline unsigned propagate_literal (kitten *kitten, unsigned lit) {
   while (p != end_watches) {
     const unsigned ref = *q++ = *p++;
     klause *c = dereference_klause (kitten, ref);
-    assert (c->size > 1);
+    CADICAL_assert (c->size > 1);
     unsigned *lits = c->lits;
     const unsigned other = lits[0] ^ lits[1] ^ not_lit;
     const value other_value = values[other];
@@ -1049,7 +1049,7 @@ static inline unsigned propagate_literal (kitten *kitten, unsigned lit) {
         break;
     }
     if (replacement_value >= 0) {
-      assert (replacement != INVALID);
+      CADICAL_assert (replacement != INVALID);
       ROG (ref, "unwatching %u in", not_lit);
       lits[0] = other;
       lits[1] = replacement;
@@ -1062,7 +1062,7 @@ static inline unsigned propagate_literal (kitten *kitten, unsigned lit) {
       conflict = ref;
       break;
     } else {
-      assert (!other_value);
+      CADICAL_assert (!other_value);
       assign (kitten, other, ref);
     }
   }
@@ -1074,7 +1074,7 @@ static inline unsigned propagate_literal (kitten *kitten, unsigned lit) {
 }
 
 static inline unsigned propagate (kitten *kitten) {
-  assert (kitten->inconsistent == INVALID);
+  CADICAL_assert (kitten->inconsistent == INVALID);
   unsigned propagated = 0;
   unsigned conflict = INVALID;
   while (conflict == INVALID &&
@@ -1103,8 +1103,8 @@ static void bump (kitten *kitten) {
 
 static inline void unassign (kitten *kitten, value *values, unsigned lit) {
   const unsigned not_lit = lit ^ 1;
-  assert (values[lit]);
-  assert (values[not_lit]);
+  CADICAL_assert (values[lit]);
+  CADICAL_assert (values[not_lit]);
   const unsigned idx = lit / 2;
 #ifdef LOGGING
   kar *var = kitten->vars + idx;
@@ -1112,7 +1112,7 @@ static inline void unassign (kitten *kitten, value *values, unsigned lit) {
   LOG ("unassign %u", lit);
 #endif
   values[lit] = values[not_lit] = 0;
-  assert (kitten->unassigned < kitten->lits / 2);
+  CADICAL_assert (kitten->unassigned < kitten->lits / 2);
   kitten->unassigned++;
   kink *links = kitten->links;
   kink *link = links + idx;
@@ -1122,7 +1122,7 @@ static inline void unassign (kitten *kitten, value *values, unsigned lit) {
 
 static void backtrack (kitten *kitten, unsigned jump) {
   check_queue (kitten);
-  assert (jump < kitten->level);
+  CADICAL_assert (jump < kitten->level);
   LOG ("back%s to level %u",
        (kitten->level == jump + 1 ? "tracking" : "jumping"), jump);
   kar *vars = kitten->vars;
@@ -1148,17 +1148,17 @@ void completely_backtrack_to_root_level (kitten *kitten) {
   value *values = kitten->values;
   unsigneds *trail = &kitten->trail;
   unsigneds *units = &kitten->units;
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
   kar *vars = kitten->vars;
 #endif
   for (all_stack (unsigned, lit, *trail)) {
-    assert (vars[lit / 2].level);
+    CADICAL_assert (vars[lit / 2].level);
     unassign (kitten, values, lit);
   }
   CLEAR_STACK (*trail);
   for (all_stack (unsigned, ref, *units)) {
     klause *c = dereference_klause (kitten, ref);
-    assert (c->size == 1);
+    CADICAL_assert (c->size == 1);
     const unsigned unit = c->lits[0];
     const value value = values[unit];
     if (value <= 0)
@@ -1171,11 +1171,11 @@ void completely_backtrack_to_root_level (kitten *kitten) {
 }
 
 static void analyze (kitten *kitten, unsigned conflict) {
-  assert (kitten->level);
-  assert (kitten->inconsistent == INVALID);
-  assert (EMPTY_STACK (kitten->analyzed));
-  assert (EMPTY_STACK (kitten->resolved));
-  assert (EMPTY_STACK (kitten->klause));
+  CADICAL_assert (kitten->level);
+  CADICAL_assert (kitten->inconsistent == INVALID);
+  CADICAL_assert (EMPTY_STACK (kitten->analyzed));
+  CADICAL_assert (EMPTY_STACK (kitten->resolved));
+  CADICAL_assert (EMPTY_STACK (kitten->klause));
   PUSH_STACK (kitten->klause, INVALID);
   unsigned reason = conflict;
   value *marks = kitten->marks;
@@ -1184,16 +1184,16 @@ static void analyze (kitten *kitten, unsigned conflict) {
   unsigned const *p = END_STACK (kitten->trail);
   unsigned open = 0, jump = 0, size = 1, uip;
   for (;;) {
-    assert (reason != INVALID);
+    CADICAL_assert (reason != INVALID);
     klause *c = dereference_klause (kitten, reason);
-    assert (c);
+    CADICAL_assert (c);
     ROG (reason, "analyzing");
     PUSH_STACK (kitten->resolved, reason);
     for (all_literals_in_klause (lit, c)) {
       const unsigned idx = lit / 2;
       if (marks[idx])
         continue;
-      assert (kitten->values[lit] < 0);
+      CADICAL_assert (kitten->values[lit] < 0);
       LOG ("analyzed %u", lit);
       marks[idx] = true;
       PUSH_STACK (kitten->analyzed, idx);
@@ -1215,10 +1215,10 @@ static void analyze (kitten *kitten, unsigned conflict) {
     }
     unsigned idx;
     do {
-      assert (BEGIN_STACK (kitten->trail) < p);
+      CADICAL_assert (BEGIN_STACK (kitten->trail) < p);
       uip = *--p;
     } while (!marks[idx = uip / 2]);
-    assert (open);
+    CADICAL_assert (open);
     if (!--open)
       break;
     reason = vars[idx].reason;
@@ -1236,11 +1236,11 @@ static void analyze (kitten *kitten, unsigned conflict) {
 }
 
 static void failing (kitten *kitten) {
-  assert (kitten->inconsistent == INVALID);
-  assert (!EMPTY_STACK (kitten->assumptions));
-  assert (EMPTY_STACK (kitten->analyzed));
-  assert (EMPTY_STACK (kitten->resolved));
-  assert (EMPTY_STACK (kitten->klause));
+  CADICAL_assert (kitten->inconsistent == INVALID);
+  CADICAL_assert (!EMPTY_STACK (kitten->assumptions));
+  CADICAL_assert (EMPTY_STACK (kitten->analyzed));
+  CADICAL_assert (EMPTY_STACK (kitten->resolved));
+  CADICAL_assert (EMPTY_STACK (kitten->klause));
   LOG ("analyzing failing assumptions");
   const value *const values = kitten->values;
   const kar *const vars = kitten->vars;
@@ -1268,7 +1268,7 @@ static void failing (kitten *kitten) {
     failed = failed_clashing;
   else
     failed = first_failed;
-  assert (failed != INVALID);
+  CADICAL_assert (failed != INVALID);
   const unsigned failed_idx = failed / 2;
   const kar *const failed_var = vars + failed_idx;
   const unsigned failed_reason = failed_var->reason;
@@ -1276,7 +1276,7 @@ static void failing (kitten *kitten) {
   kitten->failed[failed] = true;
 
   if (failed_unit != INVALID) {
-    assert (dereference_klause (kitten, failed_reason)->size == 1);
+    CADICAL_assert (dereference_klause (kitten, failed_reason)->size == 1);
     LOG ("root-level falsified assumption %u", failed);
     kitten->failing = failed_reason;
     ROG (kitten->failing, "failing reason");
@@ -1287,12 +1287,12 @@ static void failing (kitten *kitten) {
   if (failed_clashing != INVALID) {
     LOG ("clashing with negated assumption %u", not_failed);
     kitten->failed[not_failed] = true;
-    assert (kitten->failing == INVALID);
+    CADICAL_assert (kitten->failing == INVALID);
     return;
   }
 
   value *marks = kitten->marks;
-  assert (!marks[failed_idx]);
+  CADICAL_assert (!marks[failed_idx]);
   marks[failed_idx] = true;
   PUSH_STACK (kitten->analyzed, failed_idx);
   PUSH_STACK (kitten->klause, not_failed);
@@ -1303,7 +1303,7 @@ static void failing (kitten *kitten) {
   LOGLITS (BEGIN_STACK (kitten->trail), SIZE_STACK (kitten->trail),
            "trail");
 
-  assert (SIZE_STACK (kitten->trail));
+  CADICAL_assert (SIZE_STACK (kitten->trail));
   unsigned const *p = END_STACK (kitten->trail);
   unsigned open = 1;
   for (;;) {
@@ -1312,7 +1312,7 @@ static void failing (kitten *kitten) {
     open--;
     unsigned idx, uip;
     do {
-      assert (BEGIN_STACK (kitten->trail) < p);
+      CADICAL_assert (BEGIN_STACK (kitten->trail) < p);
       uip = *--p;
     } while (!marks[idx = uip / 2]);
 
@@ -1323,7 +1323,7 @@ static void failing (kitten *kitten) {
       if (values[lit] < 0)
         lit ^= 1;
       LOG ("failed assumption %u", lit);
-      assert (!kitten->failed[lit]);
+      CADICAL_assert (!kitten->failed[lit]);
       kitten->failed[lit] = true;
       const unsigned not_lit = lit ^ 1;
       PUSH_STACK (kitten->klause, not_lit);
@@ -1335,9 +1335,9 @@ static void failing (kitten *kitten) {
         const unsigned other_idx = other / 2;
         if (marks[other_idx])
           continue;
-        assert (other_idx != idx);
+        CADICAL_assert (other_idx != idx);
         marks[other_idx] = true;
-        assert (values[other]);
+        CADICAL_assert (values[other]);
         if (vars[other_idx].level)
           open++;
         else
@@ -1357,7 +1357,7 @@ static void failing (kitten *kitten) {
       if (values[lit] < 0)
         lit ^= 1;
       LOG ("failed assumption %u", lit);
-      assert (!kitten->failed[lit]);
+      CADICAL_assert (!kitten->failed[lit]);
       kitten->failed[lit] = true;
       const unsigned not_lit = lit ^ 1;
       PUSH_STACK (kitten->klause, not_lit);
@@ -1371,7 +1371,7 @@ static void failing (kitten *kitten) {
   /*
   for (size_t next = 0; next < SIZE_STACK (kitten->analyzed); next++) {
     const unsigned idx = PEEK_STACK (kitten->analyzed, next);
-    assert (marks[idx]);
+    CADICAL_assert (marks[idx]);
     const kar *var = vars + idx;
     const unsigned reason = var->reason;
     if (reason == INVALID) {
@@ -1379,7 +1379,7 @@ static void failing (kitten *kitten) {
       if (values[lit] < 0)
         lit ^= 1;
       LOG ("failed assumption %u", lit);
-      assert (!kitten->failed[lit]);
+      CADICAL_assert (!kitten->failed[lit]);
       kitten->failed[lit] = true;
       const unsigned not_lit = lit ^ 1;
       PUSH_STACK (kitten->klause, not_lit);
@@ -1402,13 +1402,13 @@ static void failing (kitten *kitten) {
   */
 
   for (all_stack (unsigned, idx, kitten->analyzed))
-    assert (marks[idx]), marks[idx] = 0;
+    CADICAL_assert (marks[idx]), marks[idx] = 0;
   CLEAR_STACK (kitten->analyzed);
 
   RELEASE_STACK (work);
 
   const size_t resolved = SIZE_STACK (kitten->resolved);
-  assert (resolved);
+  CADICAL_assert (resolved);
 
   if (resolved == 1) {
     kitten->failing = PEEK_STACK (kitten->resolved, 0);
@@ -1425,7 +1425,7 @@ static void failing (kitten *kitten) {
 static void flush_trail (kitten *kitten) {
   unsigneds *trail = &kitten->trail;
   LOG ("flushing %zu root-level literals from trail", SIZE_STACK (*trail));
-  assert (!kitten->level);
+  CADICAL_assert (!kitten->level);
   kitten->propagated = 0;
   CLEAR_STACK (*trail);
 }
@@ -1474,7 +1474,7 @@ static int decide (kitten *kitten) {
     unsigned idx = kitten->queue.search;
     const kink *const links = kitten->links;
     for (;;) {
-      assert (idx != INVALID);
+      CADICAL_assert (idx != INVALID);
       if (!values[2 * idx])
         break;
       idx = links[idx].prev;
@@ -1491,8 +1491,8 @@ static int decide (kitten *kitten) {
 }
 
 static void inconsistent (kitten *kitten, unsigned ref) {
-  assert (ref != INVALID);
-  assert (kitten->inconsistent == INVALID);
+  CADICAL_assert (ref != INVALID);
+  CADICAL_assert (kitten->inconsistent == INVALID);
 
   if (!kitten->antecedents) {
     kitten->inconsistent = ref;
@@ -1503,25 +1503,25 @@ static void inconsistent (kitten *kitten, unsigned ref) {
   unsigneds *analyzed = &kitten->analyzed;
   unsigneds *resolved = &kitten->resolved;
 
-  assert (EMPTY_STACK (*analyzed));
-  assert (EMPTY_STACK (*resolved));
+  CADICAL_assert (EMPTY_STACK (*analyzed));
+  CADICAL_assert (EMPTY_STACK (*resolved));
 
   value *marks = kitten->marks;
   const kar *const vars = kitten->vars;
   unsigned next = 0;
 
   for (;;) {
-    assert (ref != INVALID);
+    CADICAL_assert (ref != INVALID);
     klause *c = dereference_klause (kitten, ref);
-    assert (c);
+    CADICAL_assert (c);
     ROG (ref, "analyzing inconsistent");
     PUSH_STACK (*resolved, ref);
     for (all_literals_in_klause (lit, c)) {
       const unsigned idx = lit / 2;
-      assert (!vars[idx].level);
+      CADICAL_assert (!vars[idx].level);
       if (marks[idx])
         continue;
-      assert (kitten->values[lit] < 0);
+      CADICAL_assert (kitten->values[lit] < 0);
       LOG ("analyzed %u", lit);
       marks[idx] = true;
       PUSH_STACK (kitten->analyzed, idx);
@@ -1531,10 +1531,10 @@ static void inconsistent (kitten *kitten, unsigned ref) {
     const unsigned idx = PEEK_STACK (kitten->analyzed, next);
     next++;
     const kar *const v = vars + idx;
-    assert (!v->level);
+    CADICAL_assert (!v->level);
     ref = v->reason;
   }
-  assert (EMPTY_STACK (kitten->klause));
+  CADICAL_assert (EMPTY_STACK (kitten->klause));
   ref = new_learned_klause (kitten);
   ROG (ref, "registering final inconsistent empty");
   kitten->inconsistent = ref;
@@ -1562,9 +1562,9 @@ static int propagate_units (kitten *kitten) {
 
   for (size_t next = 0; next < SIZE_STACK (kitten->units); next++) {
     const unsigned ref = PEEK_STACK (kitten->units, next);
-    assert (ref != INVALID);
+    CADICAL_assert (ref != INVALID);
     klause *c = dereference_klause (kitten, ref);
-    assert (c->size == 1);
+    CADICAL_assert (c->size == 1);
     ROG (ref, "propagating unit");
     const unsigned unit = c->lits[0];
     const value value = values[unit];
@@ -1599,8 +1599,8 @@ static klause *end_klauses (kitten *kitten) {
 }
 
 static klause *next_klause (kitten *kitten, klause *c) {
-  assert (begin_klauses (kitten) <= c);
-  assert (c < end_klauses (kitten));
+  CADICAL_assert (begin_klauses (kitten) <= c);
+  CADICAL_assert (c < end_klauses (kitten));
   unsigned *res = c->lits + c->size;
   if (kitten->antecedents && is_learned_klause (c))
     res += c->aux;
@@ -1625,9 +1625,9 @@ static void reset_assumptions (kitten *kitten) {
     const unsigned assumption = POP_STACK (kitten->assumptions);
     kitten->failed[assumption] = false;
   }
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
   for (size_t i = 0; i < kitten->size; i++)
-    assert (!kitten->failed[i]);
+    CADICAL_assert (!kitten->failed[i]);
 #endif
   CLEAR_STACK (kitten->assumptions);
   if (kitten->failing != INVALID) {
@@ -1642,7 +1642,7 @@ static void reset_incremental (kitten *kitten) {
   if (!EMPTY_STACK (kitten->assumptions))
     reset_assumptions (kitten);
   else
-    assert (kitten->failing == INVALID);
+    CADICAL_assert (kitten->failing == INVALID);
   if (kitten->status == 21)
     reset_core (kitten);
   UPDATE_STATUS (0);
@@ -1656,7 +1656,7 @@ static bool flip_literal (kitten *kitten, unsigned lit) {
   if (values[lit] < 0)
     lit ^= 1;
   LOG ("trying to flip value of satisfied literal %u", lit);
-  assert (values[lit] > 0);
+  CADICAL_assert (values[lit] > 0);
   katches *watches = kitten->watches + lit;
   unsigned *q = BEGIN_STACK (*watches);
   const unsigned *const end_watches = END_STACK (*watches);
@@ -1678,14 +1678,14 @@ static bool flip_literal (kitten *kitten, unsigned lit) {
     unsigned *r;
     for (r = lits + 2; r != end_lits; r++) {
       replacement = *r;
-      assert (replacement != lit);
+      CADICAL_assert (replacement != lit);
       replacement_value = values[replacement];
-      assert (replacement_value);
+      CADICAL_assert (replacement_value);
       if (replacement_value > 0)
         break;
     }
     if (replacement_value > 0) {
-      assert (replacement != INVALID);
+      CADICAL_assert (replacement != INVALID);
       ROG (ref, "unwatching %u in", lit);
       lits[0] = other;
       lits[1] = replacement;
@@ -1693,7 +1693,7 @@ static bool flip_literal (kitten *kitten, unsigned lit) {
       watch_klause (kitten, replacement, ref);
       q--;
     } else {
-      assert (replacement_value < 0);
+      CADICAL_assert (replacement_value < 0);
       ROG (ref, "single satisfied");
       res = false;
       break;
@@ -1720,7 +1720,7 @@ static bool flip_literal (kitten *kitten, unsigned lit) {
 // times just to convert literals to unsigned representation.
 //
 static unsigned int2u (int lit) {
-  assert (lit != 0);
+  CADICAL_assert (lit != 0);
   int idx = abs (lit) - 1;
   return (lit < 0) + 2u * (unsigned) idx;
 }
@@ -1746,14 +1746,14 @@ void kitten_clause_with_id_and_exception (kitten *kitten, unsigned id,
   REQUIRE_INITIALIZED ();
   if (kitten->status)
     reset_incremental (kitten);
-  assert (EMPTY_STACK (kitten->klause));
+  CADICAL_assert (EMPTY_STACK (kitten->klause));
   const unsigned *const end = elits + size;
   for (const unsigned *p = elits; p != end; p++) {
     const unsigned elit = *p;
     if (elit == except)
       continue;
     const unsigned ilit = import_literal (kitten, elit);
-    assert (ilit < kitten->lits);
+    CADICAL_assert (ilit < kitten->lits);
     const unsigned iidx = ilit / 2;
     if (kitten->marks[iidx])
       INVALID_API_USAGE ("variable '%u' of literal '%u' occurs twice",
@@ -1773,14 +1773,14 @@ void citten_clause_with_id_and_exception (kitten *kitten, unsigned id,
   REQUIRE_INITIALIZED ();
   if (kitten->status)
     reset_incremental (kitten);
-  assert (EMPTY_STACK (kitten->klause));
+  CADICAL_assert (EMPTY_STACK (kitten->klause));
   const int *const end = elits + size;
   for (const int *p = elits; p != end; p++) {
     const unsigned elit = int2u (*p); // this is the conversion
     if (elit == except)
       continue;
     const unsigned ilit = import_literal (kitten, elit);
-    assert (ilit < kitten->lits);
+    CADICAL_assert (ilit < kitten->lits);
     const unsigned iidx = ilit / 2;
     if (kitten->marks[iidx])
       INVALID_API_USAGE ("variable '%u' of literal '%u' occurs twice",
@@ -1800,7 +1800,7 @@ void citten_clause_with_id_and_equivalence (kitten *kitten, unsigned id,
   REQUIRE_INITIALIZED ();
   if (kitten->status)
     reset_incremental (kitten);
-  assert (EMPTY_STACK (kitten->klause));
+  CADICAL_assert (EMPTY_STACK (kitten->klause));
   bool sat = false;
   const int *const end = elits + size;
   for (const int *p = elits; p != end; p++) {
@@ -1812,7 +1812,7 @@ void citten_clause_with_id_and_equivalence (kitten *kitten, unsigned id,
       break;
     }
     const unsigned ilit = import_literal (kitten, elit);
-    assert (ilit < kitten->lits);
+    CADICAL_assert (ilit < kitten->lits);
     const unsigned iidx = ilit / 2;
     if (kitten->marks[iidx])
       INVALID_API_USAGE ("variable '%u' of literal '%u' occurs twice",
@@ -1910,7 +1910,7 @@ unsigned kitten_compute_clausal_core (kitten *kitten,
   LOG ("computing clausal core");
 
   unsigneds *resolved = &kitten->resolved;
-  assert (EMPTY_STACK (*resolved));
+  CADICAL_assert (EMPTY_STACK (*resolved));
 
   unsigned original = 0;
   uint64_t learned = 0;
@@ -1918,7 +1918,7 @@ unsigned kitten_compute_clausal_core (kitten *kitten,
   unsigned reason_ref = kitten->inconsistent;
 
   if (reason_ref == INVALID) {
-    assert (!EMPTY_STACK (kitten->assumptions));
+    CADICAL_assert (!EMPTY_STACK (kitten->assumptions));
     reason_ref = kitten->failing;
     if (reason_ref == INVALID) {
       LOG ("assumptions mutually inconsistent");
@@ -1928,7 +1928,7 @@ unsigned kitten_compute_clausal_core (kitten *kitten,
 
   PUSH_STACK (*resolved, reason_ref);
   unsigneds *core = &kitten->core;
-  assert (EMPTY_STACK (*core));
+  CADICAL_assert (EMPTY_STACK (*core));
 
   while (!EMPTY_STACK (*resolved)) {
     const unsigned c_ref = POP_STACK (*resolved);
@@ -1937,7 +1937,7 @@ unsigned kitten_compute_clausal_core (kitten *kitten,
       ROG (d_ref, "core[%zu]", SIZE_STACK (*core));
       PUSH_STACK (*core, d_ref);
       klause *d = dereference_klause (kitten, d_ref);
-      assert (!is_core_klause (d));
+      CADICAL_assert (!is_core_klause (d));
       set_core_klause (d);
       if (is_learned_klause (d))
         learned++;
@@ -1997,7 +1997,7 @@ void kitten_traverse_core_ids (kitten *kitten, void *state,
   LOG ("traversed %u original core clauses", traversed);
   (void) traversed;
 
-  assert (kitten->status == 21);
+  CADICAL_assert (kitten->status == 21);
 }
 
 void kitten_traverse_core_clauses (kitten *kitten, void *state,
@@ -2011,10 +2011,10 @@ void kitten_traverse_core_clauses (kitten *kitten, void *state,
 
   for (all_stack (unsigned, c_ref, kitten->core)) {
     klause *c = dereference_klause (kitten, c_ref);
-    assert (is_core_klause (c));
+    CADICAL_assert (is_core_klause (c));
     const bool learned = is_learned_klause (c);
     unsigneds *eclause = &kitten->eclause;
-    assert (EMPTY_STACK (*eclause));
+    CADICAL_assert (EMPTY_STACK (*eclause));
     for (all_literals_in_klause (ilit, c)) {
       const unsigned elit = export_literal (kitten, ilit);
       PUSH_STACK (*eclause, elit);
@@ -2030,7 +2030,7 @@ void kitten_traverse_core_clauses (kitten *kitten, void *state,
   LOG ("traversed %u core clauses", traversed);
   (void) traversed;
 
-  assert (kitten->status == 21);
+  CADICAL_assert (kitten->status == 21);
 }
 
 void kitten_traverse_core_clauses_with_id (
@@ -2045,10 +2045,10 @@ void kitten_traverse_core_clauses_with_id (
 
   for (all_stack (unsigned, c_ref, kitten->core)) {
     klause *c = dereference_klause (kitten, c_ref);
-    assert (is_core_klause (c));
+    CADICAL_assert (is_core_klause (c));
     const bool learned = is_learned_klause (c);
     unsigneds *eclause = &kitten->eclause;
-    assert (EMPTY_STACK (*eclause));
+    CADICAL_assert (EMPTY_STACK (*eclause));
     for (all_literals_in_klause (ilit, c)) {
       const unsigned elit = export_literal (kitten, ilit);
       PUSH_STACK (*eclause, elit);
@@ -2065,7 +2065,7 @@ void kitten_traverse_core_clauses_with_id (
   LOG ("traversed %u core clauses", traversed);
   (void) traversed;
 
-  assert (kitten->status == 21);
+  CADICAL_assert (kitten->status == 21);
 }
 
 void kitten_trace_core (kitten *kitten, void *state,
@@ -2080,10 +2080,10 @@ void kitten_trace_core (kitten *kitten, void *state,
 
   for (all_stack (unsigned, c_ref, kitten->core)) {
     klause *c = dereference_klause (kitten, c_ref);
-    assert (is_core_klause (c));
+    CADICAL_assert (is_core_klause (c));
     const bool learned = is_learned_klause (c);
     unsigneds *eclause = &kitten->eclause;
-    assert (EMPTY_STACK (*eclause));
+    CADICAL_assert (EMPTY_STACK (*eclause));
     for (all_literals_in_klause (ilit, c)) {
       const unsigned elit = export_literal (kitten, ilit);
       PUSH_STACK (*eclause, elit);
@@ -2092,7 +2092,7 @@ void kitten_trace_core (kitten *kitten, void *state,
     const unsigned *elits = eclause->begin;
 
     unsigneds *resolved = &kitten->resolved;
-    assert (EMPTY_STACK (*resolved));
+    CADICAL_assert (EMPTY_STACK (*resolved));
     if (learned) {
       for (all_antecedents (ref, c)) {
         PUSH_STACK (*resolved, ref);
@@ -2113,7 +2113,7 @@ void kitten_trace_core (kitten *kitten, void *state,
   LOG ("traced %u core clauses", traced);
   (void) traced;
 
-  assert (kitten->status == 21);
+  CADICAL_assert (kitten->status == 21);
 }
 
 void kitten_shrink_to_clausal_core (kitten *kitten) {
@@ -2134,7 +2134,7 @@ void kitten_shrink_to_clausal_core (kitten *kitten) {
   for (all_kits (lit))
     CLEAR_STACK (KATCHES (lit));
 
-  assert (kitten->inconsistent != INVALID);
+  CADICAL_assert (kitten->inconsistent != INVALID);
   klause *inconsistent = dereference_klause (kitten, kitten->inconsistent);
   if (is_learned_klause (inconsistent) || inconsistent->size) {
     ROG (kitten->inconsistent, "resetting inconsistent");
@@ -2151,7 +2151,7 @@ void kitten_shrink_to_clausal_core (kitten *kitten) {
 #endif
   for (klause *c = begin, *next; c != end; c = next) {
     next = next_klause (kitten, c);
-    // assert (!is_learned_klause (c)); not necessarily true
+    // CADICAL_assert (!is_learned_klause (c)); not necessarily true
     if (is_learned_klause (c))
       continue;
     if (!is_core_klause (c))
@@ -2294,7 +2294,7 @@ static bool prime_propagate (kitten *kitten, const unsigned idx,
       klause *c = dereference_klause (kitten, ref);
       if (is_learned_klause (c) || ignore (state, c->aux) == ignoring)
         continue;
-      assert (c->size > 1);
+      CADICAL_assert (c->size > 1);
       unsigned *lits = c->lits;
       const unsigned other = lits[0] ^ lits[1] ^ not_lit;
       const value other_value = values[other];
@@ -2312,7 +2312,7 @@ static bool prime_propagate (kitten *kitten, const unsigned idx,
           break;
       }
       if (replacement_value > 0) {
-        assert (replacement != INVALID);
+        CADICAL_assert (replacement != INVALID);
         ROG (ref, "unwatching %u in", not_lit);
         lits[0] = other;
         lits[1] = replacement;
@@ -2340,7 +2340,7 @@ void kitten_add_prime_implicant (kitten *kitten, void *state, int side,
   // might be possible in some edge cases
   unsigneds *prime = &kitten->prime[side];
   unsigneds *prime2 = &kitten->prime[!side];
-  assert (!EMPTY_STACK (*prime) || !EMPTY_STACK (*prime2));
+  CADICAL_assert (!EMPTY_STACK (*prime) || !EMPTY_STACK (*prime2));
   CLEAR_STACK (*prime2);
 
   for (all_stack (unsigned, lit, *prime)) {
@@ -2368,7 +2368,7 @@ int kitten_compute_prime_implicant (kitten *kitten, void *state,
   unsigneds unassigned;
   INIT_STACK (unassigned);
   bool limit_hit = 0;
-  assert (EMPTY_STACK (kitten->prime[0]) && EMPTY_STACK (kitten->prime[1]));
+  CADICAL_assert (EMPTY_STACK (kitten->prime[0]) && EMPTY_STACK (kitten->prime[1]));
   for (int i = 0; i < 2; i++) {
     const bool ignoring = i;
     for (all_stack (unsigned, lit, kitten->trail)) {
@@ -2378,10 +2378,10 @@ int kitten_compute_prime_implicant (kitten *kitten, void *state,
         limit_hit = 1;
         break;
       }
-      assert (values[lit] > 0);
+      CADICAL_assert (values[lit] > 0);
       const unsigned idx = lit / 2;
       const unsigned ref = vars[idx].reason;
-      assert (vars[idx].level);
+      CADICAL_assert (vars[idx].level);
       klause *c = 0;
       if (ref != INVALID)
         c = dereference_klause (kitten, ref);
@@ -2393,7 +2393,7 @@ int kitten_compute_prime_implicant (kitten *kitten, void *state,
           values[lit ^ 1] = 0;
           PUSH_STACK (unassigned, lit);
         } else
-          assert (values[lit] > 0);
+          CADICAL_assert (values[lit] > 0);
       }
     }
     unsigneds *prime = &kitten->prime[i];
@@ -2404,7 +2404,7 @@ int kitten_compute_prime_implicant (kitten *kitten, void *state,
     }
     // reassign all literals on
     for (all_stack (unsigned, lit, unassigned)) {
-      assert (!values[lit]);
+      CADICAL_assert (!values[lit]);
       values[lit] = 1;
       values[lit ^ 1] = -1;
     }
@@ -2419,7 +2419,7 @@ int kitten_compute_prime_implicant (kitten *kitten, void *state,
   }
   // the only case when one of the prime implicants is allowed to be empty
   // is if ignore returns always true or always false.
-  assert (!EMPTY_STACK (kitten->prime[0]) ||
+  CADICAL_assert (!EMPTY_STACK (kitten->prime[0]) ||
           !EMPTY_STACK (kitten->prime[1]));
   UPDATE_STATUS (11);
 
@@ -2459,7 +2459,7 @@ static bool prime_propagate_blit (kitten *kitten, const unsigned idx,
       if (is_learned_klause (c))
         continue;
       ROG (ref, "checking with blit %u", blit);
-      assert (c->size > 1);
+      CADICAL_assert (c->size > 1);
       unsigned *lits = c->lits;
       const unsigned other = lits[0] ^ lits[1] ^ not_lit;
       const value other_value = values[other];
@@ -2479,7 +2479,7 @@ static bool prime_propagate_blit (kitten *kitten, const unsigned idx,
           break;
       }
       if (replacement_value > 0) {
-        assert (replacement != INVALID);
+        CADICAL_assert (replacement != INVALID);
         ROG (ref, "unwatching %u in", not_lit);
         lits[0] = other;
         lits[1] = replacement;
@@ -2508,19 +2508,19 @@ static int compute_prime_implicant_for (kitten *kitten, unsigned blit) {
   unsigneds unassigned;
   INIT_STACK (unassigned);
   bool limit_hit = false;
-  assert (EMPTY_STACK (kitten->prime[0]) && EMPTY_STACK (kitten->prime[1]));
+  CADICAL_assert (EMPTY_STACK (kitten->prime[0]) && EMPTY_STACK (kitten->prime[1]));
   for (int i = 0; i < 2; i++) {
     const unsigned block = blit ^ i;
     const bool ignoring = i;
     if (prime_propagate_blit (kitten, block / 2, block)) {
       value tmp = values[blit];
-      assert (tmp);
+      CADICAL_assert (tmp);
       values[blit] = 0;
       values[blit ^ 1] = 0;
       PUSH_STACK (unassigned, tmp > 0 ? blit : blit ^ 1);
       PUSH_STACK (kitten->prime[i], block); // will be negated!
     } else
-      assert (false);
+      CADICAL_assert (false);
     for (all_stack (unsigned, lit, kitten->trail)) {
       if (KITTEN_TICKS >= kitten->limits.ticks) {
         LOG ("ticks limit %" PRIu64 " hit after %" PRIu64 " ticks",
@@ -2530,14 +2530,14 @@ static int compute_prime_implicant_for (kitten *kitten, unsigned blit) {
       }
       if (!values[lit])
         continue;
-      assert (values[lit]); // not true when flipping is involved
+      CADICAL_assert (values[lit]); // not true when flipping is involved
       const unsigned idx = lit / 2;
       const unsigned ref = vars[idx].reason;
-      assert (vars[idx].level);
+      CADICAL_assert (vars[idx].level);
       LOG ("non-prime candidate var %d", idx);
       if (prime_propagate_blit (kitten, idx, block)) {
         value tmp = values[lit];
-        assert (tmp);
+        CADICAL_assert (tmp);
         values[lit] = 0;
         values[lit ^ 1] = 0;
         PUSH_STACK (unassigned, tmp > 0 ? lit : lit ^ 1);
@@ -2551,7 +2551,7 @@ static int compute_prime_implicant_for (kitten *kitten, unsigned blit) {
     }
     // reassign all literals on
     for (all_stack (unsigned, lit, unassigned)) {
-      assert (!values[lit]);
+      CADICAL_assert (!values[lit]);
       values[lit] = 1;
       values[lit ^ 1] = -1;
     }
@@ -2566,7 +2566,7 @@ static int compute_prime_implicant_for (kitten *kitten, unsigned blit) {
   }
   // the only case when one of the prime implicants is allowed to be empty
   // is if ignore returns always true or always false.
-  assert (!EMPTY_STACK (kitten->prime[0]) ||
+  CADICAL_assert (!EMPTY_STACK (kitten->prime[0]) ||
           !EMPTY_STACK (kitten->prime[1]));
   LOGLITS (BEGIN_STACK (kitten->prime[0]), SIZE_STACK (kitten->prime[0]),
            "first implicant %u", blit);
@@ -2587,7 +2587,7 @@ int kitten_flip_and_implicant_for_signed_literal (kitten *kitten,
   }
   const unsigned eidx = kelit / 2;
   unsigned iidx = kitten->import[eidx];
-  assert (iidx);
+  CADICAL_assert (iidx);
   const unsigned ilit = 2 * (iidx - 1) + (kelit & 1);
   return compute_prime_implicant_for (kitten, ilit);
 }

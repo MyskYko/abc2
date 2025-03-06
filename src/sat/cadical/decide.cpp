@@ -65,7 +65,7 @@ int Internal::decide_phase (int idx, bool target) {
     phase = phases.saved[idx];
 
   // The following should not be necessary and in some version we had even
-  // a hard 'COVER' assertion here to check for this.   Unfortunately it
+  // a hard 'COVER' CADICAL_assertion here to check for this.   Unfortunately it
   // triggered for some users and we could not get to the root cause of
   // 'phase' still not being set here.  The logic for phase and target
   // saving is pretty complex, particularly in combination with local
@@ -100,7 +100,7 @@ bool Internal::satisfied () {
     return false;
   if (num_assigned < (size_t) max_var)
     return false;
-  assert (num_assigned == (size_t) max_var);
+  CADICAL_assert (num_assigned == (size_t) max_var);
   if (propagated < trail.size ())
     return false;
   size_t assigned = num_assigned;
@@ -120,12 +120,12 @@ bool Internal::better_decision (int lit, int other) {
 // that not all variables are assigned.
 
 int Internal::decide () {
-  assert (!satisfied ());
+  CADICAL_assert (!satisfied ());
   START (decide);
   int res = 0;
   if ((size_t) level < assumptions.size ()) {
     const int lit = assumptions[level];
-    assert (assumed (lit));
+    CADICAL_assert (assumed (lit));
     const signed char tmp = val (lit);
     if (tmp < 0) {
       LOG ("assumption %d falsified", lit);
@@ -147,7 +147,7 @@ int Internal::decide () {
 
     const size_t size_constraint = constraint.size ();
 
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
     unsigned sum = 0;
     for (auto lit : constraint)
       sum += lit;
@@ -172,7 +172,7 @@ int Internal::decide () {
         break;
       }
 
-      assert (!tmp);
+      CADICAL_assert (!tmp);
       LOG ("constraint literal %d unassigned", lit);
 
       if (!unassigned_lit || better_decision (lit, unassigned_lit))
@@ -218,10 +218,10 @@ int Internal::decide () {
       }
     }
 
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
     for (auto lit : constraint)
       sum -= lit;
-    assert (!sum); // Checksum of literal should not change!
+    CADICAL_assert (!sum); // Checksum of literal should not change!
 #endif
 
   } else {

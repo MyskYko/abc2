@@ -43,12 +43,12 @@ void Internal::remove_observed_var (int ilit) {
     backtrack ();
   }
 
-  assert (fixed (ilit) || !level);
+  CADICAL_assert (fixed (ilit) || !level);
 
   const int idx = vidx (ilit);
-  assert ((size_t) idx < relevanttab.size ());
+  CADICAL_assert ((size_t) idx < relevanttab.size ());
   unsigned &ref = relevanttab[idx];
-  assert (fixed (ilit) || ref > 0);
+  CADICAL_assert (fixed (ilit) || ref > 0);
   if (fixed (ilit))
     ref = 0;
   else if (ref < UINT_MAX) {
@@ -66,7 +66,7 @@ void Internal::remove_observed_var (int ilit) {
 // Supposed to be used only by mobical.
 //
 bool Internal::observed (int ilit) const {
-  assert ((size_t) vidx (ilit) < relevanttab.size ());
+  CADICAL_assert ((size_t) vidx (ilit) < relevanttab.size ());
   return relevanttab[vidx (ilit)] > 0;
 }
 
@@ -87,7 +87,7 @@ void Internal::set_tainted_literal () {
       tainted_literal = idx;
       continue;
     }
-    assert (val (tainted_literal));
+    CADICAL_assert (val (tainted_literal));
     if (var (idx).level < var (tainted_literal).level) {
       tainted_literal = idx;
     }
@@ -100,7 +100,7 @@ void Internal::renotify_trail_after_ilb () {
     return;
   }
   LOG ("notify external propagator about new assignments (after ilb)");
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
   LOG ("(decision level: %d, trail size: %zd, notified %zd)", level,
        trail.size (), notified);
 #endif
@@ -113,7 +113,7 @@ void Internal::renotify_trail_after_local_search () {
   }
   LOG ("notify external propagator about new assignments (after local "
        "search)");
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
   LOG ("(decision level: %d, trail size: %zd, notified %zd)", level,
        trail.size (), notified);
 #endif
@@ -161,12 +161,12 @@ void Internal::renotify_full_trail () {
       continue;
 
     int elit = externalize (ilit); // TODO: double-check tainting
-    assert (elit);
+    CADICAL_assert (elit);
     // Fixed variables might get mapped (during compact) to another
     // non-observed but fixed variable.
     // This happens on root level, so notification about their assignment is
     // already done.
-    assert (external->observed (elit) || fixed (ilit));
+    CADICAL_assert (external->observed (elit) || fixed (ilit));
     if (!external->ervars[abs (elit)])
       assigned.push_back (elit);
   }
@@ -195,7 +195,7 @@ bool Internal::is_decision (int ilit) {
 
   const int idx = vidx (ilit);
   Var &v = var (idx);
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
   LOG (v.reason,
        "is_decision: i%d (current level: %d, is_fixed: %d, v.level: %d, "
        "is_external_reason: %d, v.reason: )",
@@ -203,7 +203,7 @@ bool Internal::is_decision (int ilit) {
 #endif
   if (!v.level || v.reason)
     return false;
-  assert (!v.reason);
+  CADICAL_assert (!v.reason);
   return true;
 }
 
@@ -211,7 +211,7 @@ void Internal::force_backtrack (size_t new_level) {
   if (!forced_backt_allowed || level <= 0 || new_level >= (size_t) level)
     return;
 
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
   LOG ("external propagator forces backtrack to decision level"
        "%zd (from level %d)",
        new_level, level);
@@ -231,13 +231,13 @@ void Internal::force_backtrack (size_t new_level) {
 bool Internal::external_propagate () {
   if (level)
     require_mode (SEARCH);
-  assert (!unsat);
+  CADICAL_assert (!unsat);
 
   size_t before = num_assigned;
   bool cb_repropagate_needed = true;
   while (cb_repropagate_needed && !conflict && external_prop &&
          !external_prop_is_lazy && !private_steps) {
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
     LOG ("external propagation starts (decision level: %d, trail size: "
          "%zd, notified %zd)",
          level, trail.size (), notified);
@@ -251,13 +251,13 @@ bool Internal::external_propagate () {
     stats.ext_prop.ext_cb++;
     stats.ext_prop.eprop_call++;
     while (elit) {
-      assert (external->is_observed[abs (elit)]);
+      CADICAL_assert (external->is_observed[abs (elit)]);
       int ilit = external->e2i[abs (elit)];
       if (elit < 0)
         ilit = -ilit;
       int tmp = val (ilit);
-#ifndef NDEBUG
-      assert (fixed (ilit) || observed (ilit));
+#ifndef CADICAL_NDEBUG
+      CADICAL_assert (fixed (ilit) || observed (ilit));
       LOG ("External propagation of e%d (i%d val: %d)", elit, ilit, tmp);
 #endif
       if (!tmp) {
@@ -308,7 +308,7 @@ bool Internal::external_propagate () {
       stats.ext_prop.eprop_call++;
     }
 
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
     LOG ("External propagation ends (decision level: %d, trail size: %zd, "
          "notified %zd)",
          level, trail.size (), notified);
@@ -331,7 +331,7 @@ bool Internal::external_propagate () {
           notify_assignments ();
       }
 
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
       if (has_external_clause)
         LOG ("New external clauses are to be added.");
       else
@@ -367,7 +367,7 @@ bool Internal::external_propagate () {
         stats.ext_prop.elearn_call++;
       }
     }
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
     LOG ("External clause addition ends on decision level %d at trail "
          "size "
          "%zd (notified %zd)",
@@ -433,7 +433,7 @@ void Internal::move_literals_to_watch () {
       highest_level = other_level;
       highest_value = other_value;
     }
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
     LOG ("highest position: %d highest level: %d highest value: %d",
          highest_position, highest_level, highest_value);
 #endif
@@ -473,7 +473,7 @@ void Internal::move_literals_to_watch () {
 //
 void Internal::add_external_clause (int propagated_elit,
                                     bool no_backtrack) {
-  assert (original.empty ());
+  CADICAL_assert (original.empty ());
   int elit = 0;
 
   if (propagated_elit) {
@@ -482,7 +482,7 @@ void Internal::add_external_clause (int propagated_elit,
     // propagator can add them as an explicit unforgettable external clause
     // or set 'are_reasons_forgettable' to false.
     ext_clause_forgettable = external->propagator->are_reasons_forgettable;
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
     LOG ("add external reason of propagated lit: %d", propagated_elit);
 #endif
     elit = external->propagator->cb_add_reason_clause_lit (propagated_elit);
@@ -497,15 +497,15 @@ void Internal::add_external_clause (int propagated_elit,
   clause.clear ();
 
   // Read out the external lemma into original and simplify it into clause
-  assert (clause.empty ());
-  assert (original.empty ());
+  CADICAL_assert (clause.empty ());
+  CADICAL_assert (original.empty ());
 
-  assert (!force_no_backtrack);
-  assert (!from_propagator);
+  CADICAL_assert (!force_no_backtrack);
+  CADICAL_assert (!from_propagator);
   force_no_backtrack = no_backtrack;
   from_propagator = true;
   while (elit) {
-    assert (external->is_observed[abs (elit)]);
+    CADICAL_assert (external->is_observed[abs (elit)]);
     external->add (elit);
     if (propagated_elit)
       elit =
@@ -514,8 +514,8 @@ void Internal::add_external_clause (int propagated_elit,
       elit = external->propagator->cb_add_external_clause_lit ();
   }
   external->add (elit);
-  assert (original.empty ());
-  assert (clause.empty ());
+  CADICAL_assert (original.empty ());
+  CADICAL_assert (clause.empty ());
   force_no_backtrack = false;
   from_propagator = false;
   lrat_chain = std::move (lrat_chain_ext);
@@ -530,11 +530,11 @@ void Internal::add_external_clause (int propagated_elit,
 void Internal::explain_reason (int ilit, Clause *reason, int &open) {
   if (!opts.exteagerreasons)
     return;
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
   LOG (reason, "explain_reason of %d (open: %d)", ilit, open);
 #endif
-  assert (reason);
-  assert (reason != external_reason);
+  CADICAL_assert (reason);
+  CADICAL_assert (reason != external_reason);
   for (const auto &other : *reason) {
     if (other == ilit)
       continue;
@@ -544,8 +544,8 @@ void Internal::explain_reason (int ilit, Clause *reason, int &open) {
     Var &v = var (other);
     if (!v.level)
       continue;
-    assert (val (other) < 0);
-    assert (v.level <= level);
+    CADICAL_assert (val (other) < 0);
+    CADICAL_assert (v.level <= level);
     if (v.reason == external_reason) {
       v.reason = learn_external_reason_clause (-other, 0, true);
     }
@@ -577,8 +577,8 @@ void Internal::explain_reason (int ilit, Clause *reason, int &open) {
 // over-approximated.
 //
 void Internal::explain_external_propagations () {
-  assert (conflict);
-  assert (clause.empty ());
+  CADICAL_assert (conflict);
+  CADICAL_assert (clause.empty ());
 
   Clause *reason = conflict;
   std::vector<int> seen_lits;
@@ -601,16 +601,16 @@ void Internal::explain_external_propagations () {
     if (!open)
       break;
   }
-  assert (!open);
+  CADICAL_assert (!open);
 
   if (!opts.exteagerrecalc) {
     for (auto lit : seen_lits) {
       Flags &f = flags (lit);
       f.seen = false;
     }
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
     for (auto idx : vars) {
-      assert (!flags (idx).seen);
+      CADICAL_assert (!flags (idx).seen);
     }
 #endif
   }
@@ -636,7 +636,7 @@ void Internal::explain_external_propagations () {
         lrat_chain.clear ();
         v.reason = 0;
       }
-      assert (v.level >= real_level);
+      CADICAL_assert (v.level >= real_level);
       if (v.level > real_level) {
         v.level = real_level;
       }
@@ -646,7 +646,7 @@ void Internal::explain_external_propagations () {
 
 #if 0 // has been fuzzed extensively
   for (auto idx : vars) {
-    assert (!flags (idx).seen);
+    CADICAL_assert (!flags (idx).seen);
   }
 #endif
 }
@@ -664,18 +664,18 @@ void Internal::explain_external_propagations () {
 Clause *Internal::learn_external_reason_clause (int ilit,
                                                 int falsified_elit,
                                                 bool no_backtrack) {
-  assert (external->propagator);
+  CADICAL_assert (external->propagator);
   // we cannot modify clause during analysis
   auto clause_tmp = std::move (clause);
 
-  assert (clause.empty ());
-  assert (original.empty ());
+  CADICAL_assert (clause.empty ());
+  CADICAL_assert (original.empty ());
 
   stats.ext_prop.eprop_expl++;
 
   int elit = 0;
   if (!falsified_elit) {
-    assert (!fixed (ilit));
+    CADICAL_assert (!fixed (ilit));
     elit = externalize (ilit);
   } else
     elit = falsified_elit;
@@ -683,7 +683,7 @@ Clause *Internal::learn_external_reason_clause (int ilit,
   LOG ("ilit: %d, elit: %d", ilit, elit);
   add_external_clause (elit, no_backtrack);
 
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
   if (!falsified_elit && newest_clause) {
     // Check if external propagation is correct wrt to the topological order
     // defined by the trail. In case it is a falsified external propagation
@@ -691,7 +691,7 @@ Clause *Internal::learn_external_reason_clause (int ilit,
     // falsified clause.
     const int propagated_ilit = ilit;
     for (auto const reason_ilit : *newest_clause) {
-      assert (var (reason_ilit).trail <= var (propagated_ilit).trail);
+      CADICAL_assert (var (reason_ilit).trail <= var (propagated_ilit).trail);
     }
   }
 #endif
@@ -721,12 +721,12 @@ Clause *Internal::wrapped_learn_external_reason_clause (int ilit) {
     // The learn_external_reason clause can leave a literal in clause when
     // there is a falsified elit arg. Here it is not allowed to
     // happen.
-    assert (clause.empty ());
+    CADICAL_assert (clause.empty ());
 
     clause = std::move (clause_tmp);
     clause_tmp.clear ();
   }
-  assert (lrat_chain.empty ());
+  CADICAL_assert (lrat_chain.empty ());
   lrat_chain = std::move (chain_tmp);
   chain_tmp.clear ();
   return res;
@@ -747,8 +747,8 @@ void Internal::handle_external_clause (Clause *res) {
     if (from_propagator)
       stats.ext_prop.elearn_prop++;
     // new unit clause. For now just backtrack.
-    assert (!force_no_backtrack);
-    assert (level);
+    CADICAL_assert (!force_no_backtrack);
+    CADICAL_assert (level);
     // if (!opts.chrono) {
     backtrack ();
     // }
@@ -756,18 +756,18 @@ void Internal::handle_external_clause (Clause *res) {
   }
   if (from_propagator)
     stats.ext_prop.elearned++;
-  assert (res->size >= 2);
+  CADICAL_assert (res->size >= 2);
   const int pos0 = res->literals[0];
   const int pos1 = res->literals[1];
   if (force_no_backtrack) {
-    assert (val (pos1) < 0);
-    assert (val (pos0) >= 0);
+    CADICAL_assert (val (pos1) < 0);
+    CADICAL_assert (val (pos0) >= 0);
     return;
     // TODO: maybe fix levels
   }
   const int l1 = var (pos1).level;
   if (val (pos0) < 0) { // conflicting or propagating clause
-    assert (0 < l1 && l1 <= var (pos0).level);
+    CADICAL_assert (0 < l1 && l1 <= var (pos0).level);
     if (!opts.chrono) {
       backtrack (l1);
     }
@@ -777,7 +777,7 @@ void Internal::handle_external_clause (Clause *res) {
         // its better to backtrack instead of analyze
         backtrack (l1 - 1);
         conflict = 0;
-        assert (!val (pos0) && !val (pos1));
+        CADICAL_assert (!val (pos0) && !val (pos1));
       }
     } else {
       search_assign_driving (pos0, res);
@@ -850,7 +850,7 @@ bool Internal::external_check_solution () {
         continue;
       const int lit = external->ival (idx);
       etrail.push_back (lit);
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
 #ifdef LOGGING
       bool p = external->vals[idx];
       LOG ("evals[%d]: %d ival(%d): %d", idx, p, idx, lit);
@@ -943,14 +943,14 @@ void Internal::notify_assignments () {
       continue;
 
     int elit = externalize (ilit); // TODO: double-check tainting
-    assert (elit);
+    CADICAL_assert (elit);
     if (external->ervars[abs (elit)])
       continue;
     // Fixed variables might get mapped (during compact) to another
     // non-observed but fixed variable.
     // This happens on root level, so notification about their assignment is
     // already done.
-    assert (external->observed (elit) ||
+    CADICAL_assert (external->observed (elit) ||
             (fixed (ilit) && !external->ervars[abs (elit)]));
     assigned.push_back (elit);
   }
@@ -995,8 +995,8 @@ int Internal::ask_decision () {
   if (!external_prop || external_prop_is_lazy || private_steps)
     return 0;
 
-  assert (!unsat);
-  assert (!conflict);
+  CADICAL_assert (!unsat);
+  CADICAL_assert (!conflict);
   notify_assignments ();
   int level_before = level;
   forced_backt_allowed = true;
@@ -1007,8 +1007,8 @@ int Internal::ask_decision () {
   if (level_before != level) {
 
     propagate ();
-    assert (!unsat);
-    assert (!conflict);
+    CADICAL_assert (!unsat);
+    CADICAL_assert (!conflict);
     notify_assignments ();
 
     // In case the external propagator forced to backtrack below the
@@ -1023,7 +1023,7 @@ int Internal::ask_decision () {
   if (!elit)
     return 0;
   LOG ("external propagator proposes decision: %d", elit);
-  assert (external->is_observed[abs (elit)]);
+  CADICAL_assert (external->is_observed[abs (elit)]);
   if (!external->is_observed[abs (elit)])
     return 0;
 
@@ -1031,7 +1031,7 @@ int Internal::ask_decision () {
   if (elit < 0)
     ilit = -ilit;
 
-  assert (fixed (ilit) || observed (ilit));
+  CADICAL_assert (fixed (ilit) || observed (ilit));
 
   LOG ("Asking external propagator for decision returned: %d (internal: "
        "%d, fixed: %d, val: %d)",
@@ -1052,7 +1052,7 @@ int Internal::ask_decision () {
 // propagator.
 //
 bool Internal::is_external_forgettable (int64_t id) {
-  assert (opts.check);
+  CADICAL_assert (opts.check);
   return (external->forgettable_original.find (id) !=
           external->forgettable_original.end ());
 }
@@ -1064,8 +1064,8 @@ bool Internal::is_external_forgettable (int64_t id) {
 // ignore it.
 //
 void Internal::mark_garbage_external_forgettable (int64_t id) {
-  assert (opts.check);
-  assert (is_external_forgettable (id));
+  CADICAL_assert (opts.check);
+  CADICAL_assert (is_external_forgettable (id));
 
   LOG (external->forgettable_original[id],
        "forgettable external lemma is deleted:");
@@ -1079,7 +1079,7 @@ void Internal::mark_garbage_external_forgettable (int64_t id) {
 // internally for debug purposes.
 //
 void Internal::check_watched_literal_invariants () {
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
   int v0 = 0;
   int v1 = 0;
 
@@ -1092,19 +1092,19 @@ void Internal::check_watched_literal_invariants () {
     v1 = 1;
   else if (val (clause[1]) < 0)
     v1 = -1;
-  assert (v0 >= v1);
+  CADICAL_assert (v0 >= v1);
 #endif
   if (val (clause[0]) > 0) {
     if (val (clause[1]) > 0) { // Case 1: Both literals are satisfied
       // They are ordered by lower to higher decision level
-      assert (var (clause[0]).level <= var (clause[1]).level);
+      CADICAL_assert (var (clause[0]).level <= var (clause[1]).level);
 
       // Every other literal of the clause is either
       //    - satisfied at higher level
       //    - unassigned
       //    - falsified
       for (size_t i = 2; i < clause.size (); i++)
-        assert (val (clause[i]) <= 0 ||
+        CADICAL_assert (val (clause[i]) <= 0 ||
                 (var (clause[1]).level <= var (clause[i]).level));
 
     } else if (val (clause[1]) ==
@@ -1114,14 +1114,14 @@ void Internal::check_watched_literal_invariants () {
       //    - unassigned
       //    - falsified
       for (size_t i = 2; i < clause.size (); i++)
-        assert (val (clause[i]) <= 0);
+        CADICAL_assert (val (clause[i]) <= 0);
 
     } else { // Case 3: First satisfied, next falsified -> could have been a
              // reason of a previous propagation
       // Every other literal of the clause is falsified but at a lower
       // decision level
       for (size_t i = 2; i < clause.size (); i++)
-        assert (val (clause[i]) < 0 &&
+        CADICAL_assert (val (clause[i]) < 0 &&
                 (var (clause[1]).level >= var (clause[i]).level));
     }
   } else if (val (clause[0]) == 0) {
@@ -1131,30 +1131,30 @@ void Internal::check_watched_literal_invariants () {
       //    - unassigned
       //    - falsified
       for (size_t i = 2; i < clause.size (); i++)
-        assert (val (clause[i]) <= 0);
+        CADICAL_assert (val (clause[i]) <= 0);
 
     } else { // Case 5: First unassigned, next falsified -> PROPAGATE
       // Every other literal of the clause is falsified but at a lower
       // decision level
       for (size_t i = 2; i < clause.size (); i++)
-        assert (val (clause[i]) < 0 &&
+        CADICAL_assert (val (clause[i]) < 0 &&
                 (var (clause[1]).level >= var (clause[i]).level));
     }
   } else {
-    assert (val (clause[0]) < 0 &&
+    CADICAL_assert (val (clause[0]) < 0 &&
             val (clause[1]) < 0); // Case 6: Both literals are falsified
 
     // They are ordered by higher to lower decision level
-    assert (var (clause[0]).level >= var (clause[1]).level);
+    CADICAL_assert (var (clause[0]).level >= var (clause[1]).level);
 
     // Every other literal of the clause is falsified, but at a lower level
     for (size_t i = 2; i < clause.size (); i++)
-      assert (val (clause[i]) < 0 &&
+      CADICAL_assert (val (clause[i]) < 0 &&
               (var (clause[1]).level >= var (clause[i]).level));
   }
 }
 
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
 
 /*----------------------------------------------------------------------------*/
 //

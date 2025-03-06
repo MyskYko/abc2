@@ -7,8 +7,8 @@ External::External (Internal *i)
     : internal (i), max_var (0), vsize (0), extended (false),
       concluded (false), terminator (0), learner (0), fixed_listener (0),
       propagator (0), solution (0), vars (max_var) {
-  assert (internal);
-  assert (!internal->external);
+  CADICAL_assert (internal);
+  CADICAL_assert (!internal->external);
   internal->external = this;
 }
 
@@ -19,7 +19,7 @@ External::~External () {
 
 void External::enlarge (int new_max_var) {
 
-  assert (!extended);
+  CADICAL_assert (!extended);
 
   size_t new_vsize = vsize ? 2 * vsize : 1 + (size_t) new_max_var;
   while (new_vsize <= (size_t) new_max_var)
@@ -29,7 +29,7 @@ void External::enlarge (int new_max_var) {
 }
 
 void External::init (int new_max_var, bool extension) {
-  assert (!extended);
+  CADICAL_assert (!extended);
   if (new_max_var <= max_var)
     return;
   int new_vars = new_max_var - max_var;
@@ -40,31 +40,31 @@ void External::init (int new_max_var, bool extension) {
     enlarge (new_max_var);
   LOG ("initialized %d external variables", new_vars);
   if (!max_var) {
-    assert (e2i.empty ());
+    CADICAL_assert (e2i.empty ());
     e2i.push_back (0);
     ext_units.push_back (0);
     ext_units.push_back (0);
     ext_flags.push_back (0);
     ervars.push_back (0);
-    assert (internal->i2e.empty ());
+    CADICAL_assert (internal->i2e.empty ());
     internal->i2e.push_back (0);
   } else {
-    assert (e2i.size () == (size_t) max_var + 1);
-    assert (internal->i2e.size () == (size_t) old_internal_max_var + 1);
+    CADICAL_assert (e2i.size () == (size_t) max_var + 1);
+    CADICAL_assert (internal->i2e.size () == (size_t) old_internal_max_var + 1);
   }
   unsigned iidx = old_internal_max_var + 1, eidx;
   for (eidx = max_var + 1u; eidx <= (unsigned) new_max_var;
        eidx++, iidx++) {
     LOG ("mapping external %u to internal %u", eidx, iidx);
-    assert (e2i.size () == eidx);
+    CADICAL_assert (e2i.size () == eidx);
     e2i.push_back (iidx);
     ext_units.push_back (0);
     ext_units.push_back (0);
     ext_flags.push_back (0);
     ervars.push_back (0);
     internal->i2e.push_back (eidx);
-    assert (internal->i2e[iidx] == (int) eidx);
-    assert (e2i[eidx] == (int) iidx);
+    CADICAL_assert (internal->i2e[iidx] == (int) eidx);
+    CADICAL_assert (e2i[eidx] == (int) iidx);
   }
   if (extension)
     internal->stats.variables_extension += new_vars;
@@ -75,9 +75,9 @@ void External::init (int new_max_var, bool extension) {
   if (internal->opts.checkfrozen)
     if (new_max_var >= (int64_t) moltentab.size ())
       moltentab.resize (1 + (size_t) new_max_var, false);
-  assert (iidx == (size_t) new_internal_max_var + 1);
-  assert (eidx == (size_t) new_max_var + 1);
-  assert (ext_units.size () == (size_t) new_max_var * 2 + 2);
+  CADICAL_assert (iidx == (size_t) new_internal_max_var + 1);
+  CADICAL_assert (eidx == (size_t) new_max_var + 1);
+  CADICAL_assert (ext_units.size () == (size_t) new_max_var * 2 + 2);
   max_var = new_max_var;
 }
 
@@ -116,7 +116,7 @@ void External::reset_limits () { internal->reset_limits (); }
 int External::internalize (int elit, bool extension) {
   int ilit;
   if (elit) {
-    assert (elit != INT_MIN);
+    CADICAL_assert (elit != INT_MIN);
     const int eidx = abs (elit);
     if (extension && eidx <= max_var)
       FATAL ("can not add a definition for an already used variable %d",
@@ -125,27 +125,27 @@ int External::internalize (int elit, bool extension) {
       init (eidx, extension);
     }
     if (extension) {
-      assert (ervars.size () > (size_t) eidx);
+      CADICAL_assert (ervars.size () > (size_t) eidx);
       ervars[eidx] = true;
     }
     ilit = e2i[eidx];
     if (elit < 0)
       ilit = -ilit;
     if (!ilit) {
-      assert (internal->max_var < INT_MAX);
+      CADICAL_assert (internal->max_var < INT_MAX);
       ilit = internal->max_var + 1u;
       internal->init_vars (ilit);
       e2i[eidx] = ilit;
       LOG ("mapping external %d to internal %d", eidx, ilit);
       e2i[eidx] = ilit;
       internal->i2e.push_back (eidx);
-      assert (internal->i2e[ilit] == eidx);
-      assert (e2i[eidx] == ilit);
+      CADICAL_assert (internal->i2e[ilit] == eidx);
+      CADICAL_assert (e2i[eidx] == ilit);
       if (elit < 0)
         ilit = -ilit;
     }
     if (internal->opts.checkfrozen) {
-      assert (eidx < (int64_t) moltentab.size ());
+      CADICAL_assert (eidx < (int64_t) moltentab.size ());
       if (moltentab[eidx])
         FATAL ("can not reuse molten literal %d", eidx);
     }
@@ -155,7 +155,7 @@ int External::internalize (int elit, bool extension) {
     else if (f.status != Flags::ACTIVE && f.status != Flags::FIXED)
       internal->reactivate (ilit);
     if (!marked (tainted, elit) && marked (witness, -elit)) {
-      assert (!internal->opts.checkfrozen);
+      CADICAL_assert (!internal->opts.checkfrozen);
       LOG ("marking tainted %d", elit);
       mark (tainted, elit);
     }
@@ -165,7 +165,7 @@ int External::internalize (int elit, bool extension) {
 }
 
 void External::add (int elit) {
-  assert (elit != INT_MIN);
+  CADICAL_assert (elit != INT_MIN);
   reset_extended ();
 
   bool forgettable = false;
@@ -186,7 +186,7 @@ void External::add (int elit) {
   }
 
   const int ilit = internalize (elit);
-  assert (!elit == !ilit);
+  CADICAL_assert (!elit == !ilit);
 
   // The external literals of the new clause must be saved for later
   // when the proof is printed during add_original_lit (0)
@@ -195,7 +195,7 @@ void External::add (int elit) {
     if (internal->lrat) {
       // actually find unit of -elit (flips elit < 0)
       unsigned eidx = (elit > 0) + 2u * (unsigned) abs (elit);
-      assert ((size_t) eidx < ext_units.size ());
+      CADICAL_assert ((size_t) eidx < ext_units.size ());
       const int64_t id = ext_units[eidx];
       bool added = ext_flags[abs (elit)];
       if (id && !added) {
@@ -221,21 +221,21 @@ void External::add (int elit) {
 }
 
 void External::assume (int elit) {
-  assert (elit);
+  CADICAL_assert (elit);
   reset_extended ();
   if (internal->proof)
     internal->proof->add_assumption (elit);
   assumptions.push_back (elit);
   const int ilit = internalize (elit);
-  assert (ilit);
+  CADICAL_assert (ilit);
   LOG ("assuming external %d as internal %d", elit, ilit);
   internal->assume (ilit);
 }
 
 bool External::flip (int elit) {
-  assert (elit);
-  assert (elit != INT_MIN);
-  assert (!propagator);
+  CADICAL_assert (elit);
+  CADICAL_assert (elit != INT_MIN);
+  CADICAL_assert (!propagator);
 
   int eidx = abs (elit);
   if (eidx > max_var)
@@ -252,9 +252,9 @@ bool External::flip (int elit) {
 }
 
 bool External::flippable (int elit) {
-  assert (elit);
-  assert (elit != INT_MIN);
-  assert (!propagator);
+  CADICAL_assert (elit);
+  CADICAL_assert (elit != INT_MIN);
+  CADICAL_assert (!propagator);
 
   int eidx = abs (elit);
   if (eidx > max_var)
@@ -268,8 +268,8 @@ bool External::flippable (int elit) {
 }
 
 bool External::failed (int elit) {
-  assert (elit);
-  assert (elit != INT_MIN);
+  CADICAL_assert (elit);
+  CADICAL_assert (elit != INT_MIN);
   int eidx = abs (elit);
   if (eidx > max_var)
     return 0;
@@ -286,10 +286,10 @@ void External::constrain (int elit) {
     LOG (constraint, "replacing previous constraint");
     reset_constraint ();
   }
-  assert (elit != INT_MIN);
+  CADICAL_assert (elit != INT_MIN);
   reset_extended ();
   const int ilit = internalize (elit);
-  assert (!elit == !ilit);
+  CADICAL_assert (!elit == !ilit);
   if (elit)
     LOG ("adding external %d as internal %d to constraint", elit, ilit);
   else if (!elit && internal->proof) {
@@ -304,15 +304,15 @@ bool External::failed_constraint () {
 }
 
 void External::phase (int elit) {
-  assert (elit);
-  assert (elit != INT_MIN);
+  CADICAL_assert (elit);
+  CADICAL_assert (elit != INT_MIN);
   const int ilit = internalize (elit);
   internal->phase (ilit);
 }
 
 void External::unphase (int elit) {
-  assert (elit);
-  assert (elit != INT_MIN);
+  CADICAL_assert (elit);
+  CADICAL_assert (elit != INT_MIN);
   int eidx = abs (elit);
   if (eidx > max_var) {
   UNUSED:
@@ -341,15 +341,15 @@ void External::add_observed_var (int elit) {
     return;
   }
 
-  assert (elit);
-  assert (elit != INT_MIN);
+  CADICAL_assert (elit);
+  CADICAL_assert (elit != INT_MIN);
   reset_extended (); // tainting!
 
   int eidx = abs (elit);
   if (eidx <= max_var &&
       (marked (witness, elit) || marked (witness, -elit))) {
     LOG ("Error, only clean variables are allowed to become observed.");
-    assert (false);
+    CADICAL_assert (false);
 
     // TODO: here needs to come the taint and restore of the newly
     // observed variable. Restore_clauses must be called before continue.
@@ -395,7 +395,7 @@ void External::add_observed_var (int elit) {
        unit);
 
   // internal add-observed-var had to backtrack to root-level already
-  assert (!internal->level);
+  CADICAL_assert (!internal->level);
 
   std::vector<int> assigned = {unit};
   propagator->notify_assignment (assigned);
@@ -425,7 +425,7 @@ void External::remove_observed_var (int elit) {
 
 void External::reset_observed_vars () {
   // Shouldn't be called if there is no connected propagator
-  assert (propagator);
+  CADICAL_assert (propagator);
   reset_extended ();
 
   internal->notified = 0;
@@ -434,11 +434,11 @@ void External::reset_observed_vars () {
   if (!is_observed.size ())
     return;
 
-  assert (!max_var || (size_t) max_var + 1 == is_observed.size ());
+  CADICAL_assert (!max_var || (size_t) max_var + 1 == is_observed.size ());
 
   for (auto elit : vars) {
     int eidx = abs (elit);
-    assert (eidx <= max_var);
+    CADICAL_assert (eidx <= max_var);
     if (is_observed[eidx]) {
       int ilit = internalize (elit);
       internal->remove_observed_var (ilit);
@@ -450,8 +450,8 @@ void External::reset_observed_vars () {
 }
 
 bool External::observed (int elit) {
-  assert (elit);
-  assert (elit != INT_MIN);
+  CADICAL_assert (elit);
+  CADICAL_assert (elit != INT_MIN);
   int eidx = abs (elit);
   if (eidx > max_var)
     return false;
@@ -462,8 +462,8 @@ bool External::observed (int elit) {
 }
 
 bool External::is_witness (int elit) {
-  assert (elit);
-  assert (elit != INT_MIN);
+  CADICAL_assert (elit);
+  CADICAL_assert (elit != INT_MIN);
   int eidx = abs (elit);
   if (eidx > max_var)
     return false;
@@ -471,8 +471,8 @@ bool External::is_witness (int elit) {
 }
 
 bool External::is_decision (int elit) {
-  assert (elit);
-  assert (elit != INT_MIN);
+  CADICAL_assert (elit);
+  CADICAL_assert (elit != INT_MIN);
   int eidx = abs (elit);
   if (eidx > max_var)
     return false;
@@ -513,7 +513,7 @@ void External::implied (std::vector<int> &trailed) {
   trailed.clear();
 
   for (const auto &ilit : ilit_implicants) {
-    assert (ilit);
+    CADICAL_assert (ilit);
     const int elit = internal->externalize (ilit);
     const int eidx = abs (elit);
     const bool is_extension_var = ervars[eidx];
@@ -578,7 +578,7 @@ void External::check_solve_result (int res) {
 void External::update_molten_literals () {
   if (!internal->opts.checkfrozen)
     return;
-  assert ((size_t) max_var + 1 == moltentab.size ());
+  CADICAL_assert ((size_t) max_var + 1 == moltentab.size ());
 #ifdef LOGGING
   int registered = 0, molten = 0;
 #endif
@@ -667,9 +667,9 @@ void External::melt (int elit) {
   reset_extended ();
   int ilit = internalize (elit);
   unsigned eidx = vidx (elit);
-  assert (eidx < frozentab.size ());
+  CADICAL_assert (eidx < frozentab.size ());
   unsigned &ref = frozentab[eidx];
-  assert (ref > 0);
+  CADICAL_assert (ref > 0);
   if (ref < UINT_MAX) {
     if (!--ref) {
       if (observed (elit)) {
@@ -700,10 +700,10 @@ void External::check_assignment (int (External::*a) (int) const) {
     int value_idx = (this->*a) (idx);
     int value_neg_idx = (this->*a) (-idx);
     if (value_idx == idx)
-      assert (value_neg_idx == idx);
+      CADICAL_assert (value_neg_idx == idx);
     else {
-      assert (value_idx == -idx);
-      assert (value_neg_idx == -idx);
+      CADICAL_assert (value_idx == -idx);
+      CADICAL_assert (value_neg_idx == -idx);
     }
     if (value_idx != value_neg_idx)
       FATAL ("inconsistently assigned literals %d and %d", idx, -idx);
@@ -945,7 +945,7 @@ bool External::traverse_all_non_frozen_units_as_witnesses (
     const int ilit = e2i[idx] * (tmp < 0 ? -1 : 1);
     // heurstically add + max_var to the id to avoid reusing ids
     const int64_t id = internal->lrat ? internal->unit_id (ilit) : 1;
-    assert (id);
+    CADICAL_assert (id);
     clause_and_witness.push_back (unit);
     if (!it.witness (clause_and_witness, clause_and_witness, id + max_var))
       return false;
@@ -972,8 +972,8 @@ void External::copy_flags (External &other) const {
       continue;
     if (!other.internal->active (other_ilit))
       continue;
-    assert (this_ilit != INT_MIN);
-    assert (other_ilit != INT_MIN);
+    CADICAL_assert (this_ilit != INT_MIN);
+    CADICAL_assert (other_ilit != INT_MIN);
     const Flags &this_flags = this_ftab[abs (this_ilit)];
     Flags &other_flags = other_ftab[abs (other_ilit)];
     this_flags.copy (other_flags);
@@ -983,7 +983,7 @@ void External::copy_flags (External &other) const {
 /*------------------------------------------------------------------------*/
 
 void External::export_learned_empty_clause () {
-  assert (learner);
+  CADICAL_assert (learner);
   if (learner->learning (0)) {
     LOG ("exporting learned empty clause");
     learner->learn (0);
@@ -992,11 +992,11 @@ void External::export_learned_empty_clause () {
 }
 
 void External::export_learned_unit_clause (int ilit) {
-  assert (learner);
+  CADICAL_assert (learner);
   if (learner->learning (1)) {
     LOG ("exporting learned unit clause");
     const int elit = internal->externalize (ilit);
-    assert (elit);
+    CADICAL_assert (elit);
     learner->learn (elit);
     learner->learn (0);
   } else
@@ -1004,14 +1004,14 @@ void External::export_learned_unit_clause (int ilit) {
 }
 
 void External::export_learned_large_clause (const vector<int> &clause) {
-  assert (learner);
+  CADICAL_assert (learner);
   size_t size = clause.size ();
-  assert (size <= (unsigned) INT_MAX);
+  CADICAL_assert (size <= (unsigned) INT_MAX);
   if (learner->learning ((int) size)) {
     LOG ("exporting learned clause of size %zu", size);
     for (auto ilit : clause) {
       const int elit = internal->externalize (ilit);
-      assert (elit);
+      CADICAL_assert (elit);
       learner->learn (elit);
     }
     learner->learn (0);

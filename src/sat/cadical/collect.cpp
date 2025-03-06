@@ -56,7 +56,7 @@ void Internal::remove_falsified_literals (Clause *c) {
   literal_iterator j = c->begin ();
   for (i = j; i != end; i++) {
     const int lit = *j++ = *i, tmp = fixed (lit);
-    assert (tmp <= 0);
+    CADICAL_assert (tmp <= 0);
     if (tmp >= 0)
       continue;
     LOG ("flushing %d", lit);
@@ -102,23 +102,23 @@ void Internal::mark_satisfied_clauses_as_garbage () {
 
 void Internal::protect_reasons () {
   LOG ("protecting reason clauses of all assigned variables on trail");
-  assert (!protected_reasons);
+  CADICAL_assert (!protected_reasons);
 #ifdef LOGGING
   size_t count = 0;
 #endif
   for (const auto &lit : trail) {
     if (!active (lit))
       continue;
-    assert (val (lit));
+    CADICAL_assert (val (lit));
     Var &v = var (lit);
-    assert (v.level > 0);
+    CADICAL_assert (v.level > 0);
     Clause *reason = v.reason;
     if (!reason)
       continue;
     if (reason == external_reason)
       continue;
     LOG (reason, "protecting assigned %d reason %p", lit, (void *) reason);
-    assert (!reason->reason);
+    CADICAL_assert (!reason->reason);
     reason->reason = true;
 #ifdef LOGGING
     count++;
@@ -135,16 +135,16 @@ void Internal::protect_reasons () {
 
 void Internal::unprotect_reasons () {
   LOG ("unprotecting reasons clauses of all assigned variables on trail");
-  assert (protected_reasons);
+  CADICAL_assert (protected_reasons);
 #ifdef LOGGING
   size_t count = 0;
 #endif
   for (const auto &lit : trail) {
     if (!active (lit))
       continue;
-    assert (val (lit));
+    CADICAL_assert (val (lit));
     Var &v = var (lit);
-    assert (v.level > 0);
+    CADICAL_assert (v.level > 0);
     Clause *reason = v.reason;
     if (!reason)
       continue;
@@ -152,7 +152,7 @@ void Internal::unprotect_reasons () {
       continue;
     LOG (reason, "unprotecting assigned %d reason %p", lit,
          (void *) reason);
-    assert (reason->reason);
+    CADICAL_assert (reason->reason);
     reason->reason = false;
 #ifdef LOGGING
     count++;
@@ -181,7 +181,7 @@ size_t Internal::flush_occs (int lit) {
     if (c->collect ())
       continue;
     *j++ = c->moved ? c->copy : c;
-    // assert (!c->redundant); // -> not true in sweeping
+    // CADICAL_assert (!c->redundant); // -> not true in sweeping
     res++;
   }
   os.resize (j - os.begin ());
@@ -196,7 +196,7 @@ size_t Internal::flush_occs (int lit) {
 // preprocessing is actually redundant.
 
 inline void Internal::flush_watches (int lit, Watches &saved) {
-  assert (saved.empty ());
+  CADICAL_assert (saved.empty ());
   Watches &ws = watches (lit);
   const const_watch_iterator end = ws.end ();
   watch_iterator j = ws.begin ();
@@ -211,7 +211,7 @@ inline void Internal::flush_watches (int lit, Watches &saved) {
     w.size = c->size;
     const int new_blit_pos = (c->literals[0] == lit);
     LOG (c, "clause in flush_watch starting from %d", lit);
-    assert (c->literals[!new_blit_pos] == lit); /*FW1*/
+    CADICAL_assert (c->literals[!new_blit_pos] == lit); /*FW1*/
     w.blit = c->literals[new_blit_pos];
     if (w.binary ())
       *j++ = w;
@@ -254,8 +254,8 @@ void Internal::update_reason_references () {
     if (c == external_reason)
       continue;
     LOG (c, "updating assigned %d reason", lit);
-    assert (c->reason);
-    assert (c->moved);
+    CADICAL_assert (c->reason);
+    CADICAL_assert (c->moved);
     Clause *d = c->copy;
     v.reason = d;
 #ifdef LOGGING
@@ -310,7 +310,7 @@ void Internal::delete_garbage_clauses () {
 //
 void Internal::copy_clause (Clause *c) {
   LOG (c, "moving");
-  assert (!c->moved);
+  CADICAL_assert (!c->moved);
   char *p = (char *) c;
   char *q = arena.copy (p, c->bytes ());
   c->copy = (Clause *) q;
@@ -390,7 +390,7 @@ void Internal::copy_non_garbage_clauses () {
     // the decision queue and also uses saved phases.  It seems faster than
     // the MiniSAT version and thus we keep 'opts.arenatype == 3'.
 
-    assert (opts.arenatype == 3);
+    CADICAL_assert (opts.arenatype == 3);
 
     for (int sign = -1; sign <= 1; sign += 2)
       for (int idx = queue.last; idx; idx = link (idx).prev)
@@ -418,7 +418,7 @@ void Internal::copy_non_garbage_clauses () {
     if (c->collect ())
       delete_clause (c);
     else
-      assert (c->moved), *j++ = c->copy, deallocate_clause (c);
+      CADICAL_assert (c->moved), *j++ = c->copy, deallocate_clause (c);
   }
   clauses.resize (j - clauses.begin ());
   if (clauses.size () < clauses.capacity () / 2)
@@ -446,7 +446,7 @@ void Internal::copy_non_garbage_clauses () {
 // statistics are updated correctly.
 
 void Internal::check_clause_stats () {
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
   int64_t irredundant = 0, redundant = 0, total = 0, irrlits = 0;
   for (const auto &c : clauses) {
     if (c->garbage)
@@ -459,10 +459,10 @@ void Internal::check_clause_stats () {
       irrlits += c->size;
     total++;
   }
-  assert (stats.current.irredundant == irredundant);
-  assert (stats.current.redundant == redundant);
-  assert (stats.current.total == total);
-  assert (stats.irrlits == irrlits);
+  CADICAL_assert (stats.current.irredundant == irredundant);
+  CADICAL_assert (stats.current.redundant == redundant);
+  CADICAL_assert (stats.current.total == total);
+  CADICAL_assert (stats.irrlits == irrlits);
 #endif
 }
 
@@ -481,7 +481,7 @@ void Internal::remove_garbage_binaries () {
   Watches saved;
   for (auto v : vars) {
     for (auto lit : {-v, v}) {
-      assert (saved.empty ());
+      CADICAL_assert (saved.empty ());
       Watches &ws = watches (lit);
       const const_watch_iterator end = ws.end ();
       watch_iterator j = ws.begin ();
@@ -495,7 +495,7 @@ void Internal::remove_garbage_binaries () {
           continue;
         if (c->reason && c->garbage) {
           COVER (true);
-          assert (c->size == 2);
+          CADICAL_assert (c->size == 2);
           backtrack_level =
               min (backtrack_level, var (c->literals[0]).level);
           LOG ("need to backtrack to before level %d", backtrack_level);

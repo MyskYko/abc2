@@ -16,7 +16,7 @@ namespace CaDiCaL {
 
 bool Internal::minimize_literal (int lit, int depth) {
   LOG ("attempt to minimize lit %d at depth %d", lit, depth);
-  assert (val (lit) > 0);
+  CADICAL_assert (val (lit) > 0);
   Flags &f = flags (lit);
   Var &v = var (lit);
   if (!v.level || f.removable || f.keep)
@@ -31,18 +31,18 @@ bool Internal::minimize_literal (int lit, int depth) {
   if (depth > opts.minimizedepth)
     return false;
   bool res = true;
-  assert (v.reason);
+  CADICAL_assert (v.reason);
   if (opts.minimizeticks)
     stats.ticks.search[stable]++;
   if (v.reason == external_reason) {
-    assert (!opts.exteagerreasons);
+    CADICAL_assert (!opts.exteagerreasons);
     v.reason = learn_external_reason_clause (lit, 0, true);
     if (!v.reason) {
-      assert (!v.level);
+      CADICAL_assert (!v.level);
       return true;
     }
   }
-  assert (v.reason != external_reason);
+  CADICAL_assert (v.reason != external_reason);
   const const_literal_iterator end = v.reason->end ();
   const_literal_iterator i;
   for (i = v.reason->begin (); res && i != end; i++) {
@@ -71,7 +71,7 @@ struct minimize_trail_positive_rank {
   minimize_trail_positive_rank (Internal *s) : internal (s) {}
   typedef unsigned Type;
   Type operator() (const int &a) const {
-    assert (internal->val (a));
+    CADICAL_assert (internal->val (a));
     return (unsigned) internal->var (a).trail;
   }
 };
@@ -89,7 +89,7 @@ struct minimize_trail_level_positive_rank {
   minimize_trail_level_positive_rank (Internal *s) : internal (s) {}
   typedef uint64_t Type;
   Type operator() (const int &a) const {
-    assert (internal->val (a));
+    CADICAL_assert (internal->val (a));
     Var &v = internal->var (a);
     uint64_t res = v.level;
     res <<= 32;
@@ -114,15 +114,15 @@ void Internal::minimize_clause () {
   external->check_learned_clause (); // check 1st UIP learned clause first
   minimize_sort_clause ();
 
-  assert (minimized.empty ());
-  assert (minimize_chain.empty ());
+  CADICAL_assert (minimized.empty ());
+  CADICAL_assert (minimize_chain.empty ());
   const auto end = clause.end ();
   auto j = clause.begin (), i = j;
   std::vector<int> stack;
   for (; i != end; i++) {
     if (minimize_literal (-*i)) {
       if (lrat) {
-        assert (mini_chain.empty ());
+        CADICAL_assert (mini_chain.empty ());
         calculate_minimize_chain (-*i, stack);
         for (auto p : mini_chain) {
           minimize_chain.push_back (p);
@@ -153,19 +153,19 @@ void Internal::minimize_clause () {
 // minimize version. Unlike the minimize version, we have to keep literals
 // on the stack in order to push its reason later.
 void Internal::calculate_minimize_chain (int lit, std::vector<int> &stack) {
-  assert (stack.empty ());
+  CADICAL_assert (stack.empty ());
   stack.push_back (vidx (lit));
 
   while (!stack.empty ()) {
     const int idx = stack.back ();
-    assert (idx);
+    CADICAL_assert (idx);
     stack.pop_back ();
     if (idx < 0) {
       Var &v = var (idx);
       mini_chain.push_back (v.reason->id);
       continue;
     }
-    assert (idx);
+    CADICAL_assert (idx);
     Flags &f = flags (idx);
     Var &v = var (idx);
     if (f.keep || f.added || f.poison) {
@@ -182,7 +182,7 @@ void Internal::calculate_minimize_chain (int lit, std::vector<int> &stack) {
       continue;
     }
     f.added = true;
-    assert (v.reason && f.removable);
+    CADICAL_assert (v.reason && f.removable);
     const const_literal_iterator end = v.reason->end ();
     const_literal_iterator i;
     LOG (v.reason, "LRAT chain for lit %d at depth %zd by going over", lit,
@@ -195,7 +195,7 @@ void Internal::calculate_minimize_chain (int lit, std::vector<int> &stack) {
       stack.push_back (vidx (other));
     }
   }
-  assert (stack.empty ());
+  CADICAL_assert (stack.empty ());
 }
 
 // Sort the literals in reverse assignment order (thus trail order) to
@@ -215,7 +215,7 @@ void Internal::clear_minimized_literals () {
     f.poison = f.removable = f.shrinkable = f.added = false;
   }
   for (const auto &lit : clause)
-    assert (!flags (lit).shrinkable), flags (lit).keep =
+    CADICAL_assert (!flags (lit).shrinkable), flags (lit).keep =
                                           flags (lit).shrinkable =
                                               flags (lit).added = false;
   minimized.clear ();

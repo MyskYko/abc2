@@ -12,11 +12,11 @@ void Internal::recompute_tier () {
   lim.recompute_tier = stats.conflicts + delta;
   LOG ("rescheduling in %zd at %zd (conflicts at %zd)", delta,
        lim.recompute_tier, stats.conflicts);
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
   uint64_t total_used = 0;
   for (auto u : stats.used[stable])
     total_used += u;
-  assert (total_used == stats.bump_used[stable]);
+  CADICAL_assert (total_used == stats.bump_used[stable]);
 #endif
 
   if (!stats.bump_used[stable]) {

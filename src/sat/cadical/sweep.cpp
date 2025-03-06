@@ -133,7 +133,7 @@ void Internal::sweep_dense_propagate (Sweeper &sweeper) {
   while (i < work.size ()) {
     int lit = work[i++];
     LOG ("sweeping propagation of %d", lit);
-    assert (val (lit) > 0);
+    CADICAL_assert (val (lit) > 0);
     ticks += 1 + cache_lines (occs (-lit).size (), sizeof (Clause *));
     const Occs &ns = occs (-lit);
     for (const auto &c : ns) {
@@ -225,7 +225,7 @@ void Internal::init_sweeper (Sweeper &sweeper) {
           .size (); // initialize with the cost of building full occ list.
   sweeper.current_ticks +=
       2 + 2 * cache_lines (clauses.size (), sizeof (Clause *));
-  assert (!citten);
+  CADICAL_assert (!citten);
   citten = kitten_init ();
   citten_clear_track_log_terminate ();
 
@@ -297,12 +297,12 @@ void Internal::clear_sweeper (Sweeper &sweeper) {
 
   citten_clear_track_log_terminate ();
   for (auto &idx : sweeper.vars) {
-    assert (sweeper.depths[idx]);
+    CADICAL_assert (sweeper.depths[idx]);
     sweeper.depths[idx] = 0;
   }
   sweeper.vars.clear ();
   for (auto c : sweeper.clauses) {
-    assert (c->swept);
+    CADICAL_assert (c->swept);
     c->swept = false;
   }
   sweeper.clauses.clear ();
@@ -331,7 +331,7 @@ int Internal::sweep_repr (Sweeper &sweeper, int lit) {
       sweeper.reprs[prev] = res;
       prev = next;
     }
-    assert (sweeper.reprs[-prev] == not_res);
+    CADICAL_assert (sweeper.reprs[-prev] == not_res);
   }
   return res;
 }
@@ -344,16 +344,16 @@ void Internal::add_literal_to_environment (Sweeper &sweeper, unsigned depth,
   const int idx = abs (lit);
   if (sweeper.depths[idx])
     return;
-  assert (depth < UINT_MAX);
+  CADICAL_assert (depth < UINT_MAX);
   sweeper.depths[idx] = depth + 1;
-  assert (idx);
+  CADICAL_assert (idx);
   sweeper.vars.push_back (idx);
   LOG ("sweeping[%u] adding literal %d", depth, lit);
 }
 
 void Internal::sweep_add_clause (Sweeper &sweeper, unsigned depth) {
-  // TODO: assertion fails, check if this an issue or can be avoided
-  // assert (sweeper.clause.size () > 1);
+  // TODO: CADICAL_assertion fails, check if this an issue or can be avoided
+  // CADICAL_assert (sweeper.clause.size () > 1);
   for (const auto &lit : sweeper.clause)
     add_literal_to_environment (sweeper, depth, lit);
   citten_clause_with_id (citten, sweeper.clauses.size (),
@@ -366,9 +366,9 @@ void Internal::sweep_add_clause (Sweeper &sweeper, unsigned depth) {
 void Internal::sweep_clause (Sweeper &sweeper, unsigned depth, Clause *c) {
   if (c->swept)
     return;
-  assert (can_sweep_clause (c));
+  CADICAL_assert (can_sweep_clause (c));
   LOG (c, "sweeping[%u]", depth);
-  assert (sweeper.clause.empty ());
+  CADICAL_assert (sweeper.clause.empty ());
   for (const auto &lit : *c) {
     const signed char tmp = val (lit);
     if (tmp > 0) {
@@ -403,7 +403,7 @@ static void save_core_clause (void *state, unsigned id, bool learned,
     pc.cad_id = INVALID64; // delay giving ids
   } else {
     pc.sweep_id = id; // necessary
-    assert (id < sweeper->clauses.size ());
+    CADICAL_assert (id < sweeper->clauses.size ());
     pc.cad_id = sweeper->clauses[id]->id;
   }
   pc.kit_id = 0;
@@ -436,17 +436,17 @@ static void save_core_clause_with_lrat (void *state, unsigned cid,
   pc.sweep_id = INVALID;
   pc.cad_id = INVALID64;
   if (!learned) {
-    assert (size);
-    assert (!chain_size);
-    assert (id < clauses.size ());
+    CADICAL_assert (size);
+    CADICAL_assert (!chain_size);
+    CADICAL_assert (id < clauses.size ());
     pc.sweep_id = id;
-    assert (id < clauses.size ());
+    CADICAL_assert (id < clauses.size ());
     pc.cad_id = clauses[id]->id;
     for (const auto &lit : *clauses[id]) {
       pc.literals.push_back (lit);
     }
   } else {
-    assert (chain_size);
+    CADICAL_assert (chain_size);
     pc.sweep_id = INVALID;
     pc.cad_id = INVALID64; // delay giving ids
     const unsigned *end = lits + size;
@@ -462,7 +462,7 @@ static void save_core_clause_with_lrat (void *state, unsigned cid,
     LOG (pc.literals, "traced %s",
          pc.learned == true ? "learned" : "original");
   else {
-    assert (id < clauses.size ());
+    CADICAL_assert (id < clauses.size ());
     LOG (clauses[id], "traced");
   }
 #endif
@@ -476,7 +476,7 @@ static int citten_terminate (void *data) {
 } // end extern C
 
 void Internal::citten_clear_track_log_terminate () {
-  assert (citten);
+  CADICAL_assert (citten);
   kitten_clear (citten);
   kitten_track_antecedents (citten);
   if (external->terminator)
@@ -491,10 +491,10 @@ void Internal::add_core (Sweeper &sweeper, unsigned core_idx) {
   if (unsat)
     return;
   LOG ("check and add extracted core[%u] lemmas to proof", core_idx);
-  assert (core_idx == 0 || core_idx == 1);
+  CADICAL_assert (core_idx == 0 || core_idx == 1);
   vector<sweep_proof_clause> &core = sweeper.core[core_idx];
 
-  assert (!lrat || proof);
+  CADICAL_assert (!lrat || proof);
 
   unsigned unsat_size = 0;
   for (auto &pc : core) {
@@ -513,7 +513,7 @@ void Internal::add_core (Sweeper &sweeper, unsigned core_idx) {
     const unsigned new_size = pc.literals.size ();
 
     if (lrat) {
-      assert (pc.cad_id == INVALID64);
+      CADICAL_assert (pc.cad_id == INVALID64);
       for (auto &cid : pc.chain) {
         int64_t id = 0;
         for (const auto &cpc : core) {
@@ -522,8 +522,8 @@ void Internal::add_core (Sweeper &sweeper, unsigned core_idx) {
               id = cpc.cad_id;
             else {
               id = cpc.cad_id;
-              assert (cpc.cad_id == sweeper.clauses[cpc.sweep_id]->id);
-              assert (!sweeper.clauses[cpc.sweep_id]->garbage);
+              CADICAL_assert (cpc.cad_id == sweeper.clauses[cpc.sweep_id]->id);
+              CADICAL_assert (!sweeper.clauses[cpc.sweep_id]->garbage);
               // avoid duplicate ids of units with seen flags
               for (const auto &lit : cpc.literals) {
                 if (val (lit) >= 0)
@@ -542,7 +542,7 @@ void Internal::add_core (Sweeper &sweeper, unsigned core_idx) {
             break;
           }
         }
-        assert (id);
+        CADICAL_assert (id);
         if (id != INVALID64)
           lrat_chain.push_back (id);
       }
@@ -581,8 +581,8 @@ void Internal::add_core (Sweeper &sweeper, unsigned core_idx) {
       continue;
     }
 
-    assert (new_size > 1);
-    assert (pc.learned);
+    CADICAL_assert (new_size > 1);
+    CADICAL_assert (pc.learned);
 
     if (proof) {
       pc.cad_id = ++clause_id;
@@ -594,8 +594,8 @@ void Internal::add_core (Sweeper &sweeper, unsigned core_idx) {
 
 void Internal::save_core (Sweeper &sweeper, unsigned core) {
   LOG ("saving extracted core[%u] lemmas", core);
-  assert (core == 0 || core == 1);
-  assert (sweeper.core[core].empty ());
+  CADICAL_assert (core == 0 || core == 1);
+  CADICAL_assert (sweeper.core[core].empty ());
   sweeper.save = core;
   kitten_compute_clausal_core (citten, 0);
   if (lrat)
@@ -606,7 +606,7 @@ void Internal::save_core (Sweeper &sweeper, unsigned core) {
 }
 
 void Internal::clear_core (Sweeper &sweeper, unsigned core_idx) {
-  assert (core_idx == 0 || core_idx == 1);
+  CADICAL_assert (core_idx == 0 || core_idx == 1);
   LOG ("clearing core[%u] lemmas", core_idx);
   vector<sweep_proof_clause> &core = sweeper.core[core_idx];
   if (proof) {
@@ -632,7 +632,7 @@ void Internal::init_backbone_and_partition (Sweeper &sweeper) {
   for (const auto &idx : sweeper.vars) {
     if (!active (idx))
       continue;
-    assert (idx > 0);
+    CADICAL_assert (idx > 0);
     const int lit = idx;
     const int not_lit = -lit;
     const signed char tmp = kitten_signed_value (citten, lit);
@@ -648,9 +648,9 @@ void Internal::init_backbone_and_partition (Sweeper &sweeper) {
 }
 
 void Internal::sweep_empty_clause (Sweeper &sweeper) {
-  assert (!unsat);
+  CADICAL_assert (!unsat);
   save_add_clear_core (sweeper);
-  assert (unsat);
+  CADICAL_assert (unsat);
 }
 
 void Internal::sweep_refine_partition (Sweeper &sweeper) {
@@ -756,7 +756,7 @@ void Internal::sweep_refine_backbone (Sweeper &sweeper) {
 }
 
 void Internal::sweep_refine (Sweeper &sweeper) {
-  assert (kitten_status (citten) == 10);
+  CADICAL_assert (kitten_status (citten) == 10);
   if (sweeper.backbone.empty ())
     LOG ("no need to refine empty backbone candidates");
   else
@@ -771,7 +771,7 @@ void Internal::flip_backbone_literals (Sweeper &sweeper) {
   const unsigned max_rounds = opts.sweepfliprounds;
   if (!max_rounds)
     return;
-  assert (sweeper.backbone.size ());
+  CADICAL_assert (sweeper.backbone.size ());
   if (kitten_status (citten) != 10)
     return;
 #ifdef LOGGING
@@ -829,7 +829,7 @@ bool Internal::sweep_extract_fixed (Sweeper &sweeper, int lit) {
     stats.sweep_unknown_backbone++;
     return false;
   }
-  assert (res == 20);
+  CADICAL_assert (res == 20);
   LOG ("sweep unit %d", lit);
   save_add_clear_core (sweeper);
   stats.sweep_unsat_backbone++;
@@ -841,7 +841,7 @@ bool Internal::sweep_backbone_candidate (Sweeper &sweeper, int lit) {
   signed char value = kitten_fixed_signed (citten, lit);
   if (value) {
     stats.sweep_fixed_backbone++;
-    assert (value > 0);
+    CADICAL_assert (value > 0);
     if (val (lit) <= 0) {
       return sweep_extract_fixed (sweeper, lit);
     } else
@@ -876,7 +876,7 @@ bool Internal::sweep_backbone_candidate (Sweeper &sweeper, int lit) {
   if (res == 20) {
     LOG ("sweep unit %d", lit);
     save_add_clear_core (sweeper);
-    assert (val (lit));
+    CADICAL_assert (val (lit));
     stats.sweep_unsat_backbone++;
     return true;
   }
@@ -894,11 +894,11 @@ bool Internal::sweep_backbone_candidate (Sweeper &sweeper, int lit) {
 //
 int64_t Internal::add_sweep_binary (sweep_proof_clause pc, int lit,
                                     int other) {
-  assert (!unsat);
+  CADICAL_assert (!unsat);
   if (unsat)
     return 0; // sanity check, should be fuzzed
 
-  assert (!val (lit) && !val (other));
+  CADICAL_assert (!val (lit) && !val (other));
   if (val (lit) || val (other))
     return 0;
 
@@ -940,28 +940,28 @@ bool Internal::scheduled_variable (Sweeper &sweeper, int idx) {
 }
 
 void Internal::schedule_inner (Sweeper &sweeper, int idx) {
-  assert (idx);
+  CADICAL_assert (idx);
   if (!active (idx))
     return;
   const int next = sweeper.next[idx];
   if (next != 0) {
     LOG ("rescheduling inner %d as last", idx);
     const unsigned prev = sweeper.prev[idx];
-    assert (sweeper.prev[next] == idx);
+    CADICAL_assert (sweeper.prev[next] == idx);
     sweeper.prev[next] = prev;
     if (prev == 0) {
-      assert (sweeper.first == idx);
+      CADICAL_assert (sweeper.first == idx);
       sweeper.first = next;
     } else {
-      assert (sweeper.next[prev] == idx);
+      CADICAL_assert (sweeper.next[prev] == idx);
       sweeper.next[prev] = next;
     }
     const unsigned last = sweeper.last;
     if (last == 0) {
-      assert (sweeper.first == 0);
+      CADICAL_assert (sweeper.first == 0);
       sweeper.first = idx;
     } else {
-      assert (sweeper.next[last] == 0);
+      CADICAL_assert (sweeper.next[last] == 0);
       sweeper.next[last] = idx;
     }
     sweeper.prev[idx] = last;
@@ -971,13 +971,13 @@ void Internal::schedule_inner (Sweeper &sweeper, int idx) {
     LOG ("scheduling inner %d as last", idx);
     const unsigned last = sweeper.last;
     if (last == 0) {
-      assert (sweeper.first == 0);
+      CADICAL_assert (sweeper.first == 0);
       sweeper.first = idx;
     } else {
-      assert (sweeper.next[last] == 0);
+      CADICAL_assert (sweeper.next[last] == 0);
       sweeper.next[last] = idx;
     }
-    assert (sweeper.next[idx] == 0);
+    CADICAL_assert (sweeper.next[idx] == 0);
     sweeper.prev[idx] = last;
     sweeper.last = idx;
   } else
@@ -985,17 +985,17 @@ void Internal::schedule_inner (Sweeper &sweeper, int idx) {
 }
 
 void Internal::schedule_outer (Sweeper &sweeper, int idx) {
-  assert (!scheduled_variable (sweeper, idx));
-  assert (active (idx));
+  CADICAL_assert (!scheduled_variable (sweeper, idx));
+  CADICAL_assert (active (idx));
   const int first = sweeper.first;
   if (first == 0) {
-    assert (sweeper.last == 0);
+    CADICAL_assert (sweeper.last == 0);
     sweeper.last = idx;
   } else {
-    assert (sweeper.prev[first] == 0);
+    CADICAL_assert (sweeper.prev[first] == 0);
     sweeper.prev[first] = idx;
   }
-  assert (sweeper.prev[idx] == 0);
+  CADICAL_assert (sweeper.prev[idx] == 0);
   sweeper.next[idx] = first;
   sweeper.first = idx;
   LOG ("scheduling outer %d as first", idx);
@@ -1007,16 +1007,16 @@ int Internal::next_scheduled (Sweeper &sweeper) {
     LOG ("no more scheduled variables left");
     return 0;
   }
-  assert (res > 0);
+  CADICAL_assert (res > 0);
   LOG ("dequeuing next scheduled %d", res);
   const unsigned prev = sweeper.prev[res];
-  assert (sweeper.next[res] == 0);
+  CADICAL_assert (sweeper.next[res] == 0);
   sweeper.prev[res] = 0;
   if (prev == 0) {
-    assert (sweeper.first == res);
+    CADICAL_assert (sweeper.first == res);
     sweeper.first = 0;
   } else {
-    assert (sweeper.next[prev] == res);
+    CADICAL_assert (sweeper.next[prev] == res);
     sweeper.next[prev] = 0;
   }
   sweeper.last = prev;
@@ -1027,7 +1027,7 @@ void Internal::sweep_substitute_lrat (Clause *c, int64_t id) {
   if (!lrat)
     return;
   for (const auto &lit : *c) {
-    assert (val (lit) <= 0);
+    CADICAL_assert (val (lit) <= 0);
     if (val (lit) < 0) {
       int64_t id = unit_id (-lit);
       lrat_chain.push_back (id);
@@ -1054,11 +1054,11 @@ void Internal::substitute_connected_clauses (Sweeper &sweeper, int lit,
     return;
   LOG ("substituting %d with %d in all irredundant clauses", lit, repr);
 
-  assert (lit != repr);
-  assert (lit != -repr);
+  CADICAL_assert (lit != repr);
+  CADICAL_assert (lit != -repr);
 
-  assert (active (lit));
-  assert (active (repr));
+  CADICAL_assert (active (lit));
+  CADICAL_assert (active (repr));
 
   uint64_t &ticks = sweeper.current_ticks;
 
@@ -1074,25 +1074,25 @@ void Internal::substitute_connected_clauses (Sweeper &sweeper, int lit,
       ticks++;
       if (c->garbage)
         continue;
-      assert (clause.empty ());
+      CADICAL_assert (clause.empty ());
       bool satisfied = false;
       bool repr_already_watched = false;
       const int not_repr = -repr;
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
       bool found = false;
 #endif
       for (const auto &other : *c) {
         if (other == lit) {
-#ifndef NDEBUG
-          assert (!found);
+#ifndef CADICAL_NDEBUG
+          CADICAL_assert (!found);
           found = true;
 #endif
           clause.push_back (repr);
           continue;
         }
-        assert (other != -lit);
+        CADICAL_assert (other != -lit);
         if (other == repr) {
-          assert (!repr_already_watched);
+          CADICAL_assert (!repr_already_watched);
           repr_already_watched = true;
           continue;
         }
@@ -1115,12 +1115,12 @@ void Internal::substitute_connected_clauses (Sweeper &sweeper, int lit,
         sweep_update_noccs (c);
         continue;
       }
-      assert (found);
+      CADICAL_assert (found);
       const unsigned new_size = clause.size ();
       sweep_substitute_lrat (c, id);
       if (new_size == 0) {
         LOG (c, "substituted empty clause");
-        assert (!unsat);
+        CADICAL_assert (!unsat);
         learn_empty_clause ();
         break;
       }
@@ -1136,7 +1136,7 @@ void Internal::substitute_connected_clauses (Sweeper &sweeper, int lit,
         stats.sweep_units++;
         break;
       }
-      assert (c->size >= 2);
+      CADICAL_assert (c->size >= 2);
       if (!c->redundant)
         mark_removed (c);
       uint64_t new_id = ++clause_id;
@@ -1179,7 +1179,7 @@ void Internal::sweep_substitute_new_equivalences (Sweeper &sweeper) {
     return;
 
   unsigned count = 0;
-  assert (lrat_chain.empty ());
+  CADICAL_assert (lrat_chain.empty ());
 
   for (const auto &sb : sweeper.binaries) {
     count++;
@@ -1190,7 +1190,7 @@ void Internal::sweep_substitute_new_equivalences (Sweeper &sweeper) {
     } else {
       substitute_connected_clauses (sweeper, -lit, other, sb.id);
     }
-    assert (lrat_chain.empty ());
+    CADICAL_assert (lrat_chain.empty ());
     if (val (lit) < 0) {
       if (lrat) {
         const int64_t lid = unit_id (-lit);
@@ -1218,7 +1218,7 @@ void Internal::sweep_substitute_new_equivalences (Sweeper &sweeper) {
         }
         assign_unit (lit);
       } else
-        assert (val (lit) > 0);
+        CADICAL_assert (val (lit) > 0);
     }
     lrat_chain.clear ();
     delete_sweep_binary (sb);
@@ -1230,19 +1230,19 @@ void Internal::sweep_substitute_new_equivalences (Sweeper &sweeper) {
       }
       count = 0;
     }
-    assert (lrat_chain.empty ());
+    CADICAL_assert (lrat_chain.empty ());
   }
   sweeper.binaries.clear ();
 }
 
 void Internal::sweep_remove (Sweeper &sweeper, int lit) {
-  assert (sweeper.reprs[lit] != lit);
+  CADICAL_assert (sweeper.reprs[lit] != lit);
   vector<int> &partition = sweeper.partition;
   const auto begin_partition = partition.begin ();
   auto p = begin_partition;
   const auto end_partition = partition.end ();
   for (; *p != lit; p++)
-    assert (p + 1 != end_partition);
+    CADICAL_assert (p + 1 != end_partition);
   auto begin_class = p;
   while (begin_class != begin_partition && begin_class[-1] != 0)
     begin_class--;
@@ -1252,7 +1252,7 @@ void Internal::sweep_remove (Sweeper &sweeper, int lit) {
   const unsigned size = end_class - begin_class;
   LOG ("removing non-representative %d from equivalence class of size %u",
        lit, size);
-  assert (size > 1);
+  CADICAL_assert (size > 1);
   auto q = begin_class;
   if (size == 2) {
     LOG ("completely squashing equivalence class of %d", lit);
@@ -1270,7 +1270,7 @@ void Internal::flip_partition_literals (Sweeper &sweeper) {
   const unsigned max_rounds = opts.sweepfliprounds;
   if (!max_rounds)
     return;
-  assert (sweeper.partition.size ());
+  CADICAL_assert (sweeper.partition.size ());
   if (kitten_status (citten) != 10)
     return;
 #ifdef LOGGING
@@ -1286,10 +1286,10 @@ void Internal::flip_partition_literals (Sweeper &sweeper) {
     const auto end = sweeper.partition.end ();
     while (src != end) {
       auto end_src = src;
-      while (assert (end_src != end), *end_src != 0)
+      while (CADICAL_assert (end_src != end), *end_src != 0)
         end_src++;
       unsigned size = end_src - src;
-      assert (size > 1);
+      CADICAL_assert (size > 1);
       auto q = dst;
       for (auto p = src; p != end_src; p++) {
         const int lit = *p;
@@ -1339,9 +1339,9 @@ bool Internal::sweep_equivalence_candidates (Sweeper &sweeper, int lit,
   LOG ("trying equivalence candidates %d = %d", lit, other);
   const auto begin = sweeper.partition.begin ();
   auto const end = sweeper.partition.end ();
-  assert (begin + 3 <= end);
-  assert (end[-3] == lit);
-  assert (end[-2] == other);
+  CADICAL_assert (begin + 3 <= end);
+  CADICAL_assert (end[-3] == lit);
+  CADICAL_assert (end[-2] == other);
   const int third = (end - begin == 3) ? 0 : end[-4];
   int res = kitten_status (citten);
   if (res == 10) {
@@ -1446,7 +1446,7 @@ bool Internal::sweep_equivalence_candidates (Sweeper &sweeper, int lit,
     return false;
   }
 
-  assert (res == 20);
+  CADICAL_assert (res == 20);
 
   stats.sweep_unsat_equivalences++;
   LOG ("second sweeping implication %d <- %d succeeded too", other, lit);
@@ -1462,8 +1462,8 @@ bool Internal::sweep_equivalence_candidates (Sweeper &sweeper, int lit,
   add_core (sweeper, 0);
   add_core (sweeper, 1);
   if (!val (lit) && !val (other)) {
-    assert (sweeper.core[0].size ());
-    assert (sweeper.core[1].size ());
+    CADICAL_assert (sweeper.core[0].size ());
+    CADICAL_assert (sweeper.core[1].size ());
     stats.sweep_equivalences++;
     sweep_binary bin1;
     sweep_binary bin2;
@@ -1508,22 +1508,22 @@ bool Internal::sweep_equivalence_candidates (Sweeper &sweeper, int lit,
 }
 
 const char *Internal::sweep_variable (Sweeper &sweeper, int idx) {
-  assert (!unsat);
+  CADICAL_assert (!unsat);
   if (!active (idx))
     return "inactive variable";
   const int start = idx;
   if (sweeper.reprs[start] != start)
     return "non-representative variable";
-  assert (sweeper.vars.empty ());
-  assert (sweeper.clauses.empty ());
-  assert (sweeper.backbone.empty ());
-  assert (sweeper.partition.empty ());
-  assert (!sweeper.encoded);
+  CADICAL_assert (sweeper.vars.empty ());
+  CADICAL_assert (sweeper.clauses.empty ());
+  CADICAL_assert (sweeper.backbone.empty ());
+  CADICAL_assert (sweeper.partition.empty ());
+  CADICAL_assert (!sweeper.encoded);
 
   stats.sweep_variables++;
 
   LOG ("sweeping %d", idx);
-  assert (!val (start));
+  CADICAL_assert (!val (start));
   LOG ("starting sweeping[0]");
   add_literal_to_environment (sweeper, 0, start);
   LOG ("finished sweeping[0]");
@@ -1559,7 +1559,7 @@ const char *Internal::sweep_variable (Sweeper &sweeper, int idx) {
     if (opts.sweeprand && choices > 1) {
       const unsigned swaps = sweeper.random.pick_int (0, choices - 1);
       if (swaps) {
-        assert (expand + swaps < sweeper.vars.size ());
+        CADICAL_assert (expand + swaps < sweeper.vars.size ());
         swap (sweeper.vars[expand], sweeper.vars[expand + swaps]);
       }
     }
@@ -1639,7 +1639,7 @@ const char *Internal::sweep_variable (Sweeper &sweeper, int idx) {
              "complete swept variable %d backbone with %" PRIu64
              " units in %" PRIu64 " solver calls",
              externalize (idx), units, solved);
-    assert (sweeper.backbone.empty ());
+    CADICAL_assert (sweeper.backbone.empty ());
 #ifndef QUIET
     uint64_t equivalences = stats.sweep_equivalences;
     solved = stats.sweep_solved;
@@ -1663,7 +1663,7 @@ const char *Internal::sweep_variable (Sweeper &sweeper, int idx) {
         break;
       if (sweeper.partition.size () > 2) {
         const auto end = sweeper.partition.end ();
-        assert (end[-1] == 0);
+        CADICAL_assert (end[-1] == 0);
         int lit = end[-3];
         int other = end[-2];
         if (sweep_equivalence_candidates (sweeper, lit, other))
@@ -1698,7 +1698,7 @@ DONE:
     return "unsuccessfully without reaching limit";
   else if (success && !limit_reached)
     return "successfully without reaching limit";
-  assert (!success && limit_reached);
+  CADICAL_assert (!success && limit_reached);
   return "unsuccessfully and reached limit";
 }
 
@@ -1709,8 +1709,8 @@ struct sweep_candidate {
 
 struct rank_sweep_candidate {
   bool operator() (sweep_candidate a, sweep_candidate b) const {
-    assert (a.rank && b.rank);
-    assert (a.idx > 0 && b.idx > 0);
+    CADICAL_assert (a.rank && b.rank);
+    CADICAL_assert (a.idx > 0 && b.idx > 0);
     if (a.rank < b.rank)
       return true;
     if (b.rank < a.rank)
@@ -1759,7 +1759,7 @@ unsigned Internal::schedule_all_other_not_scheduled_yet (Sweeper &sweeper) {
     fresh.push_back (cand);
   }
   const size_t size = fresh.size ();
-  assert (size <= UINT_MAX);
+  CADICAL_assert (size <= UINT_MAX);
   sort (fresh.begin (), fresh.end (), rank_sweep_candidate ());
   for (auto &cand : fresh)
     schedule_outer (sweeper, cand.idx);
@@ -1829,7 +1829,7 @@ unsigned Internal::schedule_sweeping (Sweeper &sweeper) {
          percent (incomplete, scheduled));
 #endif
   if (incomplete)
-    assert (sweep_incomplete);
+    CADICAL_assert (sweep_incomplete);
   else {
     if (sweep_incomplete)
       stats.sweep_completed++;
@@ -1843,8 +1843,8 @@ void Internal::unschedule_sweeping (Sweeper &sweeper, unsigned swept,
 #ifdef QUIET
   (void) scheduled, (void) swept;
 #endif
-  assert (sweep_schedule.empty ());
-  assert (sweep_incomplete);
+  CADICAL_assert (sweep_schedule.empty ());
+  CADICAL_assert (sweep_incomplete);
   for (all_scheduled (idx))
     if (active (idx)) {
       sweep_schedule.push_back (idx);
@@ -1883,7 +1883,7 @@ bool Internal::sweep () {
   SET_EFFORT_LIMIT (tickslimit, sweep, !opts.sweepcomplete);
   delaying_sweep.bumpreasons.unbypass_delay ();
 
-  assert (!level);
+  CADICAL_assert (!level);
   START_SIMPLIFIER (sweep, SWEEP);
   stats.sweep++;
   uint64_t equivalences = stats.sweep_equivalences;

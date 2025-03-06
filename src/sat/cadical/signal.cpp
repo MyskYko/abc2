@@ -4,7 +4,7 @@
 
 /*------------------------------------------------------------------------*/
 
-#include <cassert>
+#include <cCADICAL_assert>
 #include <csignal>
 
 /*------------------------------------------------------------------------*/
@@ -122,9 +122,9 @@ void Signal::set (Handler *h) {
 #ifndef __WIN32
 
 void Signal::alarm (int seconds) {
-  assert (seconds >= 0);
-  assert (!alarm_set);
-  assert (alarm_time < 0);
+  CADICAL_assert (seconds >= 0);
+  CADICAL_assert (!alarm_set);
+  CADICAL_assert (alarm_time < 0);
   SIGALRM_handler = signal (SIGALRM, catch_signal);
   alarm_set = true;
   alarm_time = absolute_real_time () + seconds;

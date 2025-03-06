@@ -45,52 +45,52 @@ void update_ite_flags (Gate *g) {
     f |= Special_ITE_GATE::NO_NEG_ELSE;
   }
   g->degenerated_ite = f;
-  assert (lhs != -then_lit);
-  assert (lhs != -else_lit);
-  assert (cond != then_lit);
-  assert (cond != else_lit);
-  assert (cond != -then_lit);
-  assert (cond != -else_lit);
+  CADICAL_assert (lhs != -then_lit);
+  CADICAL_assert (lhs != -else_lit);
+  CADICAL_assert (cond != then_lit);
+  CADICAL_assert (cond != else_lit);
+  CADICAL_assert (cond != -then_lit);
+  CADICAL_assert (cond != -else_lit);
 }
 
 void check_correct_ite_flags (const Gate *const g) {
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
   const int8_t f = g->degenerated_ite;
   const int lhs = g->lhs;
   const int cond = g->rhs [0];
   const int then_lit = g->rhs[1];
   const int else_lit = g->rhs[2];
-  assert (g->pos_lhs_ids.size () == 4);
+  CADICAL_assert (g->pos_lhs_ids.size () == 4);
   if (g->pos_lhs_ids[0].clause == nullptr)
-    assert ((f & Special_ITE_GATE::NO_PLUS_THEN));
+    CADICAL_assert ((f & Special_ITE_GATE::NO_PLUS_THEN));
   if (g->pos_lhs_ids[1].clause == nullptr)
-    assert (f & Special_ITE_GATE::NO_NEG_THEN);
+    CADICAL_assert (f & Special_ITE_GATE::NO_NEG_THEN);
   if (g->pos_lhs_ids[2].clause == nullptr)
-    assert (f & Special_ITE_GATE::NO_PLUS_ELSE);
+    CADICAL_assert (f & Special_ITE_GATE::NO_PLUS_ELSE);
   if (g->pos_lhs_ids[3].clause == nullptr)
-    assert (f & Special_ITE_GATE::NO_NEG_ELSE);
+    CADICAL_assert (f & Special_ITE_GATE::NO_NEG_ELSE);
   if (lhs == cond) {
-    assert (f & Special_ITE_GATE::NO_NEG_THEN);
-    assert (f & Special_ITE_GATE::NO_PLUS_ELSE);
+    CADICAL_assert (f & Special_ITE_GATE::NO_NEG_THEN);
+    CADICAL_assert (f & Special_ITE_GATE::NO_PLUS_ELSE);
   }
   if (lhs == -cond) {
-    assert (f & Special_ITE_GATE::NO_PLUS_THEN);
-    assert (f & Special_ITE_GATE::NO_NEG_ELSE);
+    CADICAL_assert (f & Special_ITE_GATE::NO_PLUS_THEN);
+    CADICAL_assert (f & Special_ITE_GATE::NO_NEG_ELSE);
   }
   if (lhs == then_lit) {
-    assert (f & Special_ITE_GATE::NO_PLUS_THEN);
-    assert (f & Special_ITE_GATE::NO_NEG_THEN);
+    CADICAL_assert (f & Special_ITE_GATE::NO_PLUS_THEN);
+    CADICAL_assert (f & Special_ITE_GATE::NO_NEG_THEN);
   }
   if (lhs == else_lit) {
-    assert (f & Special_ITE_GATE::NO_PLUS_ELSE);
-    assert (f & Special_ITE_GATE::NO_NEG_ELSE);
+    CADICAL_assert (f & Special_ITE_GATE::NO_PLUS_ELSE);
+    CADICAL_assert (f & Special_ITE_GATE::NO_NEG_ELSE);
   }
-  assert (lhs != -then_lit);
-  assert (lhs != -else_lit);
-  assert (cond != then_lit);
-  assert (cond != else_lit);
-  assert (cond != -then_lit);
-  assert (cond != -else_lit);
+  CADICAL_assert (lhs != -then_lit);
+  CADICAL_assert (lhs != -else_lit);
+  CADICAL_assert (cond != then_lit);
+  CADICAL_assert (cond != else_lit);
+  CADICAL_assert (cond != -then_lit);
+  CADICAL_assert (cond != -else_lit);
 #else
   (void)g;
 #endif
@@ -116,7 +116,7 @@ static size_t hash_lits (std::array<int, 16> &nonces,
 }
 
 size_t Hash::operator() (const Gate *const g) const {
-  assert (hash_lits (nonces, g->rhs) == g->hash);
+  CADICAL_assert (hash_lits (nonces, g->rhs) == g->hash);
   return g->hash;
 }
 
@@ -144,7 +144,7 @@ bool Closure::find_binary (int lit, int other) const {
   const auto size = offsize.second;
   const auto begin = std::begin (binaries) + offset;
   const auto end = std::begin (binaries) + size;
-  assert (end <= std::end (binaries));
+  CADICAL_assert (end <= std::end (binaries));
   const CompactBinary target = CompactBinary (nullptr, 0, lit, other);
   auto it = std::lower_bound (begin, end, target, compact_binary_order ());
   // search_binary only returns a bool
@@ -172,7 +172,7 @@ void Closure::extract_binaries () {
       continue;
     if (c->size > 2)
       continue;
-    assert (c->size == 2);
+    CADICAL_assert (c->size == 2);
     const int lit = c->literals[0];
     const int other = c->literals[1];
     const bool already_sorted =
@@ -195,8 +195,8 @@ void Closure::extract_binaries () {
       while (j < size && binaries[j].lit1 == lit) {
         ++j;
       }
-      assert (j >= i);
-      assert (j <= size);
+      CADICAL_assert (j >= i);
+      CADICAL_assert (j <= size);
       offsetsize[internal->vlit (lit)] = make_pair (i, j);
       i = j;
     }
@@ -257,7 +257,7 @@ void Closure::extract_binaries () {
   {
     size_t i = 0;
     for (size_t j = 1; j < new_size; ++j) {
-      assert (i < j);
+      CADICAL_assert (i < j);
       if (binaries[i].lit1 == binaries[j].lit1 &&
           binaries[i].lit2 == binaries[j].lit2) {
         // subsuming later clause
@@ -268,7 +268,7 @@ void Closure::extract_binaries () {
         binaries[++i] = binaries[j];
       }
     }
-    assert (i <= new_size);
+    CADICAL_assert (i <= new_size);
     binaries.resize (i);
   }
   binaries.clear ();
@@ -281,26 +281,26 @@ void Closure::extract_binaries () {
 /*------------------------------------------------------------------------*/
 // marking structure for congruence closure, by reference
 signed char &Closure::marked (int lit) {
-  assert (internal->vlit (lit) < marks.size ());
+  CADICAL_assert (internal->vlit (lit) < marks.size ());
   return marks[internal->vlit (lit)];
 }
 
 void Closure::unmark_all () {
   for (auto lit : internal->analyzed) {
-    assert (marked (lit));
+    CADICAL_assert (marked (lit));
     marked (lit) = 0;
   }
   internal->analyzed.clear ();
 }
 
 void Closure::set_mu1_reason (int lit, Clause *c) {
-  assert (marked (lit) & 1);
+  CADICAL_assert (marked (lit) & 1);
   LOG (c, "mu1 %d -> %zd", lit, c->id);
   mu1_ids[internal->vlit (lit)] = LitClausePair (lit, c);
 }
 
 void Closure::set_mu2_reason (int lit, Clause *c) {
-  assert (marked (lit) & 2);
+  CADICAL_assert (marked (lit) & 2);
   if (!internal->lrat)
     return;
   LOG (c, "mu2 %d -> %zd", lit, c->id);
@@ -308,7 +308,7 @@ void Closure::set_mu2_reason (int lit, Clause *c) {
 }
 
 void Closure::set_mu4_reason (int lit, Clause *c) {
-  assert (marked (lit) & 4);
+  CADICAL_assert (marked (lit) & 4);
   if (!internal->lrat)
     return;
   LOG (c, "mu4 %d -> %zd", lit, c->id);
@@ -401,21 +401,21 @@ void Closure::sort_literals_by_var (vector<int> &rhs) {
 }
 /*------------------------------------------------------------------------*/
 int &Closure::representative (int lit) {
-  assert (internal->vlit (lit) < representant.size ());
+  CADICAL_assert (internal->vlit (lit) < representant.size ());
   return representant[internal->vlit (lit)];
 }
 int Closure::representative (int lit) const {
-  assert (internal->vlit (lit) < representant.size ());
+  CADICAL_assert (internal->vlit (lit) < representant.size ());
   return representant[internal->vlit (lit)];
 }
 
 int &Closure::eager_representative (int lit) {
-  assert (internal->vlit (lit) < eager_representant.size ());
+  CADICAL_assert (internal->vlit (lit) < eager_representant.size ());
   return eager_representant[internal->vlit (lit)];
 }
 
 int Closure::eager_representative (int lit) const {
-  assert (internal->vlit (lit) < eager_representant.size ());
+  CADICAL_assert (internal->vlit (lit) < eager_representant.size ());
   return eager_representant[internal->vlit (lit)];
 }
 
@@ -479,7 +479,7 @@ int Closure::find_representative_and_compress (int lit, bool update_eager) {
       eager_representative (lit) = res;
       if (internal->lrat)
         eager_representative_id (lit) = representative_id (lit);
-      assert (!internal->lrat || eager_representative_id (lit));
+      CADICAL_assert (!internal->lrat || eager_representative_id (lit));
     }
   }
 
@@ -493,7 +493,7 @@ int Closure::find_representative_and_compress (int lit, bool update_eager) {
 void Closure::push_lrat_unit (int lit) {
   if (!internal->lrat)
     return;
-  assert (internal->val (lit) > 0);
+  CADICAL_assert (internal->val (lit) > 0);
   LRAT_ID id = internal->unit_id (lit);
   lrat_chain.push_back (id);
 }
@@ -521,7 +521,7 @@ int Closure::find_eager_representative_and_compress (int lit) {
     ++path_length;
   } while (nxt != res);
 
-  //  assert (res == find_representative (lit));
+  //  CADICAL_assert (res == find_representative (lit));
   // we have to do path compression to support LRAT proofs
   if (path_length > 2) {
     LOG ("learning new rewriting from %d to %d (current path length: %d)",
@@ -545,10 +545,10 @@ int Closure::find_eager_representative_and_compress (int lit) {
   } else if (path_length == 2) {
     LOG ("duplicated information %d -> %d to eager with clause %" PRIu64,
          lit, res, eager_representative_id (lit));
-    assert (eager_representative (lit) == res);
-    assert (!internal->lrat || eager_representative_id (lit));
+    CADICAL_assert (eager_representative (lit) == res);
+    CADICAL_assert (!internal->lrat || eager_representative_id (lit));
   }
-  assert (internal->clause.empty ());
+  CADICAL_assert (internal->clause.empty ());
   return res;
 }
 
@@ -566,14 +566,14 @@ void Closure::import_lazy_and_find_eager_representative_and_compress_both (
 }
 
 void Closure::produce_representative_lrat (int lit) {
-  assert (internal->lrat);
+  CADICAL_assert (internal->lrat);
   LOG ("production of LRAT chain for %d with representative %" PRIu64, lit,
        representative_id (lit));
-  assert (internal->lrat);
-  assert (lrat_chain.empty ());
+  CADICAL_assert (internal->lrat);
+  CADICAL_assert (lrat_chain.empty ());
   int res = lit;
   int nxt = lit;
-  assert (nxt != representative (nxt));
+  CADICAL_assert (nxt != representative (nxt));
   do {
     res = nxt;
     nxt = representative (nxt);
@@ -585,14 +585,14 @@ void Closure::produce_representative_lrat (int lit) {
 }
 
 void Closure::produce_eager_representative_lrat (int lit) {
-  assert (internal->lrat);
+  CADICAL_assert (internal->lrat);
   LOG ("production of LRAT chain for %d with representative %" PRIu64, lit,
        eager_representative_id (lit));
-  assert (internal->lrat);
-  assert (lrat_chain.empty ());
+  CADICAL_assert (internal->lrat);
+  CADICAL_assert (lrat_chain.empty ());
   int res = lit;
   int nxt = lit;
-  assert (nxt != eager_representative (nxt));
+  CADICAL_assert (nxt != eager_representative (nxt));
   do {
     res = nxt;
     nxt = eager_representative (nxt);
@@ -607,13 +607,13 @@ LRAT_ID Closure::find_representative_lrat (int lit) {
   if (!internal->lrat)
     return 0;
   int res = lit;
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
   int nxt = representative (res);
-  assert (nxt == representative (res));
+  CADICAL_assert (nxt == representative (res));
 #endif
   LOG ("checking for existing LRAT chain for %d with clause %" PRIu64, lit,
        eager_representative_id (res));
-  assert (representative_id (res));
+  CADICAL_assert (representative_id (res));
   return representative_id (res);
 }
 
@@ -621,44 +621,44 @@ LRAT_ID Closure::find_eager_representative_lrat (int lit) {
   if (!internal->lrat)
     return 0;
   int res = lit;
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
   int nxt = eager_representative (res);
-  assert (nxt == eager_representative (res));
+  CADICAL_assert (nxt == eager_representative (res));
 #endif
   LOG ("checking for existing LRAT chain for %d with clause %" PRIu64, lit,
        eager_representative_id (res));
-  assert (eager_representative_id (res));
+  CADICAL_assert (eager_representative_id (res));
   return eager_representative_id (res);
 }
 
 LRAT_ID &Closure::eager_representative_id (int lit) {
-  assert (internal->vlit (lit) < eager_representant_id.size ());
+  CADICAL_assert (internal->vlit (lit) < eager_representant_id.size ());
   return eager_representant_id[internal->vlit (lit)];
 }
 LRAT_ID Closure::eager_representative_id (int lit) const {
-  assert (internal->vlit (lit) < eager_representant_id.size ());
+  CADICAL_assert (internal->vlit (lit) < eager_representant_id.size ());
   return eager_representant_id[internal->vlit (lit)];
 }
 
 LRAT_ID &Closure::representative_id (int lit) {
-  assert (internal->vlit (lit) < representant_id.size ());
+  CADICAL_assert (internal->vlit (lit) < representant_id.size ());
   return representant_id[internal->vlit (lit)];
 }
 LRAT_ID Closure::representative_id (int lit) const {
-  assert (internal->vlit (lit) < representant_id.size ());
+  CADICAL_assert (internal->vlit (lit) < representant_id.size ());
   return representant_id[internal->vlit (lit)];
 }
 
 void Closure::mark_garbage (Gate *g) {
   LOG (g, "marking as garbage");
-  assert (!g->garbage);
+  CADICAL_assert (!g->garbage);
   g->garbage = true;
   garbage.push_back (g);
 }
 
 bool Closure::remove_gate (GatesTable::iterator git) {
-  assert (git != end (table));
-  assert (!internal->unsat);
+  CADICAL_assert (git != end (table));
+  CADICAL_assert (!internal->unsat);
   (*git)->indexed = false;
   LOG ((*git), "removing from hash table");
   table.erase (git);
@@ -668,8 +668,8 @@ bool Closure::remove_gate (GatesTable::iterator git) {
 bool Closure::remove_gate (Gate *g) {
   if (!g->indexed)
     return false;
-  assert (!internal->unsat);
-  assert (table.find (g) != end (table));
+  CADICAL_assert (!internal->unsat);
+  CADICAL_assert (table.find (g) != end (table));
   table.erase (table.find (g));
   g->indexed = false;
   LOG (g, "removing from hash table");
@@ -677,10 +677,10 @@ bool Closure::remove_gate (Gate *g) {
 }
 
 void Closure::index_gate (Gate *g) {
-  assert (!g->indexed);
-  assert (!internal->unsat);
-  assert (g->arity () > 1);
-  assert (g->hash == hash_lits (nonces, g->rhs));
+  CADICAL_assert (!g->indexed);
+  CADICAL_assert (!internal->unsat);
+  CADICAL_assert (g->arity () > 1);
+  CADICAL_assert (g->hash == hash_lits (nonces, g->rhs));
   LOG (g, "adding to hash table");
   table.insert (g);
   g->indexed = true;
@@ -688,9 +688,9 @@ void Closure::index_gate (Gate *g) {
 
 void Closure::produce_rewritten_clause_lrat_and_clean (
     std::vector<LitClausePair> &litIds, int except_lhs, bool remove_units) {
-  assert (internal->lrat_chain.empty ());
+  CADICAL_assert (internal->lrat_chain.empty ());
   for (auto &litId : litIds) {
-    assert (litId.clause);
+    CADICAL_assert (litId.clause);
     litId.clause = produce_rewritten_clause_lrat (litId.clause, except_lhs,
                                                   remove_units);
     litId.current_lit = find_eager_representative (litId.current_lit);
@@ -704,11 +704,11 @@ void Closure::produce_rewritten_clause_lrat_and_clean (
 void Closure::produce_rewritten_clause_lrat_and_clean (
     std::vector<LitClausePair> &litIds, int except_lhs,
     size_t &old_position1, size_t &old_position2, bool remove_units) {
-  assert (internal->lrat_chain.empty ());
-  assert (old_position1 != old_position2);
+  CADICAL_assert (internal->lrat_chain.empty ());
+  CADICAL_assert (old_position1 != old_position2);
   size_t j = 0;
   for (size_t i = 0; i < litIds.size (); ++i) {
-    assert (j <= i);
+    CADICAL_assert (j <= i);
     litIds[j].clause = produce_rewritten_clause_lrat (
         litIds[i].clause, except_lhs, remove_units);
     litIds[j].current_lit =
@@ -732,10 +732,10 @@ void Closure::produce_rewritten_clause_lrat_and_clean (
 }
 
 void Closure::compute_rewritten_clause_lrat_simple (Clause *c, int except) {
-  assert (internal->clause.empty ());
-  assert (internal->lrat_chain.empty ());
-  assert (clause.empty ());
-  assert (lrat_chain.empty ());
+  CADICAL_assert (internal->clause.empty ());
+  CADICAL_assert (internal->lrat_chain.empty ());
+  CADICAL_assert (clause.empty ());
+  CADICAL_assert (lrat_chain.empty ());
   bool changed = false;
   bool tautology = false;
   for (auto lit : *c) {
@@ -804,23 +804,23 @@ void Closure::compute_rewritten_clause_lrat_simple (Clause *c, int except) {
     LOG (lrat_chain, "LRAT chain");
   } else {
     LOG (c, "oops this should not happen");
-    assert (false);
+    CADICAL_assert (false);
   }
 }
 
 Clause *Closure::new_tmp_clause (std::vector<int> &clause) {
-  assert (internal->lrat);
-  assert (!clause.empty ());
-  assert (!lrat_chain.empty ());
+  CADICAL_assert (internal->lrat);
+  CADICAL_assert (!clause.empty ());
+  CADICAL_assert (!lrat_chain.empty ());
   bool clear = false;
 
   LOG (clause, "learn new tmp clause");
-  assert (clause.size () >= 2);
+  CADICAL_assert (clause.size () >= 2);
   internal->external->check_learned_clause ();
 
-  assert (internal->clause.size () <= (size_t) INT_MAX);
+  CADICAL_assert (internal->clause.size () <= (size_t) INT_MAX);
   const int size = (int) clause.size ();
-  assert (size >= 2);
+  CADICAL_assert (size >= 2);
 
   size_t bytes = Clause::bytes (size);
   Clause *c = (Clause *) new char[bytes];
@@ -857,7 +857,7 @@ Clause *Closure::new_tmp_clause (std::vector<int> &clause) {
   // Just checking that we did not mess up our sophisticated memory layout.
   // This might be compiler dependent though. Crucial for correctness.
   //
-  assert (c->bytes () == bytes);
+  CADICAL_assert (c->bytes () == bytes);
 
   clause_delete.release ();
   LOG (c, "new pointer %p", (void *) c);
@@ -869,12 +869,12 @@ Clause *Closure::new_tmp_clause (std::vector<int> &clause) {
     internal->proof->add_derived_clause (c, lrat_chain);
   }
   extra_clauses.push_back (c);
-  assert (internal->lrat_chain.empty ());
+  CADICAL_assert (internal->lrat_chain.empty ());
   return c;
 }
 
 Clause *Closure::new_clause () {
-  assert (internal->clause.empty () || clause.empty ());
+  CADICAL_assert (internal->clause.empty () || clause.empty ());
   bool clear = false;
   if (internal->clause.empty ()) {
     swap (internal->clause, clause);
@@ -897,7 +897,7 @@ Clause *Closure::new_clause () {
 // probably do not need that.
 void Closure::produce_rewritten_clause_lrat (
     std::vector<LitClausePair> &litIds, int except_lhs, bool remove_units) {
-  assert (internal->lrat_chain.empty ());
+  CADICAL_assert (internal->lrat_chain.empty ());
   for (auto &litId : litIds) {
     if (!litId.clause)
       continue;
@@ -909,14 +909,14 @@ void Closure::produce_rewritten_clause_lrat (
 
 Clause *Closure::produce_rewritten_clause_lrat (Clause *c, int except_lhs,
                                                 bool remove_units, bool fail_on_unit) {
-  assert (internal->clause.empty ());
-  assert (internal->lrat_chain.empty ());
+  CADICAL_assert (internal->clause.empty ());
+  CADICAL_assert (internal->lrat_chain.empty ());
   auto tmp_lrat (std::move (lrat_chain));
   lrat_chain.clear ();
   LOG (c, "rewriting clause for LRAT proof, except for rewriting %d",
        except_lhs);
-  assert (internal->clause.empty ());
-  assert (lrat_chain.empty ());
+  CADICAL_assert (internal->clause.empty ());
+  CADICAL_assert (lrat_chain.empty ());
   bool changed = false;
   bool tautology = false;
   for (auto lit : *c) {
@@ -978,7 +978,7 @@ Clause *Closure::produce_rewritten_clause_lrat (Clause *c, int except_lhs,
 
   lrat_chain.push_back (c->id);
   Clause *d;
-  assert (internal->clause.empty ());
+  CADICAL_assert (internal->clause.empty ());
   if (tautology) {
     LOG ("generated clause is a tautology");
     d = nullptr;
@@ -987,7 +987,7 @@ Clause *Closure::produce_rewritten_clause_lrat (Clause *c, int except_lhs,
     LOG (lrat_chain, "LRAT chain");
     if (fail_on_unit) {
       d = nullptr;
-      assert (false && "rewriting produced a unit clause");
+      CADICAL_assert (false && "rewriting produced a unit clause");
     } else {
       d = c;
     }
@@ -1002,7 +1002,7 @@ Clause *Closure::produce_rewritten_clause_lrat (Clause *c, int except_lhs,
   }
   clause.clear ();
   lrat_chain = std::move (tmp_lrat);
-  assert (internal->clause.empty ());
+  CADICAL_assert (internal->clause.empty ());
   return d;
 }
 
@@ -1025,11 +1025,11 @@ void Closure::push_id_and_rewriting_lrat_unit (Clause *c, Rewrite rewrite1,
        ", %" PRIu64 ") and skipping %d and %d",
        rewrite1.src, rewrite1.id1, rewrite1.id2, rewrite2.src, rewrite2.id1,
        rewrite2.id2, except_lhs, except_lhs2);
-  assert (c);
+  CADICAL_assert (c);
   std::vector<LRAT_ID> units, rewriting;
   for (auto other : *c) {
     // unclear how to achieve this in the simplify context where other ==
-    // g->lhs might be set assert (internal->val (other) <= 0 || other ==
+    // g->lhs might be set CADICAL_assert (internal->val (other) <= 0 || other ==
     // except);
     if (other == except_lhs || other == -except_lhs) {
       // do nothing;
@@ -1048,9 +1048,9 @@ void Closure::push_id_and_rewriting_lrat_unit (Clause *c, Rewrite rewrite1,
     } else if (other == -rewrite2.src && rewrite2.id2) {
       push_id_on_chain (rewriting, rewrite2, other);
     } else if (other != find_eager_representative_and_compress (other)) {
-#if defined(LOGGING) || !defined(NDEBUG)
+#if defined(LOGGING) || !defined(CADICAL_NDEBUG)
       const int rewritten_other = eager_representative (other);
-      assert (other != rewritten_other);
+      CADICAL_assert (other != rewritten_other);
       LOG ("reason for representative of %d %d is %" PRIu64 "", other,
            rewritten_other, find_eager_representative_lrat (other));
 #endif
@@ -1086,12 +1086,12 @@ void Closure::push_id_and_rewriting_lrat_full (Clause *c, Rewrite rewrite1,
        ") and skipping %d and %d",
        rewrite1.src, rewrite1.id1, rewrite1.id2, rewrite2.src, rewrite2.id1,
        rewrite2.id2, except_lhs, except_lhs2);
-  assert (c);
+  CADICAL_assert (c);
   if (!insert_id_after)
     chain.push_back (c->id);
   for (auto other : *c) {
     // unclear how to achieve this in the simplify context where other ==
-    // g->lhs might be set assert (internal->val (other) <= 0 || other ==
+    // g->lhs might be set CADICAL_assert (internal->val (other) <= 0 || other ==
     // except);
     if (other == except_lhs) {
       // do nothing;
@@ -1100,7 +1100,7 @@ void Closure::push_id_and_rewriting_lrat_full (Clause *c, Rewrite rewrite1,
     } else if (internal->val (other) < 0) {
       LOG ("found unit %d", -other);
       LRAT_ID id = internal->unit_id (-other);
-      assert (id);
+      CADICAL_assert (id);
       chain.push_back (id);
     } else if (other == rewrite1.src && rewrite1.id1) {
       push_id_on_chain (chain, rewrite1, other);
@@ -1111,7 +1111,7 @@ void Closure::push_id_and_rewriting_lrat_full (Clause *c, Rewrite rewrite1,
     } else if (other == -rewrite2.src && rewrite2.id2) {
       push_id_on_chain (chain, rewrite2, other);
     } else {
-      assert (other == find_eager_representative (other));
+      CADICAL_assert (other == find_eager_representative (other));
       LOG ("no rewriting needed for %d", other);
     }
   }
@@ -1123,7 +1123,7 @@ void Closure::push_id_and_rewriting_lrat_full (Clause *c, Rewrite rewrite1,
 // because we can force rewriting that way that have not been done eagerly
 // yet.
 void Closure::push_id_on_chain (std::vector<LRAT_ID> &chain, Clause *c) {
-  assert (c);
+  CADICAL_assert (c);
   chain.push_back (c->id);
   LOG (lrat_chain, "chain");
 }
@@ -1144,9 +1144,9 @@ void Closure::learn_congruence_unit_when_lhs_set (Gate *g, int src,
   if (!internal->lrat)
     return;
   LOG ("calculating LRAT chain learn_congruence_unit_when_lhs_set");
-  assert (!g->pos_lhs_ids.empty ());
-  assert (internal->analyzed.empty ());
-  assert (internal->val (g->lhs) < 0);
+  CADICAL_assert (!g->pos_lhs_ids.empty ());
+  CADICAL_assert (internal->analyzed.empty ());
+  CADICAL_assert (internal->val (g->lhs) < 0);
   switch (g->tag) {
   case Gate_Type::And_Gate:
     LOG (lrat_chain, "lrat");
@@ -1157,7 +1157,7 @@ void Closure::learn_congruence_unit_when_lhs_set (Gate *g, int src,
     LOG (lrat_chain, "lrat");
     break;
   default:
-    assert (false);
+    CADICAL_assert (false);
   }
 }
 
@@ -1167,9 +1167,9 @@ void Closure::learn_congruence_unit_falsifies_lrat_chain (
     Gate *g, int src, int dst, int clashing, int falsified, int unit) {
   if (!internal->lrat)
     return;
-  assert (!g->pos_lhs_ids.empty ());
-  assert (internal->analyzed.empty ());
-  assert (lrat_chain.empty ());
+  CADICAL_assert (!g->pos_lhs_ids.empty ());
+  CADICAL_assert (internal->analyzed.empty ());
+  CADICAL_assert (lrat_chain.empty ());
   std::vector<LRAT_ID> proof_chain;
   switch (g->tag) {
   case Gate_Type::And_Gate:
@@ -1211,7 +1211,7 @@ void Closure::learn_congruence_unit_falsifies_lrat_chain (
                 LOG (proof_chain, "produced lrat chain so far");
               }
             }
-	    assert (!proof_chain.empty ());
+	    CADICAL_assert (!proof_chain.empty ());
           } else {
             LOG ("degenerated AND gate with conflict without LHS");
             for (const auto &litId : g->pos_lhs_ids) {
@@ -1251,7 +1251,7 @@ void Closure::learn_congruence_unit_falsifies_lrat_chain (
         }
       }
     } else {
-      assert (unit);
+      CADICAL_assert (unit);
       // Example is 1 = 2&3 where 2 and 3 are false
       for (auto litId : g->neg_lhs_ids) {
         push_id_and_rewriting_lrat_unit (litId.clause, Rewrite (),
@@ -1263,7 +1263,7 @@ void Closure::learn_congruence_unit_falsifies_lrat_chain (
     lrat_chain = std::move (proof_chain);
     break;
   default:
-    assert (false);
+    CADICAL_assert (false);
   }
   (void) unit;
 }
@@ -1272,8 +1272,8 @@ bool Closure::fully_propagate () {
   if (internal->unsat)
     return false;
   LOG ("fully propagating");
-  assert (internal->watching ());
-  assert (full_watching);
+  CADICAL_assert (internal->watching ());
+  CADICAL_assert (full_watching);
   bool no_conflict = internal->propagate ();
 
   if (no_conflict)
@@ -1298,10 +1298,10 @@ bool Closure::learn_congruence_unit (int lit, bool delay_propagation, bool force
   }
   LOG ("adding unit %s", LOGLIT (lit));
   ++internal->stats.congruence.units;
-  assert (!internal->lrat || !lrat_chain.empty ());
+  CADICAL_assert (!internal->lrat || !lrat_chain.empty ());
   if (val_lit < 0) {
     if (internal->lrat) {
-      assert (internal->lrat_chain.empty ());
+      CADICAL_assert (internal->lrat_chain.empty ());
       LRAT_ID id = internal->unit_id (-lit);
       internal->lrat_chain.push_back (id);
       for (auto id : lrat_chain)
@@ -1315,8 +1315,8 @@ bool Closure::learn_congruence_unit (int lit, bool delay_propagation, bool force
   LOG (lrat_chain, "assigning due to LRAT chain");
   swap (lrat_chain, internal->lrat_chain);
   internal->assign_unit (lit);
-  assert (lrat_chain.empty ());
-  assert (internal->lrat_chain.empty ());
+  CADICAL_assert (lrat_chain.empty ());
+  CADICAL_assert (internal->lrat_chain.empty ());
   if (delay_propagation)
     return false;
   else return fully_propagate ();
@@ -1329,9 +1329,9 @@ bool Closure::merge_literals_lrat (
     Gate *g, Gate *h, int lit, int other,
     const std::vector<LRAT_ID> &extra_reasons_lit,
     const std::vector<LRAT_ID> &extra_reasons_ulit) {
-  assert (!internal->unsat);
-  assert (g->lhs == lit);
-  assert (g == h || h->lhs == other);
+  CADICAL_assert (!internal->unsat);
+  CADICAL_assert (g->lhs == lit);
+  CADICAL_assert (g == h || h->lhs == other);
   (void) g, (void) h;
   LOG ("merging literals %s and %s", LOGLIT(lit), LOGLIT(other));
   // TODO: this should not update_eager but still calculate the LRAT chain
@@ -1392,10 +1392,10 @@ bool Closure::merge_literals_lrat (
     swap (smaller_chain, larger_chain);
   }
 
-  assert (find_representative (smaller_repr) == smaller_repr);
-  assert (find_representative (larger_repr) == larger_repr);
+  CADICAL_assert (find_representative (smaller_repr) == smaller_repr);
+  CADICAL_assert (find_representative (larger_repr) == larger_repr);
   if (lit == -other) {
-    assert (chain.empty ());
+    CADICAL_assert (chain.empty ());
     LOG ("merging clashing %d and %d", lit, other);
     if (internal->proof) {
       if (internal->lrat) {
@@ -1425,7 +1425,7 @@ bool Closure::merge_literals_lrat (
     lrat_chain = *smaller_chain;
     eq1_tmp = add_tmp_binary_clause (-larger, smaller);
   }
-  assert (!internal->lrat || eq1_tmp);
+  CADICAL_assert (!internal->lrat || eq1_tmp);
 
   Clause *eq2_tmp = nullptr;
   if (internal->lrat) {
@@ -1436,7 +1436,7 @@ bool Closure::merge_literals_lrat (
     // the order in the clause is important for the
     // repr_lit == -repr_other to get the right chain
   }
-  assert (!internal->lrat || eq2_tmp);
+  CADICAL_assert (!internal->lrat || eq2_tmp);
   if (internal->lrat)
     lrat_chain.clear ();
 
@@ -1484,7 +1484,7 @@ bool Closure::merge_literals_lrat (
     if (val_lit == -val_other) {
       LOG ("merging lits %d and %d assigned to inconsistent value", lit,
            other);
-      assert (lrat_chain.empty ());
+      CADICAL_assert (lrat_chain.empty ());
       if (internal->lrat) {
         Clause *c = val_lit ? eq2_tmp : eq1_tmp;
         int pos = val_lit ? other : lit;
@@ -1499,9 +1499,9 @@ bool Closure::merge_literals_lrat (
       return false;
     }
 
-    assert (!val_other);
+    CADICAL_assert (!val_other);
     LOG ("merging assigned %d and unassigned %d", lit, other);
-    assert (lrat_chain.empty ());
+    CADICAL_assert (lrat_chain.empty ());
     const int unit = (val_lit < 0) ? -other : other;
     if (internal->lrat) {
       Clause *c;
@@ -1527,7 +1527,7 @@ bool Closure::merge_literals_lrat (
 
   if (!val_lit && val_other) {
     LOG ("merging assigned %d and unassigned %d", lit, other);
-    assert (lrat_chain.empty ());
+    CADICAL_assert (lrat_chain.empty ());
     const int unit = (val_other < 0) ? -lit : lit;
     if (internal->lrat) {
       Clause *c;
@@ -1611,10 +1611,10 @@ bool Closure::merge_literals_lrat (
 
   if (internal->lrat) {
     representative_id (larger_repr) = eq1_repr->id;
-    assert (std::find (begin (*eq1_repr), end (*eq1_repr), -larger_repr) !=
+    CADICAL_assert (std::find (begin (*eq1_repr), end (*eq1_repr), -larger_repr) !=
             end (*eq1_repr));
     representative_id (-larger_repr) = eq2_repr->id;
-    assert (std::find (begin (*eq2_repr), end (*eq2_repr), larger_repr) !=
+    CADICAL_assert (std::find (begin (*eq2_repr), end (*eq2_repr), larger_repr) !=
             end (*eq2_repr));
   }
   LOG ("updating %d -> %d", larger_repr, smaller_repr);
@@ -1622,7 +1622,7 @@ bool Closure::merge_literals_lrat (
   representative (-larger_repr) = -smaller_repr;
   schedule_literal (larger_repr);
   ++internal->stats.congruence.congruent;
-  assert (lrat_chain.empty ());
+  CADICAL_assert (lrat_chain.empty ());
   return true;
 }
 
@@ -1632,7 +1632,7 @@ bool Closure::merge_literals_lrat (
 bool Closure::merge_literals_lrat (
     int lit, int other, const std::vector<LRAT_ID> &extra_reasons_lit,
     const std::vector<LRAT_ID> &extra_reasons_ulit) {
-  assert (!internal->unsat);
+  CADICAL_assert (!internal->unsat);
   LOG ("merging literals %s and %s", LOGLIT (lit), LOGLIT (other));
   // TODO: this should not update_eager but still calculate the LRAT chain
   // below!
@@ -1688,8 +1688,8 @@ bool Closure::merge_literals_lrat (
     swap (val_smaller, val_larger);
   }
 
-  assert (find_representative (smaller_repr) == smaller_repr);
-  assert (find_representative (larger_repr) == larger_repr);
+  CADICAL_assert (find_representative (smaller_repr) == smaller_repr);
+  CADICAL_assert (find_representative (larger_repr) == larger_repr);
   if (lit == -other) {
     LOG ("merging clashing %d and %d", lit, other);
     if (!val_smaller) {
@@ -1701,7 +1701,7 @@ bool Closure::merge_literals_lrat (
 
       push_lrat_unit (smaller);
       if (internal->lrat) {
-        assert (internal->lrat_chain.empty ());
+        CADICAL_assert (internal->lrat_chain.empty ());
         swap (internal->lrat_chain, lrat_chain);
         for (auto id : *larger_chain)
           internal->lrat_chain.push_back (id);
@@ -1747,9 +1747,9 @@ bool Closure::merge_literals_lrat (
   if (internal->lrat) {
     lrat_chain = *smaller_chain;
     eq1_tmp = add_tmp_binary_clause (-larger, smaller);
-    assert (eq1_tmp);
+    CADICAL_assert (eq1_tmp);
   }
-  assert (!internal->lrat || eq1_tmp);
+  CADICAL_assert (!internal->lrat || eq1_tmp);
 
   Clause *eq2_tmp = nullptr;
   if (internal->lrat) {
@@ -1758,10 +1758,10 @@ bool Closure::merge_literals_lrat (
     // the order in the clause is important for the
     // repr_lit == -repr_other to get the right chain
     eq2_tmp = add_tmp_binary_clause (larger, -smaller);
-    assert (eq2_tmp);
+    CADICAL_assert (eq2_tmp);
   }
 
-  assert (!internal->lrat || eq2_tmp);
+  CADICAL_assert (!internal->lrat || eq2_tmp);
   if (internal->lrat)
     lrat_chain.clear ();
 
@@ -1781,7 +1781,7 @@ bool Closure::merge_literals_lrat (
                                        rew2);
       swap (lrat_chain, internal->lrat_chain);
     }
-    assert (val_larger == internal->val (larger_repr));
+    CADICAL_assert (val_larger == internal->val (larger_repr));
     if (!val_larger) {
       // not assigned, first assign one
       internal->assign_unit (-larger_repr);
@@ -1819,7 +1819,7 @@ bool Closure::merge_literals_lrat (
     if (val_lit == -val_other) {
       LOG ("merging lits %d and %d assigned to inconsistent value", lit,
            other);
-      assert (lrat_chain.empty ());
+      CADICAL_assert (lrat_chain.empty ());
       if (internal->lrat) {
         Clause *c = val_lit ? eq2_tmp : eq1_tmp;
         int pos = val_lit ? other : lit;
@@ -1834,9 +1834,9 @@ bool Closure::merge_literals_lrat (
       return false;
     }
 
-    assert (!val_other);
+    CADICAL_assert (!val_other);
     LOG ("merging assigned %d and unassigned %d", lit, other);
-    assert (lrat_chain.empty ());
+    CADICAL_assert (lrat_chain.empty ());
     const int unit = (val_lit < 0) ? -other : other;
     if (internal->lrat) {
       Clause *c;
@@ -1862,12 +1862,12 @@ bool Closure::merge_literals_lrat (
 
   if (!val_lit && val_other) {
     LOG ("merging assigned %d and unassigned %d", lit, other);
-    assert (lrat_chain.empty ());
+    CADICAL_assert (lrat_chain.empty ());
     const int unit = (val_other < 0) ? -lit : lit;
     if (internal->lrat) {
       Clause *c;
       if (lit == smaller) {
-        assert (other == larger);
+        CADICAL_assert (other == larger);
         if (val_other > 0)
           c = eq1_tmp;
         else
@@ -1945,12 +1945,12 @@ bool Closure::merge_literals_lrat (
 
   if (internal->lrat) {
     representative_id (larger_repr) = eq1_repr->id;
-    assert (std::find (begin (*eq1_repr), end (*eq1_repr), -larger_repr) !=
+    CADICAL_assert (std::find (begin (*eq1_repr), end (*eq1_repr), -larger_repr) !=
             end (*eq1_repr));
     representative_id (-larger_repr) = eq2_repr->id;
     check_not_tmp_binary_clause (eq1_repr);
     check_not_tmp_binary_clause (eq2_repr);
-    assert (std::find (begin (*eq2_repr), end (*eq2_repr), larger_repr) !=
+    CADICAL_assert (std::find (begin (*eq2_repr), end (*eq2_repr), larger_repr) !=
             end (*eq2_repr));
   }
   LOG ("updating %d -> %d", larger_repr, smaller_repr);
@@ -1958,7 +1958,7 @@ bool Closure::merge_literals_lrat (
   representative (-larger_repr) = -smaller_repr;
   schedule_literal (larger_repr);
   ++internal->stats.congruence.congruent;
-  assert (lrat_chain.empty ());
+  CADICAL_assert (lrat_chain.empty ());
   return true;
 }
 
@@ -1976,9 +1976,9 @@ inline void Closure::promote_clause (Clause *c) {
   internal->stats.current.irredundant++;
   internal->stats.added.irredundant++;
   internal->stats.irrlits += c->size;
-  assert (internal->stats.current.redundant > 0);
+  CADICAL_assert (internal->stats.current.redundant > 0);
   internal->stats.current.redundant--;
-  assert (internal->stats.added.redundant > 0);
+  CADICAL_assert (internal->stats.added.redundant > 0);
   internal->stats.added.redundant--;
   // ... and keep 'stats.added.total'.
 }
@@ -1989,18 +1989,18 @@ inline void Closure::promote_clause (Clause *c) {
 // vice-versa
 bool Closure::merge_literals_equivalence (int lit, int other, Clause *c1,
                                           Clause *c2) {
-  assert (!internal->unsat);
+  CADICAL_assert (!internal->unsat);
   LRAT_ID id1 = c1 ? c1->id : 0;
   LRAT_ID id2 = c2 ? c2->id : 0;
   if (internal->lrat) {
-    assert (c1);
-    assert (c2);
-    assert (c1->size == 2);
-    assert (c2->size == 2);
-    assert (c1->literals[0] == lit || c1->literals[1] == lit);
-    assert (c2->literals[0] == other || c2->literals[1] == other);
-    assert (c1->literals[0] == -other || c1->literals[1] == -other);
-    assert (c2->literals[0] == -lit || c2->literals[1] == -lit);
+    CADICAL_assert (c1);
+    CADICAL_assert (c2);
+    CADICAL_assert (c1->size == 2);
+    CADICAL_assert (c2->size == 2);
+    CADICAL_assert (c1->literals[0] == lit || c1->literals[1] == lit);
+    CADICAL_assert (c2->literals[0] == other || c2->literals[1] == other);
+    CADICAL_assert (c1->literals[0] == -other || c1->literals[1] == -other);
+    CADICAL_assert (c2->literals[0] == -lit || c2->literals[1] == -lit);
     check_not_tmp_binary_clause (c1);
     check_not_tmp_binary_clause (c2);
   }
@@ -2033,7 +2033,7 @@ bool Closure::merge_literals_equivalence (int lit, int other, Clause *c1,
       return false;
     }
 
-    assert (!val_other);
+    CADICAL_assert (!val_other);
     LOG ("merging assigned %d and unassigned %d", lit, other);
     const int unit = (val_lit < 0) ? -other : other;
     if (internal->lrat)
@@ -2070,8 +2070,8 @@ bool Closure::merge_literals_equivalence (int lit, int other, Clause *c1,
     swap (smaller, larger);
   }
 
-  assert (find_representative (smaller_repr) == smaller_repr);
-  assert (find_representative (larger_repr) == larger_repr);
+  CADICAL_assert (find_representative (smaller_repr) == smaller_repr);
+  CADICAL_assert (find_representative (larger_repr) == larger_repr);
 
   if (repr_lit == -repr_other) {
     LOG ("merging clashing %d [=%d] and %d[=%d], smaller: %d", lit,
@@ -2093,7 +2093,7 @@ bool Closure::merge_literals_equivalence (int lit, int other, Clause *c1,
     if (internal->lrat) {
       lrat_chain.clear ();
       LRAT_ID id = internal->unit_id (repr_lit);
-      assert (id);
+      CADICAL_assert (id);
       lrat_chain.push_back (id);
       if (lit != repr_lit) {
         const LRAT_ID repr_id2 = find_representative_lrat (-lit);
@@ -2140,20 +2140,20 @@ bool Closure::merge_literals_equivalence (int lit, int other, Clause *c1,
     if (internal->lrat) {
       lrat_chain.clear ();
       if (smaller_repr == repr_lit) {
-        assert (larger_repr == repr_other);
+        CADICAL_assert (larger_repr == repr_other);
         representative_id (-larger_repr) = eq2->id;
-        assert (std::find (eq2->begin (), eq2->end (), larger_repr) !=
+        CADICAL_assert (std::find (eq2->begin (), eq2->end (), larger_repr) !=
                 eq2->end ());
         representative_id (larger_repr) = eq1->id;
-        assert (std::find (eq1->begin (), eq1->end (), -larger_repr) !=
+        CADICAL_assert (std::find (eq1->begin (), eq1->end (), -larger_repr) !=
                 eq1->end ());
       } else {
-        assert (larger_repr == repr_lit);
+        CADICAL_assert (larger_repr == repr_lit);
         representative_id (-larger_repr) = eq1->id;
-        assert (std::find (eq1->begin (), eq1->end (), larger_repr) !=
+        CADICAL_assert (std::find (eq1->begin (), eq1->end (), larger_repr) !=
                 eq1->end ());
         representative_id (larger_repr) = eq2->id;
-        assert (std::find (eq2->begin (), eq2->end (), -larger_repr) !=
+        CADICAL_assert (std::find (eq2->begin (), eq2->end (), -larger_repr) !=
                 eq2->end ());
       }
     }
@@ -2187,13 +2187,13 @@ GOccs &Closure::goccs (int lit) { return gtab[internal->vlit (lit)]; }
 void Closure::connect_goccs (Gate *g, int lit) {
   LOG (g, "connect %d to", lit);
   // incorrect for ITE
-  // assert (std::find(begin (goccs (lit)), end (goccs (lit)), g) ==
+  // CADICAL_assert (std::find(begin (goccs (lit)), end (goccs (lit)), g) ==
   // std::end (goccs (lit)));
   goccs (lit).push_back (g);
 }
 
 uint64_t &Closure::largecount (int lit) {
-  assert (internal->vlit (lit) < glargecounts.size ());
+  CADICAL_assert (internal->vlit (lit) < glargecounts.size ());
   return glargecounts[internal->vlit (lit)];
 }
 
@@ -2216,7 +2216,7 @@ void Closure::init_closure () {
     mu2_ids.resize (2 * internal->max_var + 3);
     mu4_ids.resize (2 * internal->max_var + 3);
   }
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
   for (auto &it : mu1_ids)
     it.current_lit = 0, it.clause = nullptr;
   for (auto &it : mu2_ids)
@@ -2253,7 +2253,7 @@ void Closure::init_and_gate_extraction () {
       continue;
     if (c->size > 2)
       continue;
-    assert (c->size == 2);
+    CADICAL_assert (c->size == 2);
     const int lit = c->literals[0];
     const int other = c->literals[1];
     internal->noccs (lit)++;
@@ -2264,8 +2264,8 @@ void Closure::init_and_gate_extraction () {
 
 /*------------------------------------------------------------------------*/
 void Closure::check_and_gate_implied (Gate *g) {
-  assert (internal->clause.empty ());
-  assert (g->tag == Gate_Type::And_Gate);
+  CADICAL_assert (internal->clause.empty ());
+  CADICAL_assert (g->tag == Gate_Type::And_Gate);
   if (internal->lrat)
     return;
   LOG (g, "checking implied");
@@ -2280,14 +2280,14 @@ void Closure::check_and_gate_implied (Gate *g) {
 
 void Closure::delete_proof_chain () {
   if (!internal->proof) {
-    assert (chain.empty ());
+    CADICAL_assert (chain.empty ());
     return;
   }
   if (chain.empty ())
     return;
   LOG ("starting deletion of proof chain");
   auto &clause = internal->clause;
-  assert (clause.empty ());
+  CADICAL_assert (clause.empty ());
   uint32_t id1 = UINT32_MAX, id2 = UINT32_MAX;
   LRAT_ID id = 0;
 
@@ -2308,13 +2308,13 @@ void Closure::delete_proof_chain () {
       LOG ("found %d as literal in chain", lit);
       clause.push_back (lit);
     } else {
-      assert (id);
+      CADICAL_assert (id);
       internal->proof->delete_clause (id, false, clause);
       clause.clear ();
       id = 0, id1 = UINT32_MAX, id2 = UINT32_MAX;
     }
   }
-  assert (clause.empty ());
+  CADICAL_assert (clause.empty ());
   chain.clear ();
   LOG ("finished deletion of proof chain");
 }
@@ -2322,7 +2322,7 @@ void Closure::delete_proof_chain () {
 /*------------------------------------------------------------------------*/
 // Simplification
 bool Closure::skip_and_gate (Gate *g) {
-  assert (g->tag == Gate_Type::And_Gate);
+  CADICAL_assert (g->tag == Gate_Type::And_Gate);
   if (g->garbage)
     return true;
   const int lhs = g->lhs;
@@ -2331,15 +2331,15 @@ bool Closure::skip_and_gate (Gate *g) {
     return true;
   }
 
-  assert (g->arity () > 1);
+  CADICAL_assert (g->arity () > 1);
   return false;
 }
 
 bool Closure::skip_xor_gate (Gate *g) {
-  assert (g->tag == Gate_Type::XOr_Gate);
+  CADICAL_assert (g->tag == Gate_Type::XOr_Gate);
   if (g->garbage)
     return true;
-  assert (g->arity () > 1);
+  CADICAL_assert (g->arity () > 1);
   return false;
 }
 
@@ -2371,17 +2371,17 @@ void Closure::update_and_gate_unit_build_lrat_chain (
       // with a rewriting 4 -> 1 (unchanged clause)
       // and later 1 -> 3 (unchanged clause)
       // but you do not know anymore from the gate that it is degenerated
-      assert (g->pos_lhs_ids.size () == 1);
+      CADICAL_assert (g->pos_lhs_ids.size () == 1);
       push_id_and_rewriting_lrat_unit (g->pos_lhs_ids[0].clause, Rewrite (),
                                        extra_reasons_ulit, true, Rewrite ());
       return;
     }
-    assert (g->lhs == g->rhs[0] || (g->lhs == src && g->rhs[0] == dst));
-    assert (g->pos_lhs_ids.size () <= 1); // either degenerated or empty A = A
+    CADICAL_assert (g->lhs == g->rhs[0] || (g->lhs == src && g->rhs[0] == dst));
+    CADICAL_assert (g->pos_lhs_ids.size () <= 1); // either degenerated or empty A = A
     return;
   }
-  assert (g->neg_lhs_ids.size () == 1);
-  assert (!g->pos_lhs_ids.empty ());
+  CADICAL_assert (g->neg_lhs_ids.size () == 1);
+  CADICAL_assert (!g->pos_lhs_ids.empty ());
 
   const int repr_lit = find_representative (g->lhs);
   const int repr_other = find_representative (g->rhs[0]);
@@ -2397,7 +2397,7 @@ void Closure::update_and_gate_unit_build_lrat_chain (
 
   lrat_chain.clear ();
 
-  assert (!g->pos_lhs_ids.empty ());
+  CADICAL_assert (!g->pos_lhs_ids.empty ());
   for (auto litId : g->pos_lhs_ids)
     push_id_and_rewriting_lrat_unit (
         litId.clause, Rewrite (src, dst, id1, id2), extra_reasons_lit, true,
@@ -2408,7 +2408,7 @@ void Closure::update_and_gate_unit_build_lrat_chain (
 void Closure::update_and_gate_build_lrat_chain (
     Gate *g, Gate *h, std::vector<LRAT_ID> &extra_reasons_lit,
     std::vector<LRAT_ID> &extra_reasons_ulit, bool remove_units) {
-  assert (g != h);
+  CADICAL_assert (g != h);
   LOG (g, "merging");
   LOG (h, "with");
   // If the LHS are identical, do not even attempt to build the LRAT chain
@@ -2425,41 +2425,41 @@ void Closure::update_and_gate_build_lrat_chain (
     // and all gate clauses (except one binary) are actually tautologies
     for (auto &litId : g->pos_lhs_ids) {
       if (litId.current_lit == h->lhs) {
-        assert (extra_reasons_lit.empty ());
+        CADICAL_assert (extra_reasons_lit.empty ());
         LOG (litId.clause, "binary clause to push into the reason");
         litId.clause = produce_rewritten_clause_lrat (litId.clause, g->lhs,
                                                       remove_units);
-        assert (litId.clause);
+        CADICAL_assert (litId.clause);
         extra_reasons_lit.push_back (litId.clause->id);
       }
     }
-    assert (!extra_reasons_lit.empty ());
-    assert (extra_reasons_lit.size () == 1);
+    CADICAL_assert (!extra_reasons_lit.empty ());
+    CADICAL_assert (extra_reasons_lit.size () == 1);
 
     for (auto &litId : h->pos_lhs_ids) {
       if (litId.current_lit == g->lhs) {
-        assert (extra_reasons_ulit.empty ());
-	assert (litId.clause);
+        CADICAL_assert (extra_reasons_ulit.empty ());
+	CADICAL_assert (litId.clause);
         LOG (litId.clause, "binary clause to push into the reason");
         litId.clause = produce_rewritten_clause_lrat (litId.clause, h->lhs,
                                                       remove_units);
-        assert (litId.clause);
+        CADICAL_assert (litId.clause);
         extra_reasons_ulit.push_back (litId.clause->id);
       }
     }
-    assert (!extra_reasons_ulit.empty ());
-    assert (extra_reasons_ulit.size () == 1);
+    CADICAL_assert (!extra_reasons_ulit.empty ());
+    CADICAL_assert (extra_reasons_ulit.size () == 1);
     return;
   }
   if (g_tautology || h_tautology) {
     // special case: actually we have an equivalence due to binary clauses
     // and some of the clauses from the gate are actually tautologies
-    assert (g_tautology != h_tautology);
+    CADICAL_assert (g_tautology != h_tautology);
     Gate *tauto = (g_tautology ? g : h);
     Gate *other = (g_tautology ? h : g);
     LOG (tauto, "one gate is a tautology");
-    assert (tauto != other);
-    assert (tauto == h || tauto == g);
+    CADICAL_assert (tauto != other);
+    CADICAL_assert (tauto == h || tauto == g);
 
     auto &extra_reasons_tauto =
         (!g_tautology ? extra_reasons_lit : extra_reasons_ulit);
@@ -2469,32 +2469,32 @@ void Closure::update_and_gate_build_lrat_chain (
     // one direction: the binary clause already exists
     for (auto &litId : other->pos_lhs_ids) {
       if (litId.current_lit == tauto->lhs) {
-	assert (litId.clause);
-        assert (extra_reasons_tauto.empty ());
+	CADICAL_assert (litId.clause);
+        CADICAL_assert (extra_reasons_tauto.empty ());
         LOG (litId.clause, "binary clause to push into the reason");
         litId.clause = produce_rewritten_clause_lrat (
             litId.clause, other->lhs, remove_units);
-        assert (litId.clause);
+        CADICAL_assert (litId.clause);
         extra_reasons_tauto.push_back (litId.clause->id);
       }
     }
-    assert (!extra_reasons_tauto.empty ());
+    CADICAL_assert (!extra_reasons_tauto.empty ());
 
     // other direction, we have to resolve
     LOG (tauto, "now the other direction");
     for (auto &litId : tauto->pos_lhs_ids) {
-      assert (litId.clause);
+      CADICAL_assert (litId.clause);
       LOG (litId.clause,
            "binary clause from %d to push into the reason [avoiding %d]",
            litId.current_lit, tauto->lhs);
       if (litId.current_lit != tauto->lhs) {
         LOG (litId.clause, "binary clause to push into the reason");
-	assert (litId.clause);
+	CADICAL_assert (litId.clause);
         litId.clause = produce_rewritten_clause_lrat (
             litId.clause, tauto->lhs, remove_units);
         if (!litId.clause) // degenerated but does not know yet
 	  continue;
-	assert (litId.clause);
+	CADICAL_assert (litId.clause);
         extra_reasons_other.push_back (litId.clause->id);
       }
       tauto->pos_lhs_ids.erase (std::remove_if (begin (tauto->pos_lhs_ids),
@@ -2504,12 +2504,12 @@ void Closure::update_and_gate_build_lrat_chain (
                                             }),
                             end (tauto->pos_lhs_ids));
     }
-    assert (!extra_reasons_other.empty ());
+    CADICAL_assert (!extra_reasons_other.empty ());
     produce_rewritten_clause_lrat_and_clean (other->neg_lhs_ids, other->lhs,
                                              remove_units);
     push_id_on_chain (extra_reasons_other, other->neg_lhs_ids);
-    assert (!extra_reasons_tauto.empty ());
-    assert (!extra_reasons_other.empty ());
+    CADICAL_assert (!extra_reasons_tauto.empty ());
+    CADICAL_assert (!extra_reasons_other.empty ());
     return;
   }
   // default: resolve all clauses
@@ -2517,16 +2517,16 @@ void Closure::update_and_gate_build_lrat_chain (
   // TODO: do we really need dest as second exclusion?
   produce_rewritten_clause_lrat_and_clean (h->pos_lhs_ids, -h->lhs,
                                            remove_units);
-  assert (internal->clause.empty ());
+  CADICAL_assert (internal->clause.empty ());
   produce_rewritten_clause_lrat_and_clean (h->neg_lhs_ids, -h->lhs,
                                            remove_units);
-  assert (internal->clause.empty ());
+  CADICAL_assert (internal->clause.empty ());
   produce_rewritten_clause_lrat_and_clean (g->pos_lhs_ids, -g->lhs,
                                            remove_units);
-  assert (internal->clause.empty ());
+  CADICAL_assert (internal->clause.empty ());
   produce_rewritten_clause_lrat_and_clean (g->neg_lhs_ids, -g->lhs,
                                            remove_units);
-  assert (internal->clause.empty ());
+  CADICAL_assert (internal->clause.empty ());
 
   push_id_on_chain (extra_reasons_ulit, h->pos_lhs_ids);
   push_id_on_chain (extra_reasons_ulit, g->neg_lhs_ids[0].clause);
@@ -2538,15 +2538,15 @@ void Closure::update_and_gate_build_lrat_chain (
 
   lrat_chain.clear ();
   LOG (extra_reasons_lit, "lrat chain for positive side");
-  assert (!extra_reasons_lit.empty ());
-  assert (!extra_reasons_ulit.empty ());
+  CADICAL_assert (!extra_reasons_lit.empty ());
+  CADICAL_assert (!extra_reasons_ulit.empty ());
 }
 
 void Closure::update_and_gate (Gate *g, GatesTable::iterator it, int src,
                                int dst, LRAT_ID id1, LRAT_ID id2,
                                int falsifies, int clashing) {
   LOG (g, "update and gate of arity %ld", g->arity ());
-  assert (lrat_chain.empty ());
+  CADICAL_assert (lrat_chain.empty ());
   bool garbage = true;
   if (falsifies || clashing) {
     if (internal->lrat)
@@ -2589,12 +2589,12 @@ void Closure::update_and_gate (Gate *g, GatesTable::iterator it, int src,
       }
     }
   } else {
-    assert (g->arity () > 1);
+    CADICAL_assert (g->arity () > 1);
     sort_literals_by_var (g->rhs);
     Gate *h = find_and_lits (g->rhs, g);
-    assert (g != h);
+    CADICAL_assert (g != h);
     if (h) {
-      assert (garbage);
+      CADICAL_assert (garbage);
       std::vector<LRAT_ID> extra_reasons_lit2;
       std::vector<LRAT_ID> extra_reasons_ulit2;
       if (internal->lrat)
@@ -2610,7 +2610,7 @@ void Closure::update_and_gate (Gate *g, GatesTable::iterator it, int src,
       }
       g->hash = hash_lits (nonces, g->rhs);
       LOG (g, "inserting gate into table");
-      assert (table.count (g) == 0);
+      CADICAL_assert (table.count (g) == 0);
       table.insert (g);
       g->indexed = true;
       garbage = false;
@@ -2624,23 +2624,23 @@ void Closure::update_and_gate (Gate *g, GatesTable::iterator it, int src,
 }
 
 void Closure::update_xor_gate (Gate *g, GatesTable::iterator git) {
-  assert (g->tag == Gate_Type::XOr_Gate);
-  assert (!internal->unsat && chain.empty ());
+  CADICAL_assert (g->tag == Gate_Type::XOr_Gate);
+  CADICAL_assert (!internal->unsat && chain.empty ());
   LOG (g, "updating");
   bool garbage = true;
   // TODO Florian LRAT for learn_congruence_unit
-  assert (g->arity () == 0 || internal->clause.empty ());
-  assert (clause.empty ());
+  CADICAL_assert (g->arity () == 0 || internal->clause.empty ());
+  CADICAL_assert (clause.empty ());
   if (g->arity () == 0) {
     if (internal->clause.size ()) {
-      assert (!internal->proof || (internal->clause.size () == 1 &&
+      CADICAL_assert (!internal->proof || (internal->clause.size () == 1 &&
                                    internal->clause.back () == -g->lhs));
-      assert (!internal->lrat || lrat_chain.size ());
+      CADICAL_assert (!internal->lrat || lrat_chain.size ());
       internal->clause.clear ();
 
     } else if (internal->lrat) {
       simplify_unit_xor_lrat_clauses (g->pos_lhs_ids, g->lhs);
-      assert (clause.size () && clause.back () == -g->lhs);
+      CADICAL_assert (clause.size () && clause.back () == -g->lhs);
       clause.clear ();
     }
 
@@ -2653,14 +2653,14 @@ void Closure::update_xor_gate (Gate *g, GatesTable::iterator git) {
     } else
       learn_congruence_unit (-g->lhs);
 
-    assert (clause.empty ());
+    CADICAL_assert (clause.empty ());
   } else if (g->arity () == 1) {
     std::vector<LRAT_ID> reasons_implication, reasons_back;
     if (internal->lrat) {
       vector<LitClausePair> first;
       simplify_and_sort_xor_lrat_clauses (g->pos_lhs_ids, first, g->lhs);
       g->pos_lhs_ids = first;
-      assert (g->pos_lhs_ids.size () == 2);
+      CADICAL_assert (g->pos_lhs_ids.size () == 2);
       reasons_implication.push_back (g->pos_lhs_ids[0].clause->id);
       reasons_back.push_back (g->pos_lhs_ids[1].clause->id);
     }
@@ -2683,11 +2683,11 @@ void Closure::update_xor_gate (Gate *g, GatesTable::iterator git) {
       ++internal->stats.congruence.unaries;
       ++internal->stats.congruence.unary_and;
     }
-    assert (clause.empty ());
+    CADICAL_assert (clause.empty ());
   } else {
     Gate *h = find_xor_gate (g);
     if (h) {
-      assert (garbage);
+      CADICAL_assert (garbage);
       std::vector<LRAT_ID> reasons_implication, reasons_back;
       add_xor_matching_proof_chain (g, g->lhs, h->pos_lhs_ids, h->lhs,
                                     reasons_implication, reasons_back);
@@ -2703,21 +2703,21 @@ void Closure::update_xor_gate (Gate *g, GatesTable::iterator git) {
       LOG (g, "reinserting in table");
       table.insert (g);
       g->indexed = true;
-      assert (table.find (g) != end (table));
+      CADICAL_assert (table.find (g) != end (table));
       garbage = false;
     }
-    assert (clause.empty ());
+    CADICAL_assert (clause.empty ());
   }
   if (garbage && !internal->unsat)
     mark_garbage (g);
-  assert (clause.empty ());
+  CADICAL_assert (clause.empty ());
 }
 
 void Closure::simplify_and_gate (Gate *g) {
   if (skip_and_gate (g))
     return;
   GatesTable::iterator git = (g->indexed ? table.find (g) : end (table));
-  assert (!g->indexed || git != end (table));
+  CADICAL_assert (!g->indexed || git != end (table));
   LOG (g, "simplifying");
   int falsifies = 0;
   std::vector<int>::iterator it = begin (g->rhs);
@@ -2756,9 +2756,9 @@ void Closure::simplify_and_gate (Gate *g) {
     g->pos_lhs_ids.resize (i);
   }
 
-  assert (it <= end (g->rhs)); // can be equal when ITE are converted to
+  CADICAL_assert (it <= end (g->rhs)); // can be equal when ITE are converted to
                                // ands leading to
-  assert (it >= begin (g->rhs));
+  CADICAL_assert (it >= begin (g->rhs));
   LOG (g, "shrunken");
 
   g->shrunken = true;
@@ -2774,7 +2774,7 @@ void Closure::simplify_and_gate (Gate *g) {
   ++internal->stats.congruence.simplified;
 
   if (ulhs_in_rhs) { // missing in Kissat, TODO: port back
-    assert (gate_contains (g, -g->lhs));
+    CADICAL_assert (gate_contains (g, -g->lhs));
     if (internal->lrat) {
       for (auto litId : g->pos_lhs_ids) {
         if (litId.current_lit == g->lhs) {
@@ -2799,18 +2799,18 @@ bool Closure::simplify_gate (Gate *g) {
     simplify_ite_gate (g);
     break;
   default:
-    assert (false);
+    CADICAL_assert (false);
     break;
   }
-  assert (lrat_chain.empty ());
+  CADICAL_assert (lrat_chain.empty ());
   return !internal->unsat;
 }
 
 bool Closure::simplify_gates (int lit) {
   const auto &occs = goccs (lit);
   for (Gate *g : occs) {
-    assert (lrat_chain.empty ());
-    assert (clause.empty ());
+    CADICAL_assert (lrat_chain.empty ());
+    CADICAL_assert (clause.empty ());
     if (!simplify_gate (g))
       return false;
   }
@@ -2820,7 +2820,7 @@ bool Closure::simplify_gates (int lit) {
 // AND gates
 
 Gate *Closure::find_and_lits (const vector<int> &rhs, Gate *except) {
-  assert (is_sorted (begin (rhs), end (rhs),
+  CADICAL_assert (is_sorted (begin (rhs), end (rhs),
                      sort_literals_by_var_smaller (internal)));
   return find_gate_lits (rhs, Gate_Type::And_Gate, except);
 }
@@ -2845,7 +2845,7 @@ Gate *Closure::find_gate_lits (const vector<int> &rhs, Gate_Type typ,
     LOG ((*it), "checking gate in the table");
     if (*it == except)
       continue;
-    assert ((*it)->lhs != g->lhs);
+    CADICAL_assert ((*it)->lhs != g->lhs);
     if ((*it)->tag != g->tag)
       continue;
     if ((*it)->rhs != g->rhs)
@@ -2874,12 +2874,12 @@ Gate *Closure::new_and_gate (Clause *base_clause, int lhs) {
 
   for (auto lit : lits) {
     if (lhs != lit) {
-      assert (lhs != -lit);
+      CADICAL_assert (lhs != -lit);
       rhs.push_back (-lit);
     }
   }
 
-  assert (rhs.size () + 1 == lits.size ());
+  CADICAL_assert (rhs.size () + 1 == lits.size ());
   sort_literals_by_var (this->rhs);
 
   Gate *h = find_and_lits (this->rhs);
@@ -2920,7 +2920,7 @@ Gate *Closure::new_and_gate (Clause *base_clause, int lhs) {
     return nullptr;
   } else {
     g->rhs = {rhs};
-    assert (!internal->lrat ||
+    CADICAL_assert (!internal->lrat ||
             g->pos_lhs_ids.size () ==
                 g->arity ()); // otherwise we need intermediate clauses
     g->garbage = false;
@@ -2942,7 +2942,7 @@ Gate *Closure::new_and_gate (Clause *base_clause, int lhs) {
 }
 
 Gate *Closure::find_first_and_gate (Clause *base_clause, int lhs) {
-  assert (internal->analyzed.empty ());
+  CADICAL_assert (internal->analyzed.empty ());
   const int not_lhs = -lhs;
   LOG ("trying to find AND gate with first LHS %d", (lhs));
   LOG ("negated LHS %d occurs in %zd binary clauses", (not_lhs),
@@ -2953,15 +2953,15 @@ Gate *Closure::find_first_and_gate (Clause *base_clause, int lhs) {
 
   for (auto w : internal->watches (not_lhs)) {
     LOG (w.clause, "checking clause for candidates");
-    assert (w.binary ());
-    assert (w.clause->size == 2);
-    assert (w.clause->literals[0] == -lhs || w.clause->literals[1] == -lhs);
+    CADICAL_assert (w.binary ());
+    CADICAL_assert (w.clause->size == 2);
+    CADICAL_assert (w.clause->literals[0] == -lhs || w.clause->literals[1] == -lhs);
     const int other = w.blit;
     signed char &mark = marked (other);
     if (mark) {
       LOG ("marking %d mu2", other);
       ++matched;
-      assert (~(mark & 2));
+      CADICAL_assert (~(mark & 2));
       mark |= 2;
       internal->analyzed.push_back (other);
       set_mu2_reason (other, w.clause);
@@ -2996,10 +2996,10 @@ Clause *Closure::learn_binary_tmp_or_full_clause (int a, int b) {
 }
 
 Clause *Closure::maybe_add_binary_clause (int a, int b) {
-  assert (internal->clause.empty ());
-  assert (internal->lrat_chain.empty ());
-  assert (!internal->lrat);
-  assert (lrat_chain.empty ());
+  CADICAL_assert (internal->clause.empty ());
+  CADICAL_assert (internal->lrat_chain.empty ());
+  CADICAL_assert (!internal->lrat);
+  CADICAL_assert (lrat_chain.empty ());
   LOG ("learning binary clause %d %d", a, b);
   if (internal->unsat)
     return nullptr;
@@ -3024,18 +3024,18 @@ Clause *Closure::maybe_add_binary_clause (int a, int b) {
       learn_congruence_unit (unit);
       return nullptr;
     }
-    assert (!a_value), assert (!b_value);
+    CADICAL_assert (!a_value), CADICAL_assert (!b_value);
   }
   return add_binary_clause (a, b);
 }
 
 Clause *Closure::add_binary_clause (int a, int b) {
-  assert (internal->clause.empty ());
+  CADICAL_assert (internal->clause.empty ());
   internal->clause.push_back (a);
   internal->clause.push_back (b);
   if (internal->lrat) {
-    assert (lrat_chain.size () >= 1);
-    assert (internal->lrat_chain.empty ());
+    CADICAL_assert (lrat_chain.size () >= 1);
+    CADICAL_assert (internal->lrat_chain.empty ());
     swap (internal->lrat_chain, lrat_chain);
   }
   LOG (internal->lrat_chain, "chain");
@@ -3051,19 +3051,19 @@ Clause *Closure::add_binary_clause (int a, int b) {
   if (internal->lrat) {
     internal->lrat_chain.clear ();
   }
-  assert (internal->clause.empty ());
-  assert (internal->lrat_chain.empty ());
+  CADICAL_assert (internal->clause.empty ());
+  CADICAL_assert (internal->lrat_chain.empty ());
   return res;
 }
 
 void Closure::check_not_tmp_binary_clause (Clause *c) {
-#ifndef NDEBUG
-  assert (internal->lrat);
-  assert (internal->lrat_chain.empty ());
-  assert (c->size == 2);
+#ifndef CADICAL_NDEBUG
+  CADICAL_assert (internal->lrat);
+  CADICAL_assert (internal->lrat_chain.empty ());
+  CADICAL_assert (c->size == 2);
   if (internal->val (c->literals[0]) || internal->val (c->literals[1]))
     return;
-  assert (std::find (begin (extra_clauses), end (extra_clauses), c) ==
+  CADICAL_assert (std::find (begin (extra_clauses), end (extra_clauses), c) ==
           end (extra_clauses));
 #else
   (void) c;
@@ -3071,12 +3071,12 @@ void Closure::check_not_tmp_binary_clause (Clause *c) {
 };
 
 Clause *Closure::maybe_promote_tmp_binary_clause (Clause *c) {
-  assert (internal->lrat);
-  assert (internal->lrat_chain.empty ());
-  assert (c->size == 2);
+  CADICAL_assert (internal->lrat);
+  CADICAL_assert (internal->lrat_chain.empty ());
+  CADICAL_assert (c->size == 2);
   LOG (c, "promoting tmp");
-#ifndef NDEBUG
-  assert (std::find (begin (extra_clauses), end (extra_clauses), c) !=
+#ifndef CADICAL_NDEBUG
+  CADICAL_assert (std::find (begin (extra_clauses), end (extra_clauses), c) !=
           end (extra_clauses));
 #endif
   if (internal->val (c->literals[0]) || internal->val (c->literals[1]))
@@ -3088,20 +3088,20 @@ Clause *Closure::maybe_promote_tmp_binary_clause (Clause *c) {
 };
 
 Clause *Closure::add_tmp_binary_clause (int a, int b) {
-  assert (internal->clause.empty ());
-  assert (internal->lrat_chain.empty ());
-  assert (internal->lrat);
+  CADICAL_assert (internal->clause.empty ());
+  CADICAL_assert (internal->lrat_chain.empty ());
+  CADICAL_assert (internal->lrat);
   LOG ("learning tmp binary clause %d %d", a, b);
   if (internal->unsat)
     return nullptr;
   if (a == -b)
     return nullptr;
-  assert (internal->clause.empty ());
+  CADICAL_assert (internal->clause.empty ());
   internal->clause.push_back (a);
   internal->clause.push_back (b);
   if (internal->lrat) {
-    assert (lrat_chain.size () >= 1);
-    assert (internal->lrat_chain.empty ());
+    CADICAL_assert (lrat_chain.size () >= 1);
+    CADICAL_assert (internal->lrat_chain.empty ());
   }
   LOG (lrat_chain, "chain");
   Clause *res = new_tmp_clause (internal->clause);
@@ -3109,8 +3109,8 @@ Clause *Closure::add_tmp_binary_clause (int a, int b) {
   if (internal->lrat) {
     lrat_chain.clear ();
   }
-  assert (internal->clause.empty ());
-  assert (internal->lrat_chain.empty ());
+  CADICAL_assert (internal->clause.empty ());
+  CADICAL_assert (internal->lrat_chain.empty ());
   LOG (res, "promoted to");
   return res;
 }
@@ -3129,15 +3129,15 @@ Gate *Closure::find_remaining_and_gate (Clause *base_clause, int lhs) {
 
   const size_t arity = lits.size () - 1;
   size_t matched = 0;
-  assert (1 < arity);
+  CADICAL_assert (1 < arity);
 
   for (auto w : internal->watches (not_lhs)) {
-    assert (w.binary ());
+    CADICAL_assert (w.binary ());
 #ifdef LOGGING
     Clause *c = w.clause;
     LOG (c, "checking");
-    assert (c->size == 2);
-    assert (c->literals[0] == not_lhs || c->literals[1] == not_lhs);
+    CADICAL_assert (c->size == 2);
+    CADICAL_assert (c->literals[0] == not_lhs || c->literals[1] == not_lhs);
 #endif
     const int other = w.blit;
     signed char &mark = marked (other);
@@ -3150,7 +3150,7 @@ Gate *Closure::find_remaining_and_gate (Clause *base_clause, int lhs) {
       continue;
     }
     LOG ("marking %d mu4", other);
-    assert (!(mark & 4));
+    CADICAL_assert (!(mark & 4));
     mark |= 4;
     lrat_chain_and_gate.push_back (LitClausePair (other, w.clause));
     if (internal->lrat)
@@ -3159,8 +3159,8 @@ Gate *Closure::find_remaining_and_gate (Clause *base_clause, int lhs) {
 
   {
     auto q = begin (internal->analyzed);
-    assert (!internal->analyzed.empty ());
-    assert (marked (not_lhs) == 3);
+    CADICAL_assert (!internal->analyzed.empty ());
+    CADICAL_assert (marked (not_lhs) == 3);
     for (auto lit : internal->analyzed) {
       signed char &mark = marked (lit);
       if (lit == not_lhs) {
@@ -3168,7 +3168,7 @@ Gate *Closure::find_remaining_and_gate (Clause *base_clause, int lhs) {
         continue;
       }
 
-      assert ((mark & 3) == 3);
+      CADICAL_assert ((mark & 3) == 3);
       if (mark & 4) {
         mark = 3;
         *q = lit;
@@ -3179,8 +3179,8 @@ Gate *Closure::find_remaining_and_gate (Clause *base_clause, int lhs) {
         mark = 1;
       }
     }
-    assert (q != end (internal->analyzed));
-    assert (marked (not_lhs) == 1);
+    CADICAL_assert (q != end (internal->analyzed));
+    CADICAL_assert (marked (not_lhs) == 1);
     internal->analyzed.resize (q - begin (internal->analyzed));
     LOG ("after filtering %zu LHS candidate remain",
          internal->analyzed.size ());
@@ -3219,8 +3219,8 @@ struct congruence_occurrences_larger {
 };
 
 void Closure::extract_and_gates_with_base_clause (Clause *c) {
-  assert (!c->garbage);
-  assert (lrat_chain.empty ());
+  CADICAL_assert (!c->garbage);
+  CADICAL_assert (lrat_chain.empty ());
   LOG (c, "extracting and gates with clause");
   unsigned size = 0;
   const unsigned arity_limit =
@@ -3236,7 +3236,7 @@ void Closure::extract_and_gates_with_base_clause (Clause *c) {
       continue;
     }
     if (v > 0) {
-      assert (!internal->level);
+      CADICAL_assert (!internal->level);
       LOG (c, "found satisfied clause");
       internal->mark_garbage (c);
       if (internal->lrat)
@@ -3268,7 +3268,7 @@ void Closure::extract_and_gates_with_base_clause (Clause *c) {
     LOG (c, "is actually too small, thus skipping");
     if (internal->lrat)
       lrat_chain.clear ();
-    assert (lrat_chain.empty ());
+    CADICAL_assert (lrat_chain.empty ());
     return;
   }
 
@@ -3300,9 +3300,9 @@ void Closure::extract_and_gates_with_base_clause (Clause *c) {
     }
   }
   const size_t reduced_size = clause_size - reduced;
-  assert (reduced_size);
+  CADICAL_assert (reduced_size);
   LOG (c, "trying as base arity %lu AND gate", arity);
-  assert (begin (lits) + reduced_size <= end (lits));
+  CADICAL_assert (begin (lits) + reduced_size <= end (lits));
   MSORT (internal->opts.radixsortlim, begin (lits),
          begin (lits) + reduced_size,
          congruence_occurrences_rank (internal),
@@ -3311,7 +3311,7 @@ void Closure::extract_and_gates_with_base_clause (Clause *c) {
   unsigned extracted = 0;
 
   for (size_t i = 0; i < clause_size; ++i) {
-    assert (lrat_chain.empty ());
+    CADICAL_assert (lrat_chain.empty ());
     if (internal->unsat)
       break;
     if (c->garbage)
@@ -3322,16 +3322,16 @@ void Closure::extract_and_gates_with_base_clause (Clause *c) {
 
     if (first) {
       first = false;
-      assert (internal->analyzed.empty ());
+      CADICAL_assert (internal->analyzed.empty ());
       if (find_first_and_gate (c, lhs) != nullptr) {
-        assert (lrat_chain.empty ());
+        CADICAL_assert (lrat_chain.empty ());
         ++extracted;
       }
     } else if (internal->analyzed.empty ()) {
       LOG ("early abort AND gate search");
       break;
     } else if (find_remaining_and_gate (c, lhs)) {
-      assert (lrat_chain.empty ());
+      CADICAL_assert (lrat_chain.empty ());
       ++extracted;
     }
   }
@@ -3352,7 +3352,7 @@ void Closure::reset_and_gate_extraction () {
 }
 
 void Closure::extract_and_gates () {
-  assert (!full_watching);
+  CADICAL_assert (!full_watching);
   if (!internal->opts.congruenceand)
     return;
   START (extractands);
@@ -3362,7 +3362,7 @@ void Closure::extract_and_gates () {
   const size_t size = internal->clauses.size ();
   for (size_t i = 0; i < size && !internal->terminated_asynchronously ();
        ++i) { // we can learn new binary clauses, but no for loop
-    assert (lrat_chain.empty ());
+    CADICAL_assert (lrat_chain.empty ());
     Clause *c = internal->clauses[i];
     if (c->garbage)
       continue;
@@ -3373,7 +3373,7 @@ void Closure::extract_and_gates () {
     if (c->redundant)
       continue;
     extract_and_gates_with_base_clause (c);
-    assert (lrat_chain.empty ());
+    CADICAL_assert (lrat_chain.empty ());
   }
 
   reset_and_gate_extraction ();
@@ -3384,12 +3384,12 @@ void Closure::extract_and_gates () {
 // XOR gates
 
 uint64_t &Closure::new_largecounts (int lit) {
-  assert (internal->vlit (lit) < gnew_largecounts.size ());
+  CADICAL_assert (internal->vlit (lit) < gnew_largecounts.size ());
   return gnew_largecounts[internal->vlit (lit)];
 }
 
 uint64_t &Closure::largecounts (int lit) {
-  assert (internal->vlit (lit) < glargecounts.size ());
+  CADICAL_assert (internal->vlit (lit) < glargecounts.size ());
   return glargecounts[internal->vlit (lit)];
 }
 
@@ -3410,11 +3410,11 @@ void inc_lits (vector<int> &lits) {
 }
 
 void Closure::check_ternary (int a, int b, int c) {
-  assert (internal->clause.empty ());
+  CADICAL_assert (internal->clause.empty ());
   if (internal->lrat)
     return;
   auto &clause = internal->clause;
-  assert (clause.empty ());
+  CADICAL_assert (clause.empty ());
   clause.push_back (a);
   clause.push_back (b);
   clause.push_back (c);
@@ -3429,11 +3429,11 @@ void Closure::check_ternary (int a, int b, int c) {
 }
 
 void Closure::check_binary_implied (int a, int b) {
-  assert (internal->clause.empty ());
+  CADICAL_assert (internal->clause.empty ());
   if (internal->lrat)
     return;
   auto &clause = internal->clause;
-  assert (clause.empty ());
+  CADICAL_assert (clause.empty ());
   clause.push_back (a);
   clause.push_back (b);
   check_implied ();
@@ -3447,8 +3447,8 @@ void Closure::check_implied () {
 }
 
 void Closure::add_xor_shrinking_proof_chain (Gate *g, int pivot) {
-  assert (internal->clause.empty ());
-  assert (clause.empty ());
+  CADICAL_assert (internal->clause.empty ());
+  CADICAL_assert (clause.empty ());
   if (!internal->proof)
     return;
   LOG (g, "starting XOR shrinking proof chain");
@@ -3468,10 +3468,10 @@ void Closure::add_xor_shrinking_proof_chain (Gate *g, int pivot) {
     clause.push_back (lit);
 
   const bool parity = (lhs > 0);
-  assert (parity == parity_lits (clause));
+  CADICAL_assert (parity == parity_lits (clause));
   const size_t size = clause.size ();
   const unsigned end = 1u << (size - 1);
-  assert (!internal->lrat || first.size () == 2 * end);
+  CADICAL_assert (!internal->lrat || first.size () == 2 * end);
 #ifdef LOGGING
   for (auto pair : first) {
     LOG (pair.clause, "key %d", pair.current_lit);
@@ -3492,7 +3492,7 @@ void Closure::add_xor_shrinking_proof_chain (Gate *g, int pivot) {
       clause.pop_back ();
     }
     if (internal->lrat) {
-      assert (lrat_chain.empty ());
+      CADICAL_assert (lrat_chain.empty ());
       lrat_chain.push_back (first[2 * i].clause->id);
       lrat_chain.push_back (first[2 * i + 1].clause->id);
     }
@@ -3515,17 +3515,17 @@ void Closure::add_xor_shrinking_proof_chain (Gate *g, int pivot) {
 }
 
 void Closure::check_xor_gate_implied (Gate const *const g) {
-  assert (internal->clause.empty ());
-  assert (g->tag == Gate_Type::XOr_Gate);
+  CADICAL_assert (internal->clause.empty ());
+  CADICAL_assert (g->tag == Gate_Type::XOr_Gate);
   if (internal->lrat) {
     return;
   }
   const int lhs = g->lhs;
   LOG (g, "checking implied");
   auto &clause = internal->clause;
-  assert (clause.empty ());
+  CADICAL_assert (clause.empty ());
   for (auto other : g->rhs) {
-    assert (other > 0);
+    CADICAL_assert (other > 0);
     clause.push_back (other);
   }
   clause.push_back (-lhs);
@@ -3548,14 +3548,14 @@ void Closure::check_xor_gate_implied (Gate const *const g) {
 }
 
 Gate *Closure::find_xor_lits (const vector<int> &rhs) {
-  assert (is_sorted (begin (rhs), end (rhs),
+  CADICAL_assert (is_sorted (begin (rhs), end (rhs),
                      sort_literals_by_var_smaller (internal)));
   return find_gate_lits (rhs, Gate_Type::XOr_Gate);
 }
 
 Gate *Closure::find_xor_gate (Gate *g) {
-  assert (g->tag == Gate_Type::XOr_Gate);
-  assert (is_sorted (begin (g->rhs), end (g->rhs),
+  CADICAL_assert (g->tag == Gate_Type::XOr_Gate);
+  CADICAL_assert (is_sorted (begin (g->rhs), end (g->rhs),
                      sort_literals_by_var_smaller (internal)));
   return find_gate_lits (g->rhs, Gate_Type::XOr_Gate);
 }
@@ -3564,7 +3564,7 @@ void Closure::reset_xor_gate_extraction () { internal->clear_occs (); }
 
 bool Closure::normalize_ite_lits_gate (Gate *g) {
   auto &rhs = g->rhs;
-  assert (rhs.size () == 3);
+  CADICAL_assert (rhs.size () == 3);
   if (internal->lrat)
     check_correct_ite_flags (g);
   LOG (rhs, "RHS = ");
@@ -3572,7 +3572,7 @@ bool Closure::normalize_ite_lits_gate (Gate *g) {
     rhs[0] = -rhs[0];
     std::swap (rhs[1], rhs[2]);
     if (internal->lrat) {
-      assert (g->pos_lhs_ids.size () == 4);
+      CADICAL_assert (g->pos_lhs_ids.size () == 4);
       std::swap (g->pos_lhs_ids[0], g->pos_lhs_ids[2]);
       std::swap (g->pos_lhs_ids[1], g->pos_lhs_ids[3]);
       const int8_t flag = g->degenerated_ite;
@@ -3588,8 +3588,8 @@ bool Closure::normalize_ite_lits_gate (Gate *g) {
                                       : Special_ITE_GATE::NORMAL) |
                            (neg_else ? Special_ITE_GATE::NO_NEG_THEN
                                      : Special_ITE_GATE::NORMAL);
-      assert (g->pos_lhs_ids[0].current_lit == rhs[1]);
-      assert (g->pos_lhs_ids[2].current_lit == rhs[2]);
+      CADICAL_assert (g->pos_lhs_ids[0].current_lit == rhs[1]);
+      CADICAL_assert (g->pos_lhs_ids[2].current_lit == rhs[2]);
       if (internal->lrat)
         check_correct_ite_flags (g);
     }
@@ -3602,7 +3602,7 @@ bool Closure::normalize_ite_lits_gate (Gate *g) {
   rhs[2] = -rhs[2];
   LOG (rhs, "RHS = ");
   if (internal->lrat) {
-    assert (g->pos_lhs_ids.size () == 4);
+    CADICAL_assert (g->pos_lhs_ids.size () == 4);
     std::swap (g->pos_lhs_ids[0], g->pos_lhs_ids[1]);
     std::swap (g->pos_lhs_ids[2], g->pos_lhs_ids[3]);
     const int8_t flag = g->degenerated_ite;
@@ -3618,8 +3618,8 @@ bool Closure::normalize_ite_lits_gate (Gate *g) {
                                     : Special_ITE_GATE::NORMAL) |
                          (neg_else ? Special_ITE_GATE::NO_PLUS_ELSE
                                    : Special_ITE_GATE::NORMAL);
-    assert (g->pos_lhs_ids[0].current_lit == rhs[1]);
-    assert (g->pos_lhs_ids[2].current_lit == rhs[2]);
+    CADICAL_assert (g->pos_lhs_ids[0].current_lit == rhs[1]);
+    CADICAL_assert (g->pos_lhs_ids[2].current_lit == rhs[2]);
     // incorrect as we have not negated the LHS yet!
     // check_correct_ite_flags (g);
   }
@@ -3628,10 +3628,10 @@ bool Closure::normalize_ite_lits_gate (Gate *g) {
   return true;
 }
 
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
 bool is_tautological_ite_gate (Gate *g) {
-  assert (g->tag == Gate_Type::ITE_Gate);
-  assert (g->rhs.size () == 3);
+  CADICAL_assert (g->tag == Gate_Type::ITE_Gate);
+  CADICAL_assert (g->rhs.size () == 3);
   const int cond_lit = g->rhs[0];
   const int then_lit = g->rhs[1];
   const int else_lit = g->rhs[2];
@@ -3650,8 +3650,8 @@ LRAT_ID Closure::check_and_add_to_proof_chain (vector<int> &clause) {
   const LRAT_ID id = ++internal->clause_id;
   if (internal->proof) {
     if (internal->lrat) {
-      assert (internal->lrat_chain.empty ());
-      assert (lrat_chain.size () >= 1);
+      CADICAL_assert (internal->lrat_chain.empty ());
+      CADICAL_assert (lrat_chain.size () >= 1);
     }
     internal->proof->add_derived_clause (id, true, clause, lrat_chain);
     lrat_chain.clear ();
@@ -3663,7 +3663,7 @@ void Closure::add_clause_to_chain (std::vector<int> unsimplified,
                                    LRAT_ID id) {
   const uint32_t id2_higher = (id >> 32);
   const uint32_t id2_lower = (uint32_t) (id & (LRAT_ID) (uint32_t) (-1));
-  assert (id == ((LRAT_ID) id2_higher << 32) + (LRAT_ID) id2_lower);
+  CADICAL_assert (id == ((LRAT_ID) id2_higher << 32) + (LRAT_ID) id2_lower);
   chain.push_back (id2_higher);
   chain.push_back (id2_lower);
   LOG (unsimplified, "pushing to chain");
@@ -3674,10 +3674,10 @@ void Closure::add_clause_to_chain (std::vector<int> unsimplified,
 LRAT_ID Closure::simplify_and_add_to_proof_chain (vector<int> &unsimplified,
                                                   LRAT_ID delete_id) {
   vector<int> &clause = internal->clause;
-  assert (clause.empty ());
-#ifndef NDEBUG
+  CADICAL_assert (clause.empty ());
+#ifndef CADICAL_NDEBUG
   for (auto lit : unsimplified) {
-    assert (!(marked (lit) & 4));
+    CADICAL_assert (!(marked (lit) & 4));
   }
 #endif
 
@@ -3696,7 +3696,7 @@ LRAT_ID Closure::simplify_and_add_to_proof_chain (vector<int> &unsimplified,
   }
   for (auto lit : clause) {
     signed char &mark = marked (lit);
-    assert (mark & 4);
+    CADICAL_assert (mark & 4);
     mark &= ~4u;
   }
 
@@ -3725,8 +3725,8 @@ void Closure::add_ite_turned_and_binary_clauses (Gate *g) {
   if (internal->lrat)
     return;
   LOG ("starting ITE turned AND supporting binary clauses");
-  assert (unsimplified.empty ());
-  assert (chain.empty ());
+  CADICAL_assert (unsimplified.empty ());
+  CADICAL_assert (chain.empty ());
   int not_lhs = -g->lhs;
   unsimplified.push_back (not_lhs);
   unsimplified.push_back (g->rhs[0]);
@@ -3738,18 +3738,18 @@ void Closure::add_ite_turned_and_binary_clauses (Gate *g) {
 }
 void Closure::simplify_unit_xor_lrat_clauses (
     const vector<LitClausePair> &source, int lhs) {
-  assert (internal->lrat);
+  CADICAL_assert (internal->lrat);
   for (auto pair : source) {
     compute_rewritten_clause_lrat_simple (pair.clause, lhs);
     if (lrat_chain.size ())
       break;
   }
-  assert (clause.size () == 1);
+  CADICAL_assert (clause.size () == 1);
 }
 void Closure::simplify_and_sort_xor_lrat_clauses (
     const vector<LitClausePair> &source, vector<LitClausePair> &target,
     int lhs, int except2, bool flip) {
-  assert (internal->lrat);
+  CADICAL_assert (internal->lrat);
   for (auto pair : source) {
     Clause *c = produce_rewritten_clause_lrat (pair.clause, lhs);
     if (c) {
@@ -3765,7 +3765,7 @@ void Closure::add_xor_matching_proof_chain (
     return;
   if (!internal->proof)
     return;
-  assert (unsimplified.empty ());
+  CADICAL_assert (unsimplified.empty ());
   unsimplified = g->rhs;
   vector<LitClausePair> first;
   vector<LitClausePair> second;
@@ -3804,21 +3804,21 @@ void Closure::add_xor_matching_proof_chain (
   do {
     vector<LitIdPair> first_tmp;
     vector<LitIdPair> second_tmp;
-    assert (!unsimplified.empty ());
+    CADICAL_assert (!unsimplified.empty ());
     unsimplified.pop_back ();
     const size_t size = unsimplified.size ();
-    assert (size < 32);
+    CADICAL_assert (size < 32);
     const size_t off = 1u << size;
     for (size_t i = 0; i != off; ++i) {
       int32_t n = 0;
       if (internal->lrat) {
         n = number_from_xor_reason_reversed (unsimplified);
-        assert (lrat_chain.empty ());
+        CADICAL_assert (lrat_chain.empty ());
         for (auto pair : first_ids) {
           if (pair.lit == n)
             lrat_chain.push_back (pair.id);
         }
-        assert (lrat_chain.size () == 2);
+        CADICAL_assert (lrat_chain.size () == 2);
       }
       unsimplified.push_back (-lhs1);
       unsimplified.push_back (lhs2);
@@ -3833,7 +3833,7 @@ void Closure::add_xor_matching_proof_chain (
           if (pair.lit == n)
             lrat_chain.push_back (pair.id);
         }
-        assert (lrat_chain.size () == 2);
+        CADICAL_assert (lrat_chain.size () == 2);
       }
       unsimplified.push_back (lhs1);
       unsimplified.push_back (-lhs2);
@@ -3852,15 +3852,15 @@ void Closure::add_xor_matching_proof_chain (
     }
   } while (!unsimplified.empty ());
   if (internal->lrat) {
-    assert (first_ids.size () == 1);
-    assert (second_ids.size () == 1);
+    CADICAL_assert (first_ids.size () == 1);
+    CADICAL_assert (second_ids.size () == 1);
     to_lrat.push_back (first_ids.back ().id);
     back_lrat.push_back (second_ids.back ().id);
   }
-  assert (!internal->lrat || to_lrat.size () == 1);
-  assert (!internal->lrat || back_lrat.size () == 1);
+  CADICAL_assert (!internal->lrat || to_lrat.size () == 1);
+  CADICAL_assert (!internal->lrat || back_lrat.size () == 1);
   LOG ("finished XOR matching proof");
-  assert (unsimplified.empty ());
+  CADICAL_assert (unsimplified.empty ());
 }
 
 // this function needs to either put the clauses from
@@ -3872,11 +3872,11 @@ Gate *Closure::new_xor_gate (const vector<LitClausePair> &glauses,
 
   for (auto lit : lits) {
     if (lhs != lit && -lhs != lit) {
-      assert (lit > 0);
+      CADICAL_assert (lit > 0);
       rhs.push_back (lit);
     }
   }
-  assert (rhs.size () + 1 == lits.size ());
+  CADICAL_assert (rhs.size () + 1 == lits.size ());
   sort_literals_by_var (rhs);
   Gate *g = find_xor_lits (this->rhs);
   if (g) {
@@ -3889,7 +3889,7 @@ Gate *Closure::new_xor_gate (const vector<LitClausePair> &glauses,
       ++internal->stats.congruence.xors;
     }
     delete_proof_chain ();
-    assert (internal->unsat || chain.empty ());
+    CADICAL_assert (internal->unsat || chain.empty ());
   } else {
     g = new Gate;
     g->lhs = lhs;
@@ -3917,9 +3917,9 @@ Gate *Closure::new_xor_gate (const vector<LitClausePair> &glauses,
 uint32_t
 Closure::number_from_xor_reason_reversed (const std::vector<int> &rhs) {
   uint32_t n = 0;
-  assert (is_sorted (rhs.rbegin (), rhs.rend (),
+  CADICAL_assert (is_sorted (rhs.rbegin (), rhs.rend (),
                      sort_literals_by_var_smaller_except (internal, 0, 0)));
-  assert (rhs.size () <= 32);
+  CADICAL_assert (rhs.size () <= 32);
   for (auto r = rhs.rbegin (); r != rhs.rend (); r++) {
     int lit = *r;
     n *= 2;
@@ -3931,11 +3931,11 @@ Closure::number_from_xor_reason_reversed (const std::vector<int> &rhs) {
 uint32_t Closure::number_from_xor_reason (const std::vector<int> &rhs,
                                           int lhs, int except, bool flip) {
   uint32_t n = 0;
-  assert (is_sorted (
+  CADICAL_assert (is_sorted (
       begin (rhs), end (rhs),
       sort_literals_by_var_smaller_except (internal, lhs, except)));
   (void) lhs, (void) except;
-  assert (rhs.size () <= 32);
+  CADICAL_assert (rhs.size () <= 32);
   for (auto lit : rhs) {
     n *= 2;
     n += !(lit > 0) ^ flip;
@@ -3948,7 +3948,7 @@ uint32_t Closure::number_from_xor_reason (const std::vector<int> &rhs,
 // Look at this first
 void Closure::gate_sort_lrat_reasons (LitClausePair &litId, int lhs,
                                       int except2, bool flip) {
-  assert (clause.empty ());
+  CADICAL_assert (clause.empty ());
   std::copy (begin (*litId.clause), end (*litId.clause),
              back_inserter (clause));
   sort_literals_by_var_except (clause, lhs, except2);
@@ -3965,24 +3965,24 @@ struct smaller_pair_first_rank {
 // Look at this first
 void Closure::gate_sort_lrat_reasons (std::vector<LitClausePair> &xs,
                                       int lhs, int except2, bool flip) {
-  assert (clause.empty ());
-  assert (!xs.empty ());
+  CADICAL_assert (clause.empty ());
+  CADICAL_assert (!xs.empty ());
   for (auto &litId : xs) {
     gate_sort_lrat_reasons (litId, lhs, except2, flip);
   }
 
   rsort (begin (xs), end (xs), smaller_pair_first_rank ());
 
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
   std::for_each (begin (xs), end (xs), [&xs] (const LitClausePair &x) {
-    assert (x.clause->size == xs[1].clause->size);
+    CADICAL_assert (x.clause->size == xs[1].clause->size);
   });
 #endif
 }
 
 void Closure::init_xor_gate_extraction (std::vector<Clause *> &candidates) {
   const unsigned arity_limit = internal->opts.congruencexorarity;
-  assert (arity_limit < 32); // we use unsigned int.
+  CADICAL_assert (arity_limit < 32); // we use unsigned int.
   const unsigned size_limit = arity_limit + 1;
   glargecounts.resize (2 * internal->vsize, 0);
 
@@ -4043,8 +4043,8 @@ void Closure::init_xor_gate_extraction (std::vector<Clause *> &candidates) {
         if (!internal->val (lit))
           ++size;
       }
-      assert (3 <= size);
-      assert (size <= size_limit);
+      CADICAL_assert (3 <= size);
+      CADICAL_assert (size <= size_limit);
       const unsigned arity = size - 1;
       const unsigned needed_clauses = 1u << (arity - 1);
       for (auto lit : *c) {
@@ -4082,31 +4082,31 @@ Clause *Closure::find_large_xor_side_clause (std::vector<int> &lits) {
   unsigned least_occurring_literal = 0;
   unsigned count_least_occurring = UINT_MAX;
   const size_t size_lits = lits.size ();
-#if defined(LOGGING) || !defined(NDEBUG)
+#if defined(LOGGING) || !defined(CADICAL_NDEBUG)
   const unsigned arity = size_lits - 1;
 #endif
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
   const unsigned count_limit = 1u << (arity - 1);
 #endif
   LOG (lits, "trying to find arity %u XOR side clause", arity);
   for (auto lit : lits) {
-    assert (!internal->val (lit));
+    CADICAL_assert (!internal->val (lit));
     marked (lit) = 1;
     unsigned count = largecount (lit);
-    assert (count_limit <= count);
+    CADICAL_assert (count_limit <= count);
     if (count >= count_least_occurring)
       continue;
     count_least_occurring = count;
     least_occurring_literal = lit;
   }
   Clause *res = 0;
-  assert (least_occurring_literal);
+  CADICAL_assert (least_occurring_literal);
   LOG ("searching XOR side clause watched by %d#%u",
        least_occurring_literal, count_least_occurring);
   LOG ("searching for size %ld", size_lits);
   for (auto c : internal->occs (least_occurring_literal)) {
     LOG (c, "checking");
-    assert (c->size != 2); // TODO kissat has break
+    CADICAL_assert (c->size != 2); // TODO kissat has break
     if (c->garbage)
       continue;
     if ((size_t) c->size < size_lits)
@@ -4119,7 +4119,7 @@ Clause *Closure::find_large_xor_side_clause (std::vector<int> &lits) {
       if (value > 0) {
         LOG (c, "found satisfied %d in", other);
         internal->mark_garbage (c);
-        assert (c->garbage);
+        CADICAL_assert (c->garbage);
         break;
       }
       if (marked (other))
@@ -4172,8 +4172,8 @@ void Closure::extract_xor_gates_with_base_clause (Clause *c) {
       largest = smallest = lit;
       first = false;
     } else {
-      assert (smallest);
-      assert (largest);
+      CADICAL_assert (smallest);
+      CADICAL_assert (largest);
       if (internal->vlit (lit) < internal->vlit (smallest)) {
         LOG ("new smallest %d", lit);
         smallest = lit;
@@ -4198,7 +4198,7 @@ void Closure::extract_xor_gates_with_base_clause (Clause *c) {
     lits.push_back (lit);
     ++size;
   }
-  assert (size == lits.size ());
+  CADICAL_assert (size == lits.size ());
   if (size < 3) {
     LOG (c, "short XOR base clause");
     return;
@@ -4221,9 +4221,9 @@ void Closure::extract_xor_gates_with_base_clause (Clause *c) {
   }
 
   LOG ("checking for XOR side clauses");
-  assert (smallest && largest);
+  CADICAL_assert (smallest && largest);
   const unsigned end = 1u << arity;
-  assert (negated == parity_lits (lits));
+  CADICAL_assert (negated == parity_lits (lits));
   unsigned found = 0;
   vector<LitClausePair> glauses;
   glauses.push_back (LitClausePair (0, c));
@@ -4236,10 +4236,10 @@ void Closure::extract_xor_gates_with_base_clause (Clause *c) {
       Clause *d = find_large_xor_side_clause (lits);
       if (!d)
         return;
-      assert (!d->redundant);
+      CADICAL_assert (!d->redundant);
       glauses.push_back (LitClausePair (i, d));
     } else
-      assert (!c->redundant);
+      CADICAL_assert (!c->redundant);
     inc_lits (lits);
     ++found;
   }
@@ -4247,7 +4247,7 @@ void Closure::extract_xor_gates_with_base_clause (Clause *c) {
   while (parity_lits (lits) != negated)
     inc_lits (lits);
   LOG (lits, "found all needed %u matching clauses:", found);
-  assert (found == 1u << arity);
+  CADICAL_assert (found == 1u << arity);
   if (negated) {
     auto p = begin (lits);
     int lit;
@@ -4271,7 +4271,7 @@ void Closure::extract_xor_gates_with_base_clause (Clause *c) {
     LOG ("no arity %u XOR gate extracted", arity);
 }
 void Closure::extract_xor_gates () {
-  assert (!full_watching);
+  CADICAL_assert (!full_watching);
   if (!internal->opts.congruencexor)
     return;
   START (extractxors);
@@ -4325,13 +4325,13 @@ void Closure::find_units () {
       }
       unmark_all ();
     }
-    assert (internal->analyzed.empty ());
+    CADICAL_assert (internal->analyzed.empty ());
   }
   LOG ("found %zd units", units);
 }
 
 void Closure::find_equivalences () {
-  assert (!internal->unsat);
+  CADICAL_assert (!internal->unsat);
 
   for (auto v : internal->vars) {
   RESTART:
@@ -4341,7 +4341,7 @@ void Closure::find_equivalences () {
     for (auto w : internal->watches (lit)) {
       if (!w.binary ())
         break;
-      assert (w.size == 2);
+      CADICAL_assert (w.size == 2);
       const int other = w.blit;
       if (internal->vlit (lit) > internal->vlit (other))
         continue;
@@ -4361,7 +4361,7 @@ void Closure::find_equivalences () {
       const int other = w.blit;
       if (internal->vlit (-lit) > internal->vlit (other))
         continue;
-      assert (-lit != other);
+      CADICAL_assert (-lit != other);
       LOG ("binary clause %d %d", -lit, other);
       if (marked (-other)) {
         int lit_repr = find_representative (lit);
@@ -4377,7 +4377,7 @@ void Closure::find_equivalences () {
           //   // therefore you actually need to learn the clauses 2->3->4
           //   and -2->1 and vice-versa eager_representative_id (other) =
           //   marked_mu1 (-other).clause->id; eager_representative_id
-          //   (-other) = w.clause->id; assert (eager_representative_id
+          //   (-other) = w.clause->id; CADICAL_assert (eager_representative_id
           //   (other) != -1); LOG ("lrat: %d (%zd) %d (%zd)", other,
           //   eager_representative_id (other), -other,
           //   eager_representative_id (-other));
@@ -4402,7 +4402,7 @@ void Closure::find_equivalences () {
     }
     unmark_all ();
   }
-  assert (internal->analyzed.empty ());
+  CADICAL_assert (internal->analyzed.empty ());
   LOG ("found %zd equivalences", schedule.size ());
 }
 
@@ -4421,9 +4421,9 @@ void Closure::rewrite_and_gate (Gate *g, int dst, int src, LRAT_ID id1,
     simplify_and_gate (g);
     return;
   }
-  assert (src);
-  assert (dst);
-  assert (internal->val (src) == internal->val (dst));
+  CADICAL_assert (src);
+  CADICAL_assert (dst);
+  CADICAL_assert (internal->val (src) == internal->val (dst));
   GatesTable::iterator git = (g->indexed ? table.find (g) : end (table));
   LOG (g, "rewriting %d into %d in", src, dst);
   int clashing = 0, falsifies = 0;
@@ -4460,12 +4460,12 @@ void Closure::rewrite_and_gate (Gate *g, int dst, int src, LRAT_ID id1,
     }
     if (lit == -dst) {
       if (dst_count) {
-        assert (!not_dst_count);
+        CADICAL_assert (!not_dst_count);
         LOG ("clashing literals %d and %d", (dst), (-dst));
         clashing = -dst;
         break;
       }
-      assert (!not_dst_count);
+      CADICAL_assert (!not_dst_count);
       ++not_dst_count;
     }
     *q++ = lit;
@@ -4482,7 +4482,7 @@ void Closure::rewrite_and_gate (Gate *g, int dst, int src, LRAT_ID id1,
     // that we can produce an LRAT chain
     size_t i = 0, size = g->pos_lhs_ids.size ();
     bool found = false;
-    assert (!falsifies || !clashing);
+    CADICAL_assert (!falsifies || !clashing);
     const int orig_falsifies = falsifies == dst ? src : falsifies;
     const int orig_clashing =
       clashing == -dst ? -src : (clashing == dst ? src : clashing);
@@ -4522,7 +4522,7 @@ void Closure::rewrite_and_gate (Gate *g, int dst, int src, LRAT_ID id1,
       ++i;
     }
     LOG ("resizing to %zd", i);
-    assert (i);
+    CADICAL_assert (i);
     g->pos_lhs_ids.resize (i);
   }
 
@@ -4530,13 +4530,13 @@ void Closure::rewrite_and_gate (Gate *g, int dst, int src, LRAT_ID id1,
     g->rhs.resize (q - begin (g->rhs));
     g->shrunken = true;
   }
-  assert (dst_count <= 2);
-  assert (not_dst_count <= 1);
+  CADICAL_assert (dst_count <= 2);
+  CADICAL_assert (not_dst_count <= 1);
 
   std::vector<LRAT_ID> reasons_lrat_src, reasons_lrat_usrc;
   shrink_and_gate (g, falsifies, clashing);
   LOG (g, "rewritten as");
-  assert (!internal->lrat || !g->pos_lhs_ids.empty ());
+  CADICAL_assert (!internal->lrat || !g->pos_lhs_ids.empty ());
   //  check_and_gate_implied (g);
   update_and_gate (g, git, src, dst, id1, id2, falsifies, clashing);
   ++internal->stats.congruence.rewritten_ands;
@@ -4555,17 +4555,17 @@ bool Closure::rewrite_gate (Gate *g, int dst, int src, LRAT_ID id1,
     rewrite_ite_gate (g, dst, src);
     break;
   default:
-    assert (false);
+    CADICAL_assert (false);
     break;
   }
-  assert (internal->unsat || lrat_chain.empty ());
+  CADICAL_assert (internal->unsat || lrat_chain.empty ());
   return !internal->unsat;
 }
 
 bool Closure::rewrite_gates (int dst, int src, LRAT_ID id1, LRAT_ID id2) {
   const auto &occs = goccs (src);
   for (auto g : occs) {
-    assert (lrat_chain.empty ());
+    CADICAL_assert (lrat_chain.empty ());
     if (!rewrite_gate (g, dst, src, id1, id2))
       return false;
     else if (!g->garbage && gate_contains (g, dst))
@@ -4573,15 +4573,15 @@ bool Closure::rewrite_gates (int dst, int src, LRAT_ID id1, LRAT_ID id2) {
   }
   goccs (src).clear ();
 
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
   for (const auto &occs : gtab) {
     for (auto g : occs) {
-      assert (g);
-      assert (g->garbage || !gate_contains (g, src));
+      CADICAL_assert (g);
+      CADICAL_assert (g->garbage || !gate_contains (g, src));
     }
   }
 #endif
-  assert (lrat_chain.empty ());
+  CADICAL_assert (lrat_chain.empty ());
   return true;
 }
 
@@ -4610,7 +4610,7 @@ void Closure::rewrite_xor_gate (Gate *g, int dst, int src) {
   const size_t size = g->rhs.size ();
   for (size_t i = 0; i < size; ++i) {
     int lit = g->rhs[i];
-    assert (lit > 0);
+    CADICAL_assert (lit > 0);
     if (lit == src)
       lit = dst;
     const signed char v = internal->val (lit);
@@ -4628,7 +4628,7 @@ void Closure::rewrite_xor_gate (Gate *g, int dst, int src) {
     LOG ("flipping LHS %d", g->lhs);
     g->lhs = -g->lhs;
   }
-  assert (dst_count <= 2);
+  CADICAL_assert (dst_count <= 2);
   if (dst_count == 2) {
     LOG ("destination found twice, removing");
     size_t k = 0;
@@ -4637,10 +4637,10 @@ void Closure::rewrite_xor_gate (Gate *g, int dst, int src) {
       if (lit != dst)
         g->rhs[k++] = g->rhs[i];
     }
-    assert (k == j - 2);
+    CADICAL_assert (k == j - 2);
     g->rhs.resize (k);
     g->shrunken = true;
-    assert (is_sorted (begin (g->rhs), end (g->rhs),
+    CADICAL_assert (is_sorted (begin (g->rhs), end (g->rhs),
                        sort_literals_by_var_smaller (internal)));
     g->hash = hash_lits (nonces, g->rhs);
   } else if (j != size) {
@@ -4651,17 +4651,17 @@ void Closure::rewrite_xor_gate (Gate *g, int dst, int src) {
         nonces,
         g->rhs); // all but one (the dst) is sorted correctly actually
   } else {
-    assert (j == size);
+    CADICAL_assert (j == size);
     sort_literals_by_var (g->rhs);
   }
 
-  assert (clause.empty ());
+  CADICAL_assert (clause.empty ());
   // LRAT for add_xor_shrinking_proof_chain
   // this should be unnecessary...
   // TODO check if really unnecessary
   if (dst_count > 1)
     add_xor_shrinking_proof_chain (g, dst);
-  assert (internal->clause.size () <= 1);
+  CADICAL_assert (internal->clause.size () <= 1);
   update_xor_gate (g, git);
 
   if (!g->garbage && !internal->unsat && original_dst_negated &&
@@ -4685,7 +4685,7 @@ void Closure::simplify_xor_gate (Gate *g) {
   size_t j = 0;
   for (size_t i = 0; i < size; ++i) {
     int lit = g->rhs[i];
-    assert (lit > 0);
+    CADICAL_assert (lit > 0);
     const signed char v = internal->val (lit);
     if (v > 0)
       negate ^= 1;
@@ -4701,15 +4701,15 @@ void Closure::simplify_xor_gate (Gate *g) {
     LOG ("shrunken gate");
     g->shrunken = true;
     g->rhs.resize (j);
-    assert (is_sorted (begin (g->rhs), end (g->rhs),
+    CADICAL_assert (is_sorted (begin (g->rhs), end (g->rhs),
                        sort_literals_by_var_smaller (internal)));
     g->hash = hash_lits (nonces, g->rhs);
   } else {
-    assert (g->hash == hash_lits (nonces, g->rhs));
+    CADICAL_assert (g->hash == hash_lits (nonces, g->rhs));
   }
 
   check_xor_gate_implied (g);
-  assert (clause.empty ());
+  CADICAL_assert (clause.empty ());
   update_xor_gate (g, git);
   LOG (g, "simplified");
   check_xor_gate_implied (g);
@@ -4725,7 +4725,7 @@ void Closure::schedule_literal (int lit) {
     return;
   scheduled[idx] = true;
   schedule.push (lit);
-  assert (lit != find_representative (lit));
+  CADICAL_assert (lit != find_representative (lit));
   LOG ("scheduled literal %d", lit);
 }
 
@@ -4757,7 +4757,7 @@ bool Closure::propagate_equivalence (int lit) {
   const int repr = find_eager_representative_and_compress (lit);
   const LRAT_ID id1 = find_eager_representative_lrat (lit);
   const LRAT_ID id2 = find_eager_representative_lrat (-lit);
-  assert (lrat_chain.empty ());
+  CADICAL_assert (lrat_chain.empty ());
   return rewrite_gates (repr, lit, id1, id2) &&
          rewrite_gates (-repr, -lit, id2, id1);
 }
@@ -4766,10 +4766,10 @@ size_t Closure::propagate_units_and_equivalences () {
   START (congruencemerge);
   size_t propagated = 0;
   LOG ("propagating at least %zd units", schedule.size ());
-  assert (lrat_chain.empty ());
+  CADICAL_assert (lrat_chain.empty ());
   while (propagate_units () && !schedule.empty ()) {
-    assert (!internal->unsat);
-    assert (lrat_chain.empty ());
+    CADICAL_assert (!internal->unsat);
+    CADICAL_assert (lrat_chain.empty ());
     ++propagated;
     int lit = schedule.front ();
     schedule.pop ();
@@ -4778,28 +4778,28 @@ size_t Closure::propagate_units_and_equivalences () {
       break;
   }
 
-  assert (internal->unsat || schedule.empty ());
-  assert (internal->unsat || lrat_chain.empty ());
+  CADICAL_assert (internal->unsat || schedule.empty ());
+  CADICAL_assert (internal->unsat || lrat_chain.empty ());
 
   LOG ("propagated %zu congruence units", units);
   LOG ("propagated %zu congruence equivalences", propagated);
 
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
   if (!internal->unsat) {
     for (const auto &occs : gtab) {
       for (auto g : occs) {
         if (g->garbage)
           continue;
-        assert (g->tag == Gate_Type::ITE_Gate ||
+        CADICAL_assert (g->tag == Gate_Type::ITE_Gate ||
                 g->tag == Gate_Type::XOr_Gate ||
                 !gate_contains (g, -g->lhs));
         // TODO: this would be nice to have!
-        //      assert (g->tag != Gate_Type::ITE_Gate || (g->rhs.size() == 3
+        //      CADICAL_assert (g->tag != Gate_Type::ITE_Gate || (g->rhs.size() == 3
         //      && g->rhs[1] != -g->lhs && g->rhs[2] != -g->lhs));
-        // assert (table.count(g) == 1);
+        // CADICAL_assert (table.count(g) == 1);
         for (auto lit : g->rhs) {
-          assert (!internal->val (lit));
-          assert (representative (lit) == lit);
+          CADICAL_assert (!internal->val (lit));
+          CADICAL_assert (representative (lit) == lit);
         }
       }
     }
@@ -4807,7 +4807,7 @@ size_t Closure::propagate_units_and_equivalences () {
       if (g->garbage)
         continue;
       if (g->tag == Gate_Type::And_Gate) {
-        // assert (find_and_lits(g->arity, g->rhs));
+        // CADICAL_assert (find_and_lits(g->arity, g->rhs));
       }
     }
   }
@@ -4832,7 +4832,7 @@ std::string string_of_gate (Gate_Type t) {
 void Closure::reset_closure () {
   scheduled.clear ();
   for (Gate *g : table) {
-    assert (g->indexed);
+    CADICAL_assert (g->indexed);
     LOG (g, "deleting");
     if (!g->garbage)
       delete g;
@@ -4849,15 +4849,15 @@ void Closure::reset_closure () {
   garbage.clear ();
 
   if (internal->lrat) {
-    assert (internal->proof);
+    CADICAL_assert (internal->proof);
     for (auto c : extra_clauses) {
-      assert (!c->garbage);
+      CADICAL_assert (!c->garbage);
       internal->proof->delete_clause (c);
       delete c;
     }
     extra_clauses.clear ();
   } else {
-    assert (extra_clauses.empty ());
+    CADICAL_assert (extra_clauses.empty ());
   }
 }
 
@@ -4942,7 +4942,7 @@ void Closure::forward_subsume_matching_clauses () {
       continue;
     if (c->size == 2)
       continue;
-    assert (analyzed.empty ());
+    CADICAL_assert (analyzed.empty ());
     bool contains_matchable = false;
     for (auto lit : *c) {
       const signed char v = internal->val (lit);
@@ -4960,7 +4960,7 @@ void Closure::forward_subsume_matching_clauses () {
       }
 
       const int repr = find_representative (lit);
-      assert (!internal->val (repr));
+      CADICAL_assert (!internal->val (repr));
       if (marked (repr))
         continue;
       const int not_repr = -repr;
@@ -4990,7 +4990,7 @@ void Closure::forward_subsume_matching_clauses () {
   size_t tried = 0, subsumed = 0;
   internal->init_occs ();
   for (auto c : candidates) {
-    assert (c->size != 2);
+    CADICAL_assert (c->size != 2);
     // TODO if terminated
     ++tried;
     if (find_subsuming_clause (c)) {
@@ -5008,11 +5008,11 @@ void Closure::forward_subsume_matching_clauses () {
 // from subsume
 
 void Closure::subsume_clause (Clause *subsuming, Clause *subsumed) {
-  //  assert (!subsuming->redundant);
-  // assert (!subsumed->redundant);
+  //  CADICAL_assert (!subsuming->redundant);
+  // CADICAL_assert (!subsumed->redundant);
   auto &stats = internal->stats;
   stats.subsumed++;
-  assert (subsuming->size <= subsumed->size);
+  CADICAL_assert (subsuming->size <= subsumed->size);
   LOG (subsumed, "subsumed");
   if (subsumed->redundant)
     stats.subred++;
@@ -5030,26 +5030,26 @@ void Closure::subsume_clause (Clause *subsuming, Clause *subsumed) {
   stats.current.irredundant++;
   stats.added.irredundant++;
   stats.irrlits += subsuming->size;
-  assert (stats.current.redundant > 0);
+  CADICAL_assert (stats.current.redundant > 0);
   stats.current.redundant--;
-  assert (stats.added.redundant > 0);
+  CADICAL_assert (stats.added.redundant > 0);
   stats.added.redundant--;
   // ... and keep 'stats.added.total'.
 }
 
 bool Closure::find_subsuming_clause (Clause *subsumed) {
-  assert (!subsumed->garbage);
+  CADICAL_assert (!subsumed->garbage);
   Clause *subsuming = nullptr;
   for (auto lit : *subsumed) {
-    assert (internal->val (lit) <= 0);
+    CADICAL_assert (internal->val (lit) <= 0);
     const int repr_lit = find_representative (lit);
     const signed char repr_val = internal->val (repr_lit);
-    assert (repr_val <= 0);
+    CADICAL_assert (repr_val <= 0);
     if (repr_val < 0)
       continue;
     if (marked (repr_lit))
       continue;
-    assert (!marked (-repr_lit));
+    CADICAL_assert (!marked (-repr_lit));
     marked (repr_lit) = 1;
   }
   int least_occuring_lit = 0;
@@ -5059,21 +5059,21 @@ bool Closure::find_subsuming_clause (Clause *subsumed) {
   for (auto lit : *subsumed) {
     const int repr_lit = find_representative (lit);
     const size_t count = internal->occs (lit).size ();
-    assert (count <= UINT_MAX);
+    CADICAL_assert (count <= UINT_MAX);
     if (count < count_least_occurring) {
       count_least_occurring = count;
       least_occuring_lit = repr_lit;
     }
     for (auto d : internal->occs (lit)) {
-      assert (!d->garbage);
-      assert (subsumed != d);
+      CADICAL_assert (!d->garbage);
+      CADICAL_assert (subsumed != d);
       if (!subsumed->redundant && d->redundant)
         continue;
       for (auto other : *d) {
         const signed char v = internal->val (other);
         if (v < 0)
           continue;
-        assert (!v);
+        CADICAL_assert (!v);
         const int repr_other = find_representative (other);
         if (!marked (repr_other))
           goto CONTINUE_WITH_NEXT_CLAUSE;
@@ -5085,7 +5085,7 @@ bool Closure::find_subsuming_clause (Clause *subsumed) {
     CONTINUE_WITH_NEXT_CLAUSE:;
     }
   }
-  assert (least_occuring_lit);
+  CADICAL_assert (least_occuring_lit);
 
 FOUND_SUBSUMING:
   for (auto lit : *subsumed) {
@@ -5108,7 +5108,7 @@ FOUND_SUBSUMING:
 
 /*------------------------------------------------------------------------*/
 static bool skip_ite_gate (Gate *g) {
-  assert (g->tag == Gate_Type::ITE_Gate);
+  CADICAL_assert (g->tag == Gate_Type::ITE_Gate);
   if (g->garbage)
     return true;
   return false;
@@ -5117,12 +5117,12 @@ static bool skip_ite_gate (Gate *g) {
 void Closure::produce_ite_merge_then_else_reasons (
     Gate *g, int src, int dst, std::vector<LRAT_ID> &reasons_implication,
     std::vector<LRAT_ID> &reasons_back) {
-  assert (!g->garbage);
+  CADICAL_assert (!g->garbage);
   if (!internal->lrat)
     return;
   check_correct_ite_flags (g);
   // no merge is happening actually
-  assert (g->rhs[1] == find_eager_representative(g->rhs[1]) || g->rhs[2] == find_eager_representative(g->rhs[2]));
+  CADICAL_assert (g->rhs[1] == find_eager_representative(g->rhs[1]) || g->rhs[2] == find_eager_representative(g->rhs[2]));
   if (find_eager_representative (g->lhs) == g->rhs[1] || find_eager_representative (g->lhs) == g->rhs[2])
     return;
   if ((g->rhs[1] == src && g->lhs == dst && g->rhs[2] == g->lhs) ||
@@ -5131,12 +5131,12 @@ void Closure::produce_ite_merge_then_else_reasons (
       (g->rhs[2] == -src && g->lhs == -dst && g->rhs[1] == g->lhs))
     return;
   check_ite_lrat_reasons (g, false);
-  assert (g->rhs.size () == 3);
-  assert (src == g->rhs[1] || src == g->rhs[2]);
-  assert (dst == g->rhs[1] || dst == g->rhs[2]);
+  CADICAL_assert (g->rhs.size () == 3);
+  CADICAL_assert (src == g->rhs[1] || src == g->rhs[2]);
+  CADICAL_assert (dst == g->rhs[1] || dst == g->rhs[2]);
   const int8_t flag = g->degenerated_ite;
-  assert (!ite_flags_no_then_clauses (flag)); // e = lhs: already merged
-  assert (!ite_flags_no_else_clauses (flag)); // t = lhs: already merged
+  CADICAL_assert (!ite_flags_no_then_clauses (flag)); // e = lhs: already merged
+  CADICAL_assert (!ite_flags_no_else_clauses (flag)); // t = lhs: already merged
   produce_rewritten_clause_lrat (g->pos_lhs_ids, g->lhs, false);
   if (ite_flags_neg_cond_lhs (flag)) {
     LOG ("degenerated case with lhs = -cond");
@@ -5148,8 +5148,8 @@ void Closure::produce_ite_merge_then_else_reasons (
   }
   if (ite_flags_cond_lhs (flag)) {
     LOG ("degenerated case with lhs = cond");
-    assert (g->pos_lhs_ids[0].clause);
-    assert (g->pos_lhs_ids[3].clause);
+    CADICAL_assert (g->pos_lhs_ids[0].clause);
+    CADICAL_assert (g->pos_lhs_ids[3].clause);
     reasons_back.push_back (g->pos_lhs_ids[3].clause->id);
     reasons_implication.push_back (g->pos_lhs_ids[0].clause->id);
     return;
@@ -5166,7 +5166,7 @@ void Closure::rewrite_ite_gate_update_lrat_reasons (Gate *g, int src,
     return;
   LOG (g, "updating lrat from");
   for (auto &litId : g->pos_lhs_ids) {
-    assert (litId.clause);
+    CADICAL_assert (litId.clause);
     if (litId.current_lit == src)
       litId.current_lit = dst;
     if (litId.current_lit == -src)
@@ -5178,8 +5178,8 @@ void Closure::rewrite_ite_gate_update_lrat_reasons (Gate *g, int src,
 bool Closure::rewrite_ite_gate_to_and (
     Gate *g, int src, int dst, size_t idx1, size_t idx2,
     int cond_lit_to_learn_if_degenerated) {
-  assert (internal->lrat_chain.empty ());
-  assert (!g->garbage);
+  CADICAL_assert (internal->lrat_chain.empty ());
+  CADICAL_assert (!g->garbage);
   LOG (g, "rewriting to proper AND");
   if (internal->val (g->lhs) > 0) {
     {
@@ -5204,7 +5204,7 @@ bool Closure::rewrite_ite_gate_to_and (
     if (!internal->unsat) {
       const int lit = g->rhs[1];
       const char v = internal->val (lit);
-      assert (dst == g->rhs[0] || dst == g->rhs[1] || -dst == g->rhs[0] ||
+      CADICAL_assert (dst == g->rhs[0] || dst == g->rhs[1] || -dst == g->rhs[0] ||
               -dst == g->rhs[1]);
       const int other = (dst == g->rhs[0] || dst == g->rhs[1])
                             ? dst ^ g->rhs[0] ^ g->rhs[1]
@@ -5235,10 +5235,10 @@ bool Closure::rewrite_ite_gate_to_and (
   LOG ("updating flags");
   g->degenerated_and_neg = (g->rhs[1] == -g->lhs || g->rhs[0] == -g->lhs);
   g->degenerated_and_pos = (g->rhs[0] == g->lhs || g->rhs[1] == g->lhs);
-  assert (g->rhs.size () == 3);
-  assert (g->pos_lhs_ids.size () == 4);
-  assert (idx1 < g->pos_lhs_ids.size ());
-  assert (idx2 < g->pos_lhs_ids.size ());
+  CADICAL_assert (g->rhs.size () == 3);
+  CADICAL_assert (g->pos_lhs_ids.size () == 4);
+  CADICAL_assert (idx1 < g->pos_lhs_ids.size ());
+  CADICAL_assert (idx2 < g->pos_lhs_ids.size ());
   int lit = g->pos_lhs_ids[idx2].current_lit, other = g->lhs;
   // TODO: remove argument
   (void) src;
@@ -5250,59 +5250,59 @@ bool Closure::rewrite_ite_gate_to_and (
     return false;
   }
 
-  assert (idx1 != (size_t) -1);
-  assert (idx2 != (size_t) -1);
-  assert (idx1 < g->pos_lhs_ids.size ());
-  assert (idx2 < g->pos_lhs_ids.size ());
+  CADICAL_assert (idx1 != (size_t) -1);
+  CADICAL_assert (idx2 != (size_t) -1);
+  CADICAL_assert (idx1 < g->pos_lhs_ids.size ());
+  CADICAL_assert (idx2 < g->pos_lhs_ids.size ());
   Clause *c = g->pos_lhs_ids[idx1].clause;
-  assert (c->size == 2);
+  CADICAL_assert (c->size == 2);
   Clause *d = g->pos_lhs_ids[idx2].clause;
-  assert (c != d);
-  assert (c);
-  assert (d);
+  CADICAL_assert (c != d);
+  CADICAL_assert (c);
+  CADICAL_assert (d);
   g->pos_lhs_ids.erase (std::remove_if (begin (g->pos_lhs_ids),
                                         end (g->pos_lhs_ids),
                                         [d] (const LitClausePair &p) {
                                           return p.clause == d || !p.clause;
                                         }),
                         end (g->pos_lhs_ids));
-  assert (g->pos_lhs_ids.size () == 2);
-  assert (lit);
-  assert (other);
-  assert (lit != dst);
-  assert (other != dst);
-  assert (lit != other);
+  CADICAL_assert (g->pos_lhs_ids.size () == 2);
+  CADICAL_assert (lit);
+  CADICAL_assert (other);
+  CADICAL_assert (lit != dst);
+  CADICAL_assert (other != dst);
+  CADICAL_assert (lit != other);
   lrat_chain.push_back (c->id);
   lrat_chain.push_back (d->id);
   Clause *e = learn_binary_tmp_or_full_clause (lit, -other);
-  assert (e);
+  CADICAL_assert (e);
 
   auto long_clause =
       std::find_if (begin (g->pos_lhs_ids), end (g->pos_lhs_ids),
                     [] (LitClausePair l) { return l.clause->size == 3; });
-  assert (long_clause != end (g->pos_lhs_ids));
+  CADICAL_assert (long_clause != end (g->pos_lhs_ids));
   LOG (long_clause->clause, "new long clause");
   g->neg_lhs_ids.push_back (*long_clause);
   g->pos_lhs_ids.erase (long_clause);
 
-  assert (g->pos_lhs_ids.size () == 1);
+  CADICAL_assert (g->pos_lhs_ids.size () == 1);
 
   (void) maybe_promote_tmp_binary_clause (g->pos_lhs_ids[0].clause);
   g->pos_lhs_ids.push_back ({lit, e});
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
   for (auto litId : g->pos_lhs_ids) {
     bool found = false;
-    assert (litId.clause);
+    CADICAL_assert (litId.clause);
     for (auto other : *litId.clause) {
       found = (find_eager_representative (other) == litId.current_lit);
       if (found)
         break;
     }
-    assert (found);
+    CADICAL_assert (found);
   }
   for (auto id : g->pos_lhs_ids) {
     LOG (id.clause, "clause after rewriting:");
-    assert (id.clause->size == 2);
+    CADICAL_assert (id.clause->size == 2);
   }
 
 #endif
@@ -5332,13 +5332,13 @@ void Closure::produce_ite_merge_lhs_then_else_reasons (
   LOG ("cond: %d, merging %d and rewriting to %d", cond_lit, lit_to_merge,
        other_lit);
   if (internal->lrat) {
-    assert (internal->lrat);
-    assert (g->pos_lhs_ids.size () == 4);
+    CADICAL_assert (internal->lrat);
+    CADICAL_assert (g->pos_lhs_ids.size () == 4);
 
     if (repr_lhs == -repr_other_lit) {
       LOG ("special case: %s=%s, checking if other: %s %s", LOGLIT (g->lhs),
            LOGLIT (-lit_to_merge), LOGLIT (cond_lit), LOGLIT (other_lit));
-      assert (repr_lit_to_merge != -repr_lhs); // should have been rewritten before
+      CADICAL_assert (repr_lit_to_merge != -repr_lhs); // should have been rewritten before
 
       if (rewritting_then && repr_cond_lit == repr_lhs) {
         LOG ("t=-lhs/c=lhs");
@@ -5353,7 +5353,7 @@ void Closure::produce_ite_merge_lhs_then_else_reasons (
         reasons_implication.push_back (id_unit);
         g->pos_lhs_ids[3].clause = produce_rewritten_clause_lrat (
             g->pos_lhs_ids[3].clause, g->lhs, false);
-        assert (g->pos_lhs_ids[3].clause);
+        CADICAL_assert (g->pos_lhs_ids[3].clause);
         reasons_implication.push_back (g->pos_lhs_ids[3].clause->id);
         unsimplified.clear ();
         return;
@@ -5371,7 +5371,7 @@ void Closure::produce_ite_merge_lhs_then_else_reasons (
         reasons_implication.push_back (id_unit);
         g->pos_lhs_ids[0].clause = produce_rewritten_clause_lrat (
             g->pos_lhs_ids[0].clause, g->lhs, false);
-        assert (g->pos_lhs_ids[0].clause);
+        CADICAL_assert (g->pos_lhs_ids[0].clause);
         reasons_implication.push_back (g->pos_lhs_ids[0].clause->id);
         unsimplified.clear ();
         return;
@@ -5394,7 +5394,7 @@ void Closure::produce_ite_merge_lhs_then_else_reasons (
         reasons_unit = {id_unit};
         g->pos_lhs_ids[1].clause = produce_rewritten_clause_lrat (
             g->pos_lhs_ids[1].clause, g->lhs, false);
-        assert (g->pos_lhs_ids[1].clause);
+        CADICAL_assert (g->pos_lhs_ids[1].clause);
 
         // don't bother finding out which one is used
         reasons_implication.push_back (id_unit);
@@ -5412,7 +5412,7 @@ void Closure::produce_ite_merge_lhs_then_else_reasons (
         reasons_unit = {id_unit};
         g->pos_lhs_ids[2].clause = produce_rewritten_clause_lrat (
             g->pos_lhs_ids[2].clause, g->lhs, false);
-        assert (g->pos_lhs_ids[2].clause);
+        CADICAL_assert (g->pos_lhs_ids[2].clause);
 
         reasons_implication.push_back (id_unit);
         reasons_implication.push_back (g->pos_lhs_ids[2].clause->id);
@@ -5426,8 +5426,8 @@ void Closure::produce_ite_merge_lhs_then_else_reasons (
             g->pos_lhs_ids[idx1].clause, g->lhs, false);
         g->pos_lhs_ids[idx2].clause = produce_rewritten_clause_lrat (
             g->pos_lhs_ids[idx2].clause, g->lhs, false);
-        assert (g->pos_lhs_ids[idx1].clause);
-        assert (g->pos_lhs_ids[idx2].clause);
+        CADICAL_assert (g->pos_lhs_ids[idx1].clause);
+        CADICAL_assert (g->pos_lhs_ids[idx2].clause);
         lrat_chain.push_back (g->pos_lhs_ids[idx1].clause->id);
         lrat_chain.push_back (g->pos_lhs_ids[idx2].clause->id);
         unsimplified.push_back (-cond_lit);
@@ -5444,8 +5444,8 @@ void Closure::produce_ite_merge_lhs_then_else_reasons (
             g->pos_lhs_ids[idx1].clause, g->lhs, false);
         g->pos_lhs_ids[idx2].clause = produce_rewritten_clause_lrat (
             g->pos_lhs_ids[idx2].clause, g->lhs, false);
-        assert (g->pos_lhs_ids[idx1].clause);
-        assert (g->pos_lhs_ids[idx2].clause);
+        CADICAL_assert (g->pos_lhs_ids[idx1].clause);
+        CADICAL_assert (g->pos_lhs_ids[idx2].clause);
         lrat_chain.push_back (g->pos_lhs_ids[idx1].clause->id);
         lrat_chain.push_back (g->pos_lhs_ids[idx2].clause->id);
         unsimplified.push_back (cond_lit);
@@ -5463,23 +5463,23 @@ void Closure::produce_ite_merge_lhs_then_else_reasons (
             g->pos_lhs_ids[idx1].clause, g->lhs, false);
         g->pos_lhs_ids[idx2].clause = produce_rewritten_clause_lrat (
             g->pos_lhs_ids[idx2].clause, g->lhs, false);
-        assert (g->pos_lhs_ids[idx1].clause);
-        assert (g->pos_lhs_ids[idx2].clause);
+        CADICAL_assert (g->pos_lhs_ids[idx1].clause);
+        CADICAL_assert (g->pos_lhs_ids[idx2].clause);
         reasons_unit.push_back (g->pos_lhs_ids[idx1].clause->id);
         reasons_unit.push_back (g->pos_lhs_ids[idx2].clause->id);
         return;
       }
       // if (other_lit == -g->lhs) {
-      //   assert (false);
+      //   CADICAL_assert (false);
       // }
       // if (other_lit == g->lhs) {
-      //   assert (false);
+      //   CADICAL_assert (false);
       // }
     }
 
     LOG ("normal path");
     produce_rewritten_clause_lrat (g->pos_lhs_ids, g->lhs, false);
-    assert (g->pos_lhs_ids.size () == 4);
+    CADICAL_assert (g->pos_lhs_ids.size () == 4);
 
     reasons_unit.push_back (g->pos_lhs_ids[idx1].clause->id);
     reasons_unit.push_back (g->pos_lhs_ids[idx2].clause->id);
@@ -5520,15 +5520,15 @@ void Closure::produce_ite_merge_lhs_then_else_reasons (
 }
 
 void Closure::rewrite_ite_gate (Gate *g, int dst, int src) {
-  assert (unsimplified.empty ());
+  CADICAL_assert (unsimplified.empty ());
   if (skip_ite_gate (g))
     return;
   if (!gate_contains (g, src))
     return;
   LOG (g, "rewriting %d by %d in", src, dst);
-  assert (!g->shrunken);
-  assert (g->rhs.size () == 3);
-  assert (!internal->lrat || g->pos_lhs_ids.size () == 4);
+  CADICAL_assert (!g->shrunken);
+  CADICAL_assert (g->rhs.size () == 3);
+  CADICAL_assert (!internal->lrat || g->pos_lhs_ids.size () == 4);
   auto &rhs = g->rhs;
   const int lhs = g->lhs;
   const int cond = g->rhs[0];
@@ -5544,16 +5544,16 @@ void Closure::rewrite_ite_gate (Gate *g, int dst, int src) {
   bool garbage = false;
   bool shrink = true;
   const auto git = g->indexed ? table.find (g) : end (table);
-  assert (!g->indexed || git != end (table));
-  assert (*git == g);
+  CADICAL_assert (!g->indexed || git != end (table));
+  CADICAL_assert (*git == g);
   if (internal->val (cond) && internal->val (then_lit) &&
       internal->val (else_lit)) { // propagation has set all value anyway
     LOG (g, "all values are set");
-    assert (internal->val (g->lhs));
+    CADICAL_assert (internal->val (g->lhs));
     garbage = true;
   } else if (internal->val (g->lhs) && internal->val (cond)) {
     LOG (g, "all values are set 2");
-    assert (internal->val (g->lhs));
+    CADICAL_assert (internal->val (g->lhs));
     garbage = true;
   }
   // this code is taken one-to-one from kissat
@@ -5576,14 +5576,14 @@ void Closure::rewrite_ite_gate (Gate *g, int dst, int src) {
       // !then_lit & then_lit | then_lit & else_lit
       // then_lit & else_lit
       rhs[0] = else_lit;
-      assert (rhs[1] == then_lit);
+      CADICAL_assert (rhs[1] == then_lit);
       garbage = rewrite_ite_gate_to_and (g, src, dst, 0, 2, -dst);
     } else if (dst == else_lit) {
       // else_list ? then_lit : else_lit
       // else_list & then_lit | !else_list & else_lit
       // else_list & then_lit
       rhs[0] = else_lit;
-      assert (rhs[1] == then_lit);
+      CADICAL_assert (rhs[1] == then_lit);
       garbage = rewrite_ite_gate_to_and (g, src, dst, 2, 0, dst);
     } else if (not_dst == else_lit) {
       // !else_list ? then_lit : else_lit
@@ -5680,7 +5680,7 @@ void Closure::rewrite_ite_gate (Gate *g, int dst, int src) {
         produce_rewritten_clause_lrat_and_clean (g->pos_lhs_ids, g->lhs,
                                                  false);
         if (internal->lrat) {
-          assert (g->pos_lhs_ids.size () == 2);
+          CADICAL_assert (g->pos_lhs_ids.size () == 2);
           lrat_chain.push_back (g->pos_lhs_ids[0].clause->id);
           lrat_chain.push_back (g->pos_lhs_ids[1].clause->id);
         }
@@ -5689,9 +5689,9 @@ void Closure::rewrite_ite_gate (Gate *g, int dst, int src) {
       } else {
         LOG ("changing to xor");
         new_tag = Gate_Type::XOr_Gate;
-        assert (rhs[0] == cond);
+        CADICAL_assert (rhs[0] == cond);
         rhs[1] = else_lit;
-        assert (!internal->lrat || !g->pos_lhs_ids.empty ());
+        CADICAL_assert (!internal->lrat || !g->pos_lhs_ids.empty ());
         {
 #ifdef LOGGING
           for (auto litId : g->pos_lhs_ids) {
@@ -5713,7 +5713,7 @@ void Closure::rewrite_ite_gate (Gate *g, int dst, int src) {
       rewrite_ite_gate_update_lrat_reasons (g, src, dst);
     }
   } else {
-    assert (src == else_lit);
+    CADICAL_assert (src == else_lit);
     if (not_dst == g->lhs) { // TODO not in kissat
       rhs[2] = dst;
       std::vector<LRAT_ID> reasons_implication, reasons_back, reasons_unit;
@@ -5749,8 +5749,8 @@ void Closure::rewrite_ite_gate (Gate *g, int dst, int src) {
       // cond ? then_lit : cond
       // cond & then_lit | !cond & cond
       // cond & then_lit
-      assert (rhs[0] == cond);
-      assert (rhs[1] == then_lit);
+      CADICAL_assert (rhs[0] == cond);
+      CADICAL_assert (rhs[1] == then_lit);
       garbage = rewrite_ite_gate_to_and (g, src, dst, 2, 0, cond);
     } else if (not_dst == cond) {
       // cond ? then_lit : !cond
@@ -5759,7 +5759,7 @@ void Closure::rewrite_ite_gate (Gate *g, int dst, int src) {
       // then_lit | !cond
       // !(!then_lit & cond)
       g->lhs = not_lhs;
-      assert (rhs[0] == cond);
+      CADICAL_assert (rhs[0] == cond);
       rhs[1] = not_then_lit;
       if (then_lit == lhs || cond == lhs)
         garbage = true;
@@ -5785,7 +5785,7 @@ void Closure::rewrite_ite_gate (Gate *g, int dst, int src) {
         produce_rewritten_clause_lrat_and_clean (g->pos_lhs_ids, not_lhs,
                                                  false);
         if (internal->lrat) {
-          assert (g->pos_lhs_ids.size () == 2);
+          CADICAL_assert (g->pos_lhs_ids.size () == 2);
           lrat_chain.push_back (g->pos_lhs_ids[0].clause->id);
           lrat_chain.push_back (g->pos_lhs_ids[1].clause->id);
         }
@@ -5795,7 +5795,7 @@ void Closure::rewrite_ite_gate (Gate *g, int dst, int src) {
         produce_rewritten_clause_lrat_and_clean (g->pos_lhs_ids, not_lhs,
                                                  false);
         if (internal->lrat) {
-          assert (g->pos_lhs_ids.size () == 2);
+          CADICAL_assert (g->pos_lhs_ids.size () == 2);
           lrat_chain.push_back (g->pos_lhs_ids[0].clause->id);
           lrat_chain.push_back (g->pos_lhs_ids[1].clause->id);
         }
@@ -5805,7 +5805,7 @@ void Closure::rewrite_ite_gate (Gate *g, int dst, int src) {
         produce_rewritten_clause_lrat_and_clean (g->pos_lhs_ids, not_lhs,
                                                  false);
         if (internal->lrat) {
-          assert (g->pos_lhs_ids.size () == 2);
+          CADICAL_assert (g->pos_lhs_ids.size () == 2);
           lrat_chain.push_back (g->pos_lhs_ids[0].clause->id);
           lrat_chain.push_back (g->pos_lhs_ids[1].clause->id);
         }
@@ -5814,10 +5814,10 @@ void Closure::rewrite_ite_gate (Gate *g, int dst, int src) {
       } else {
         new_tag = Gate_Type::XOr_Gate;
         g->lhs = not_lhs;
-        assert (rhs[0] == cond);
-        assert (rhs[1] == then_lit);
-        assert (rhs[0] != g->lhs);
-        assert (rhs[1] != g->lhs);
+        CADICAL_assert (rhs[0] == cond);
+        CADICAL_assert (rhs[1] == then_lit);
+        CADICAL_assert (rhs[0] != g->lhs);
+        CADICAL_assert (rhs[1] != g->lhs);
         produce_rewritten_clause_lrat_and_clean (g->pos_lhs_ids, not_lhs,
                                                  false);
       }
@@ -5828,8 +5828,8 @@ void Closure::rewrite_ite_gate (Gate *g, int dst, int src) {
     }
   }
   if (!garbage && !internal->unsat) {
-    assert (new_tag != Gate_Type::ITE_Gate || g->lhs != -rhs[1]);
-    assert (new_tag != Gate_Type::ITE_Gate || g->lhs != -rhs[2]);
+    CADICAL_assert (new_tag != Gate_Type::ITE_Gate || g->lhs != -rhs[1]);
+    CADICAL_assert (new_tag != Gate_Type::ITE_Gate || g->lhs != -rhs[2]);
     if (shrink) {
       if (new_tag == Gate_Type::XOr_Gate) {
         bool negate_lhs = false;
@@ -5848,15 +5848,15 @@ void Closure::rewrite_ite_gate (Gate *g, int dst, int src) {
           internal->vlit (
               rhs[1])) { // unlike kissat, we need to do it after negating
         std::swap (rhs[0], rhs[1]);
-        assert (new_tag != Gate_Type::ITE_Gate);
+        CADICAL_assert (new_tag != Gate_Type::ITE_Gate);
       }
-      assert (internal->vlit (rhs[0]) < internal->vlit (rhs[1]));
-      assert (!g->shrunken);
+      CADICAL_assert (internal->vlit (rhs[0]) < internal->vlit (rhs[1]));
+      CADICAL_assert (!g->shrunken);
       g->shrunken = true;
       rhs[2] = 0;
       g->tag = new_tag;
       rhs.resize (2);
-      assert (rhs[0] != -rhs[1]);
+      CADICAL_assert (rhs[0] != -rhs[1]);
       if (new_tag == Gate_Type::XOr_Gate) {
         if (rhs[0] == -g->lhs || rhs[1] == -g->lhs) {
           LOG (g, "special XOR:");
@@ -5864,7 +5864,7 @@ void Closure::rewrite_ite_gate (Gate *g, int dst, int src) {
           produce_rewritten_clause_lrat_and_clean (g->pos_lhs_ids, not_lhs,
                                                    false);
           if (internal->lrat) {
-            assert (g->pos_lhs_ids.size () == 2);
+            CADICAL_assert (g->pos_lhs_ids.size () == 2);
             lrat_chain.push_back (g->pos_lhs_ids[0].clause->id);
             lrat_chain.push_back (g->pos_lhs_ids[1].clause->id);
           }
@@ -5876,7 +5876,7 @@ void Closure::rewrite_ite_gate (Gate *g, int dst, int src) {
           produce_rewritten_clause_lrat_and_clean (g->pos_lhs_ids, not_lhs,
                                                    false);
           if (internal->lrat) {
-            assert (g->pos_lhs_ids.size () == 2);
+            CADICAL_assert (g->pos_lhs_ids.size () == 2);
             lrat_chain.push_back (g->pos_lhs_ids[0].clause->id);
             lrat_chain.push_back (g->pos_lhs_ids[1].clause->id);
           }
@@ -5886,7 +5886,7 @@ void Closure::rewrite_ite_gate (Gate *g, int dst, int src) {
           int i = 0;
           bool negated = false;
           for (int j = 0; j < 2; ++i, ++j) {
-            assert (i <= j);
+            CADICAL_assert (i <= j);
             const int lit = rhs[i] = rhs[j];
             const char v = internal->val (lit);
             if (v > 0) {
@@ -5896,7 +5896,7 @@ void Closure::rewrite_ite_gate (Gate *g, int dst, int src) {
               --i;
             }
           }
-          assert (i <= 2);
+          CADICAL_assert (i <= 2);
           rhs.resize (i);
           if (negated) {
             g->lhs = -g->lhs;
@@ -5913,10 +5913,10 @@ void Closure::rewrite_ite_gate (Gate *g, int dst, int src) {
             }
 #endif
             produce_rewritten_clause_lrat_and_clean (g->pos_lhs_ids, g->lhs);
-            assert (!internal->lrat || g->pos_lhs_ids.size () == 2);
+            CADICAL_assert (!internal->lrat || g->pos_lhs_ids.size () == 2);
             Clause *c1 = nullptr, *c2 = nullptr;
             if (internal->lrat) {
-              assert (g->pos_lhs_ids[0].clause);
+              CADICAL_assert (g->pos_lhs_ids[0].clause);
               bool rhs_as_src_first =
                   g->pos_lhs_ids[0].clause->literals[0] == g->lhs ||
                   g->pos_lhs_ids[0].clause->literals[1] == g->lhs;
@@ -5935,10 +5935,10 @@ void Closure::rewrite_ite_gate (Gate *g, int dst, int src) {
           }
         }
         if (!garbage) {
-          assert (rhs[0] != g->lhs);
-          assert (rhs[1] != g->lhs);
-          assert (rhs[0] != -g->lhs);
-          assert (rhs[1] != -g->lhs);
+          CADICAL_assert (rhs[0] != g->lhs);
+          CADICAL_assert (rhs[1] != g->lhs);
+          CADICAL_assert (rhs[0] != -g->lhs);
+          CADICAL_assert (rhs[1] != -g->lhs);
         }
       }
 
@@ -5948,10 +5948,10 @@ void Closure::rewrite_ite_gate (Gate *g, int dst, int src) {
 
         if (internal->lrat) {
           if (new_tag == Gate_Type::XOr_Gate) {
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
             std::for_each (begin (g->pos_lhs_ids), end (g->pos_lhs_ids),
                            [g] (LitClausePair l) {
-                             assert ((size_t) l.clause->size ==
+                             CADICAL_assert ((size_t) l.clause->size ==
                                      1 + g->arity ());
                            });
 #endif
@@ -5959,24 +5959,24 @@ void Closure::rewrite_ite_gate (Gate *g, int dst, int src) {
             // we have to get rid of one clause, two become binaries, and
             // becomes ternary
 
-#if defined(LOGGING) || !defined(NDEBUG)
+#if defined(LOGGING) || !defined(CADICAL_NDEBUG)
             for (auto id : g->pos_lhs_ids) {
               LOG (id.clause, "clause after rewriting:");
-              assert (id.clause->size == 2);
+              CADICAL_assert (id.clause->size == 2);
             }
 #endif
-            assert (g->pos_lhs_ids.size () == 2 ||
+            CADICAL_assert (g->pos_lhs_ids.size () == 2 ||
                     gate_contains (g, g->lhs));
-            assert (g->neg_lhs_ids.size () == 1 ||
+            CADICAL_assert (g->neg_lhs_ids.size () == 1 ||
                     gate_contains (g, g->lhs));
-            assert (g->arity () == 2);
-#ifndef NDEBUG
+            CADICAL_assert (g->arity () == 2);
+#ifndef CADICAL_NDEBUG
             std::for_each (
                 begin (g->pos_lhs_ids), end (g->pos_lhs_ids),
-                [] (LitClausePair l) { assert (l.clause->size == 2); });
+                [] (LitClausePair l) { CADICAL_assert (l.clause->size == 2); });
 #endif
           } else {
-            assert (false);
+            CADICAL_assert (false);
             __builtin_unreachable ();
           }
         }
@@ -5985,7 +5985,7 @@ void Closure::rewrite_ite_gate (Gate *g, int dst, int src) {
           check_and_gate_implied (g);
           h = find_and_lits (rhs);
         } else {
-          assert (new_tag == Gate_Type::XOr_Gate);
+          CADICAL_assert (new_tag == Gate_Type::XOr_Gate);
           check_xor_gate_implied (g);
           h = find_xor_gate (g);
         }
@@ -6015,7 +6015,7 @@ void Closure::rewrite_ite_gate (Gate *g, int dst, int src) {
           if (g->indexed)
             remove_gate (git);
           index_gate (g);
-          assert (g->arity () == 2);
+          CADICAL_assert (g->arity () == 2);
           for (auto lit : g->rhs)
             if (lit != dst)
               if (lit != cond && lit != then_lit && lit != else_lit)
@@ -6029,18 +6029,18 @@ void Closure::rewrite_ite_gate (Gate *g, int dst, int src) {
       LOG (g, "rewritten");
       if (internal->lrat)
 	update_ite_flags (g), check_correct_ite_flags(g);
-      assert (rhs[0] != rhs[1]);
-      assert (rhs[0] != rhs[2]);
-      assert (rhs[1] != rhs[2]);
-      assert (rhs[0] != -(rhs[1]));
-      assert (rhs[0] != -(rhs[2]));
-      assert (rhs[1] != -(rhs[2]));
+      CADICAL_assert (rhs[0] != rhs[1]);
+      CADICAL_assert (rhs[0] != rhs[2]);
+      CADICAL_assert (rhs[1] != rhs[2]);
+      CADICAL_assert (rhs[0] != -(rhs[1]));
+      CADICAL_assert (rhs[0] != -(rhs[2]));
+      CADICAL_assert (rhs[1] != -(rhs[2]));
       check_ite_gate_implied (g);
       check_ite_lrat_reasons (g, false);
       bool negate_lhs;
       Gate *h = find_ite_gate (g, negate_lhs);
-      assert (lhs == g->lhs);
-      assert (not_lhs == -(g->lhs));
+      CADICAL_assert (lhs == g->lhs);
+      CADICAL_assert (not_lhs == -(g->lhs));
       if (negate_lhs)
         g->lhs = -lhs;
       check_ite_lrat_reasons (g);
@@ -6061,7 +6061,7 @@ void Closure::rewrite_ite_gate (Gate *g, int dst, int src) {
                                  extra_reasons_ulit))
           ++internal->stats.congruence.ites;
         delete_proof_chain ();
-        assert (internal->unsat || chain.empty ());
+        CADICAL_assert (internal->unsat || chain.empty ());
       } else {
         garbage = false;
         if (g->indexed)
@@ -6069,7 +6069,7 @@ void Closure::rewrite_ite_gate (Gate *g, int dst, int src) {
         LOG (g, "normalized");
         g->hash = hash_lits (nonces, g->rhs);
         index_gate (g);
-        assert (g->arity () == 3);
+        CADICAL_assert (g->arity () == 3);
         for (auto lit : g->rhs)
           if (lit != dst)
             if (lit != cond && lit != then_lit && lit != else_lit)
@@ -6080,7 +6080,7 @@ void Closure::rewrite_ite_gate (Gate *g, int dst, int src) {
   if (garbage && !internal->unsat)
     mark_garbage (g);
 
-  assert (chain.empty ());
+  CADICAL_assert (chain.empty ());
 }
 
 void Closure::simplify_ite_gate_produce_unit_lrat (Gate *g, int lit,
@@ -6091,13 +6091,13 @@ void Closure::simplify_ite_gate_produce_unit_lrat (Gate *g, int lit,
   // TODO
   if (internal->val (lit) > 0)
     return;
-  assert (internal->lrat);
-  assert (g);
-  assert (idx1 < g->pos_lhs_ids.size ());
-  assert (idx2 < g->pos_lhs_ids.size ());
-  assert (g->pos_lhs_ids.size () == 4);
+  CADICAL_assert (internal->lrat);
+  CADICAL_assert (g);
+  CADICAL_assert (idx1 < g->pos_lhs_ids.size ());
+  CADICAL_assert (idx2 < g->pos_lhs_ids.size ());
+  CADICAL_assert (g->pos_lhs_ids.size () == 4);
 
-  assert (idx1 != idx2);
+  CADICAL_assert (idx1 != idx2);
   Clause *c = g->pos_lhs_ids[idx1].clause;
   Clause *d = g->pos_lhs_ids[idx2].clause;
 
@@ -6105,22 +6105,22 @@ void Closure::simplify_ite_gate_produce_unit_lrat (Gate *g, int lit,
     LOG ("special case of LHS=-cond where only one clause in LRAT is needed is needed");
     size_t idx = (internal->val (g->rhs[1]) < 0 ? idx2 : idx1);
     c = produce_rewritten_clause_lrat (g->pos_lhs_ids[idx].clause, g->lhs, false, false);
-    assert (c);
+    CADICAL_assert (c);
     // not possible to do this in a single lrat chain
     push_id_and_rewriting_lrat_unit (c, Rewrite (), lrat_chain, true,
                                      Rewrite (), g->lhs);
-    assert (d);
+    CADICAL_assert (d);
     return;
   }
   if (g->lhs == g->rhs[0]) {
     LOG ("special case of LHS=cond where only one clause in LRAT is needed is needed");
     size_t idx = (internal->val (g->rhs[1]) > 0 ? idx2 : idx1);
     c = produce_rewritten_clause_lrat (g->pos_lhs_ids[idx].clause, g->lhs, false, false);
-    assert (c);
+    CADICAL_assert (c);
     // not possible to do this in a single lrat chain
     push_id_and_rewriting_lrat_unit (c, Rewrite (), lrat_chain, true,
                                      Rewrite (), g->lhs);
-    assert (d);
+    CADICAL_assert (d);
     return;
   }
 
@@ -6133,7 +6133,7 @@ void Closure::simplify_ite_gate_produce_unit_lrat (Gate *g, int lit,
   } else if (!c) {
     push_id_and_rewriting_lrat_unit (d, Rewrite (), lrat_chain, true,
                                      Rewrite (), g->lhs);
-    assert (d);
+    CADICAL_assert (d);
     lrat_chain.push_back (d->id);
   }
 }
@@ -6142,10 +6142,10 @@ void Closure::simplify_ite_gate_produce_unit_lrat (Gate *g, int lit,
 void Closure::merge_and_gate_lrat_produce_lrat (
     Gate *g, Gate *h, std::vector<LRAT_ID> &reasons_lrat_src,
     std::vector<LRAT_ID> &reasons_lrat_usrc, bool remove_units) {
-  assert (internal->lrat);
-  assert (g->tag == Gate_Type::And_Gate);
-  assert (h->tag == Gate_Type::And_Gate);
-  assert (g->neg_lhs_ids.size () <= 1);
+  CADICAL_assert (internal->lrat);
+  CADICAL_assert (g->tag == Gate_Type::And_Gate);
+  CADICAL_assert (h->tag == Gate_Type::And_Gate);
+  CADICAL_assert (g->neg_lhs_ids.size () <= 1);
   update_and_gate_build_lrat_chain (g, h, reasons_lrat_src,
                                     reasons_lrat_usrc, remove_units);
 }
@@ -6153,8 +6153,8 @@ void Closure::merge_and_gate_lrat_produce_lrat (
 // odd copy of rewrite_ite_gate_lrat_and
 bool Closure::simplify_ite_gate_to_and (Gate *g, size_t idx1, size_t idx2,
                                         int removed_lit) {
-  assert (internal->lrat_chain.empty ());
-  assert (g->rhs.size () == 3);
+  CADICAL_assert (internal->lrat_chain.empty ());
+  CADICAL_assert (g->rhs.size () == 3);
 #ifdef LOGGING
   for (auto litId : g->pos_lhs_ids) {
     LOG (litId.clause, "%d ->", litId.current_lit);
@@ -6164,7 +6164,7 @@ bool Closure::simplify_ite_gate_to_and (Gate *g, size_t idx1, size_t idx2,
     if (internal->lrat) {
       Clause *c = g->pos_lhs_ids[idx1].clause;
       push_id_and_rewriting_lrat_unit (c, Rewrite (), lrat_chain);
-      assert (!lrat_chain.empty ());
+      CADICAL_assert (!lrat_chain.empty ());
     }
     learn_congruence_unit (-g->lhs);
     return true;
@@ -6174,9 +6174,9 @@ bool Closure::simplify_ite_gate_to_and (Gate *g, size_t idx1, size_t idx2,
   g->degenerated_and_neg = (g->degenerated_and_neg || g->rhs[1] == -g->lhs || g->rhs[0] == -g->lhs);
   g->degenerated_and_pos = (g->degenerated_and_pos || g->rhs[0] == g->lhs || g->rhs[1] == g->lhs);
 
-  assert (g->pos_lhs_ids.size () == 4);
-  assert (idx1 < g->pos_lhs_ids.size ());
-  assert (idx2 < g->pos_lhs_ids.size ());
+  CADICAL_assert (g->pos_lhs_ids.size () == 4);
+  CADICAL_assert (idx1 < g->pos_lhs_ids.size ());
+  CADICAL_assert (idx2 < g->pos_lhs_ids.size ());
   int lit = g->pos_lhs_ids[idx2].current_lit, other = g->lhs;
   size_t new_idx1 = idx1;
   size_t new_idx2 = idx2;
@@ -6187,7 +6187,7 @@ bool Closure::simplify_ite_gate_to_and (Gate *g, size_t idx1, size_t idx2,
     LOG (g, "degenerated AND gate");
     const int replacement_lit = (g->rhs[1] == g->lhs ? g->rhs[0] : g->rhs[1]);
     for (auto &litId : g->pos_lhs_ids) {
-      assert (litId.clause);
+      CADICAL_assert (litId.clause);
       LOG (litId.clause, "%d ->", litId.current_lit);
       if (litId.current_lit == removed_lit)
         litId.current_lit = -replacement_lit;
@@ -6195,32 +6195,32 @@ bool Closure::simplify_ite_gate_to_and (Gate *g, size_t idx1, size_t idx2,
         litId.current_lit = replacement_lit;
       LOG (litId.clause, "%d ->", litId.current_lit);
       // TODO we need a replacement index
-      assert (std::find (begin (*litId.clause), end (*litId.clause), litId.current_lit) !=
+      CADICAL_assert (std::find (begin (*litId.clause), end (*litId.clause), litId.current_lit) !=
               end (*litId.clause));
-      assert (std::find (begin (g->rhs), end (g->rhs), litId.current_lit) !=
+      CADICAL_assert (std::find (begin (g->rhs), end (g->rhs), litId.current_lit) !=
               end (g->rhs));
     }
     return false;
   }
-  assert (new_idx1 < g->pos_lhs_ids.size ());
-  assert (new_idx2 < g->pos_lhs_ids.size ());
+  CADICAL_assert (new_idx1 < g->pos_lhs_ids.size ());
+  CADICAL_assert (new_idx2 < g->pos_lhs_ids.size ());
   Clause *c = g->pos_lhs_ids[new_idx1].clause;
-  assert (c->size == 2);
-  assert (new_idx1 != new_idx2);
+  CADICAL_assert (c->size == 2);
+  CADICAL_assert (new_idx1 != new_idx2);
   Clause *d = g->pos_lhs_ids[new_idx2].clause;
-  assert (c != d);
-  assert (c);
-  assert (d);
+  CADICAL_assert (c != d);
+  CADICAL_assert (c);
+  CADICAL_assert (d);
   g->pos_lhs_ids.erase (std::remove_if (begin (g->pos_lhs_ids),
                                         end (g->pos_lhs_ids),
                                         [d] (const LitClausePair &p) {
                                           return p.clause == d;
                                         }),
                         end (g->pos_lhs_ids));
-  assert (g->pos_lhs_ids.size () == 2);
-  assert (lit);
-  assert (other);
-  assert (lit != other);
+  CADICAL_assert (g->pos_lhs_ids.size () == 2);
+  CADICAL_assert (lit);
+  CADICAL_assert (other);
+  CADICAL_assert (lit != other);
   lrat_chain.push_back (c->id);
   lrat_chain.push_back (d->id);
   Clause *e = add_tmp_binary_clause (lit, -other);
@@ -6228,20 +6228,20 @@ bool Closure::simplify_ite_gate_to_and (Gate *g, size_t idx1, size_t idx2,
   auto long_clause =
       std::find_if (begin (g->pos_lhs_ids), end (g->pos_lhs_ids),
                     [] (LitClausePair l) { return l.clause->size == 3; });
-  assert (long_clause != end (g->pos_lhs_ids));
+  CADICAL_assert (long_clause != end (g->pos_lhs_ids));
   LOG (long_clause->clause, "new long clause");
   g->neg_lhs_ids.push_back (*long_clause);
   g->pos_lhs_ids.erase (long_clause);
-  assert (g->pos_lhs_ids.size () == 1);
+  CADICAL_assert (g->pos_lhs_ids.size () == 1);
   g->pos_lhs_ids.push_back ({lit, e});
 
   const int first_lit = g->rhs[0];
   const int second_lit = g->rhs[1];
   for (auto &litId : g->pos_lhs_ids) {
-    assert (litId.clause);
+    CADICAL_assert (litId.clause);
     LOG (litId.clause, "%s ->", LOGLIT (litId.current_lit));
     if (internal->val (litId.current_lit)) {
-      assert (litId.clause->size == 2);
+      CADICAL_assert (litId.clause->size == 2);
       int replacement_lit = 0;
       for (int i = 0; i < 2; ++i) {
         if (litId.clause->literals[i] == first_lit) {
@@ -6252,7 +6252,7 @@ bool Closure::simplify_ite_gate_to_and (Gate *g, size_t idx1, size_t idx2,
           break;
         }
       }
-      assert (replacement_lit);
+      CADICAL_assert (replacement_lit);
 
       litId.current_lit = replacement_lit;
     } else if (litId.current_lit == removed_lit)
@@ -6261,9 +6261,9 @@ bool Closure::simplify_ite_gate_to_and (Gate *g, size_t idx1, size_t idx2,
       litId.current_lit = g->rhs[0];
     LOG (litId.clause, "%d ->", litId.current_lit);
     // TODO we need a replacement index
-    assert (std::find (begin (g->rhs), end (g->rhs), litId.current_lit) !=
+    CADICAL_assert (std::find (begin (g->rhs), end (g->rhs), litId.current_lit) !=
             end (g->rhs));
-    assert (std::find (begin (*litId.clause), end (*litId.clause),
+    CADICAL_assert (std::find (begin (*litId.clause), end (*litId.clause),
                        litId.current_lit) != end (*litId.clause));
   }
   return false;
@@ -6273,9 +6273,9 @@ void Closure::merge_ite_gate_same_then_else_lrat (
     std::vector<LitClausePair> &clauses,
     std::vector<LRAT_ID> &reasons_implication,
     std::vector<LRAT_ID> &reasons_back) {
-  assert (clauses.size () == 4);
+  CADICAL_assert (clauses.size () == 4);
   produce_rewritten_clause_lrat_and_clean (clauses);
-  assert (clauses.size () == 4);
+  CADICAL_assert (clauses.size () == 4);
   auto then_imp = clauses[0];
   auto neg_then_imp = clauses[1];
   auto else_imp = clauses[2];
@@ -6289,8 +6289,8 @@ void Closure::merge_ite_gate_same_then_else_lrat (
 void Closure::simplify_ite_gate_then_else_set (
     Gate *g, std::vector<LRAT_ID> &reasons_implication,
     std::vector<LRAT_ID> &reasons_back, size_t idx1, size_t idx2) {
-  assert (idx1 < g->pos_lhs_ids.size ());
-  assert (idx2 < g->pos_lhs_ids.size ());
+  CADICAL_assert (idx1 < g->pos_lhs_ids.size ());
+  CADICAL_assert (idx2 < g->pos_lhs_ids.size ());
   Clause *c = g->pos_lhs_ids[idx1].clause;
   Clause *d = g->pos_lhs_ids[idx2].clause;
   push_id_and_rewriting_lrat_unit (c, Rewrite (), reasons_back, true,
@@ -6300,11 +6300,11 @@ void Closure::simplify_ite_gate_then_else_set (
   LOG (reasons_back, "LRAT");
   LOG (reasons_implication, "LRAT");
   // c = produce_rewritten_clause_lrat (c, g->lhs, false);
-  // assert (c);
+  // CADICAL_assert (c);
   // d = produce_rewritten_clause_lrat (d, g->lhs, false);
-  // assert (d);
+  // CADICAL_assert (d);
   // const int cond = g->rhs[0];
-  // assert (internal->val (cond));
+  // CADICAL_assert (internal->val (cond));
   // reasons_implication.push_back(internal->unit_id (internal->val (cond) >
   // 0 ? cond : -cond)); reasons_implication.push_back(c->id);
   // reasons_back.push_back(internal->unit_id (internal->val (cond) > 0 ?
@@ -6314,12 +6314,12 @@ void Closure::simplify_ite_gate_then_else_set (
 void Closure::simplify_ite_gate_condition_set (
     Gate *g, std::vector<LRAT_ID> &reasons_lrat,
     std::vector<LRAT_ID> &reasons_back_lrat, size_t idx1, size_t idx2) {
-  assert (internal->lrat);
+  CADICAL_assert (internal->lrat);
   Clause *c = g->pos_lhs_ids[idx1].clause;
   Clause *d = g->pos_lhs_ids[idx2].clause;
-#if defined(LOGGING) || !defined(NDEBUG)
+#if defined(LOGGING) || !defined(CADICAL_NDEBUG)
   const int cond = g->rhs[0];
-  assert (internal->val (cond));
+  CADICAL_assert (internal->val (cond));
   LOG ("cond = %d", cond);
 #endif
 #ifdef LOGGING
@@ -6336,7 +6336,7 @@ void Closure::simplify_ite_gate (Gate *g) {
   if (skip_ite_gate (g))
     return;
   LOG (g, "simplifying");
-  assert (g->arity () == 3);
+  CADICAL_assert (g->arity () == 3);
   bool garbage = true;
   int lhs = g->lhs;
   auto &rhs = g->rhs;
@@ -6349,7 +6349,7 @@ void Closure::simplify_ite_gate (Gate *g) {
   std::vector<LRAT_ID> reasons_lrat, reasons_back_lrat;
   if (v_cond && v_else && v_then) { // propagation has set all value anyway
     LOG (g, "all values are set");
-    assert (internal->val (g->lhs));
+    CADICAL_assert (internal->val (g->lhs));
     garbage = true;
   } else if (v_cond > 0) {
     if (internal->lrat)
@@ -6372,7 +6372,7 @@ void Closure::simplify_ite_gate (Gate *g) {
   } else {
     LOG ("then %d: %d; else %d: %d", then_lit, v_then, else_lit, v_else);
     std::vector<LRAT_ID> extra_reasons, extra_reasons_back;
-    assert (v_then || v_else);
+    CADICAL_assert (v_then || v_else);
     if (v_then > 0 && v_else > 0) {
       simplify_ite_gate_produce_unit_lrat (g, lhs, 1, 3);
       learn_congruence_unit (lhs);
@@ -6398,9 +6398,9 @@ void Closure::simplify_ite_gate (Gate *g) {
         ++internal->stats.congruence.unaries;
       }
     } else {
-      assert (!!v_then + !!v_else == 1);
+      CADICAL_assert (!!v_then + !!v_else == 1);
       auto git = g->indexed ? table.find (g) : end (table);
-      assert (!g->indexed || git != end (table));
+      CADICAL_assert (!g->indexed || git != end (table));
       if (v_then > 0) {
         g->lhs = -lhs;
         rhs[0] = -cond;
@@ -6416,7 +6416,7 @@ void Closure::simplify_ite_gate (Gate *g) {
         rhs[1] = cond;
         simplify_ite_gate_to_and (g, 3, 1, else_lit);
       } else {
-        assert (v_else < 0);
+        CADICAL_assert (v_else < 0);
         rhs[0] = then_lit;
         rhs[1] = cond;
         simplify_ite_gate_to_and (g, 2, 0, -else_lit);
@@ -6428,13 +6428,13 @@ void Closure::simplify_ite_gate (Gate *g) {
       g->shrunken = true;
       g->tag = Gate_Type::And_Gate;
       rhs.resize (2);
-      assert (is_sorted (begin (rhs), end (rhs),
+      CADICAL_assert (is_sorted (begin (rhs), end (rhs),
                          sort_literals_by_var_smaller (internal)));
       g->hash = hash_lits (nonces, rhs);
       check_and_gate_implied (g);
       Gate *h = find_and_lits (rhs);
       if (h) {
-        assert (garbage);
+        CADICAL_assert (garbage);
         std::vector<LRAT_ID> reasons_lrat, reasons_lrat_back;
         if (internal->lrat)
           merge_and_gate_lrat_produce_lrat (g, h, reasons_lrat,
@@ -6471,16 +6471,16 @@ void Closure::add_ite_matching_proof_chain (
     std::vector<LRAT_ID> &reasons2) {
   check_ite_lrat_reasons (g);
   check_ite_lrat_reasons (h, false);
-  assert (g->lhs == lhs1);
-  assert (h->lhs == lhs2);
+  CADICAL_assert (g->lhs == lhs1);
+  CADICAL_assert (h->lhs == lhs2);
   if (lhs1 == lhs2)
     return;
   if (!internal->proof)
     return;
   LOG (g, "starting ITE matching proof chain");
   LOG (h, "starting ITE matching proof chain with");
-  assert (unsimplified.empty ());
-  assert (chain.empty ());
+  CADICAL_assert (unsimplified.empty ());
+  CADICAL_assert (chain.empty ());
   if (internal->lrat)
     check_correct_ite_flags (g);
   const auto &rhs = g->rhs;
@@ -6497,11 +6497,11 @@ void Closure::add_ite_matching_proof_chain (
 
   const bool degenerated_g_cond = ite_flags_cond_lhs (flags_g);
   const bool degenerated_h_cond = ite_flags_cond_lhs (flags_h);
-  assert (!(degenerated_g_cond && degenerated_h_cond));
+  CADICAL_assert (!(degenerated_g_cond && degenerated_h_cond));
 
   const bool degenerated_g_not_cond = ite_flags_neg_cond_lhs (flags_g);
   const bool degenerated_h_not_cond = ite_flags_neg_cond_lhs (flags_h);
-  assert (!(degenerated_g_not_cond && degenerated_h_not_cond));
+  CADICAL_assert (!(degenerated_g_not_cond && degenerated_h_not_cond));
 
   if (internal->lrat) {
     // the code can produce tautologies in the case that:
@@ -6517,7 +6517,7 @@ void Closure::add_ite_matching_proof_chain (
     // b = (c ? t : a)
     // (no clauses with (then) index a and (else) index -e)
     LOG (g, "get ids from");
-    assert (g->pos_lhs_ids.size () == 4);
+    CADICAL_assert (g->pos_lhs_ids.size () == 4);
     auto &g_then_clause = g->pos_lhs_ids[0].clause;
     g_then_clause =
       g_then_clause ? produce_rewritten_clause_lrat (g_then_clause, g->lhs, false) : nullptr;
@@ -6543,7 +6543,7 @@ void Closure::add_ite_matching_proof_chain (
       g_neg_else_id = g_neg_else_clause->id;
 
     LOG (h, "now clauses from");
-    assert (h->pos_lhs_ids.size () == 4);
+    CADICAL_assert (h->pos_lhs_ids.size () == 4);
     auto &h_then_clause = h->pos_lhs_ids[0].clause;
     h_then_clause =
       h_then_clause ? produce_rewritten_clause_lrat (h_then_clause, h->lhs, false) : nullptr;
@@ -6591,8 +6591,8 @@ void Closure::add_ite_matching_proof_chain (
     }
     id2 = simplify_and_add_to_proof_chain (unsimplified);
 
-    assert (!internal->lrat || id1);
-    assert (!internal->lrat || id2);
+    CADICAL_assert (!internal->lrat || id1);
+    CADICAL_assert (!internal->lrat || id2);
     reasons1.push_back (id1);
     reasons2.push_back (id2);
     unsimplified.clear ();
@@ -6620,8 +6620,8 @@ void Closure::add_ite_matching_proof_chain (
     }
     id2 = simplify_and_add_to_proof_chain (unsimplified);
 
-    assert (!internal->lrat || id1);
-    assert (!internal->lrat || id2);
+    CADICAL_assert (!internal->lrat || id1);
+    CADICAL_assert (!internal->lrat || id2);
     reasons2.push_back (id1);
     reasons1.push_back (id2);
     unsimplified.clear ();
@@ -6634,7 +6634,7 @@ void Closure::add_ite_matching_proof_chain (
     unsimplified.push_back (-lhs2);
     LRAT_ID id1 = 0;
     if (internal->lrat) {
-      assert (g_neg_then_id && h_then_id && g_else_id && h_neg_else_id);
+      CADICAL_assert (g_neg_then_id && h_then_id && g_else_id && h_neg_else_id);
       lrat_chain.push_back (g_neg_then_id);
       lrat_chain.push_back (h_then_id);
     }
@@ -6650,8 +6650,8 @@ void Closure::add_ite_matching_proof_chain (
       lrat_chain.push_back (h_neg_else_id);
     }
     id2 = simplify_and_add_to_proof_chain (unsimplified);
-    assert (!internal->lrat || id1);
-    assert (!internal->lrat || id2);
+    CADICAL_assert (!internal->lrat || id1);
+    CADICAL_assert (!internal->lrat || id2);
     reasons2.push_back (id1);
     reasons1.push_back (id2);
     unsimplified.clear ();
@@ -6664,7 +6664,7 @@ void Closure::add_ite_matching_proof_chain (
     unsimplified.push_back (-lhs2);
     LRAT_ID id1 = 0;
     if (internal->lrat) {
-      assert (g_neg_then_id && h_then_id && g_else_id && h_neg_else_id);
+      CADICAL_assert (g_neg_then_id && h_then_id && g_else_id && h_neg_else_id);
       lrat_chain.push_back (h_neg_then_id);
       lrat_chain.push_back (g_then_id);
     }
@@ -6680,8 +6680,8 @@ void Closure::add_ite_matching_proof_chain (
       lrat_chain.push_back (g_neg_else_id);
     }
     id2 = simplify_and_add_to_proof_chain (unsimplified);
-    assert (!internal->lrat || id1);
-    assert (!internal->lrat || id2);
+    CADICAL_assert (!internal->lrat || id1);
+    CADICAL_assert (!internal->lrat || id2);
     reasons2.push_back (id1);
     reasons1.push_back (id2);
     unsimplified.clear ();
@@ -6689,16 +6689,16 @@ void Closure::add_ite_matching_proof_chain (
   }
   
   LOG ("normal path");
-  assert (!internal->lrat || degenerated_g_then ||
+  CADICAL_assert (!internal->lrat || degenerated_g_then ||
           (g_then_id && g_neg_then_id));
-  assert (!internal->lrat || degenerated_g_else ||
+  CADICAL_assert (!internal->lrat || degenerated_g_else ||
           (g_else_id && g_neg_else_id));
-  assert (!internal->lrat || degenerated_h_then ||
+  CADICAL_assert (!internal->lrat || degenerated_h_then ||
           (h_then_id && h_neg_then_id));
-  assert (!internal->lrat || degenerated_h_else ||
+  CADICAL_assert (!internal->lrat || degenerated_h_else ||
           (h_else_id && h_neg_else_id));
-  assert (!internal->lrat || g_then_id || h_neg_then_id);
-  assert (!internal->lrat || g_neg_then_id || h_then_id);
+  CADICAL_assert (!internal->lrat || g_then_id || h_neg_then_id);
+  CADICAL_assert (!internal->lrat || g_neg_then_id || h_then_id);
   unsimplified.push_back (-lhs1);
   unsimplified.push_back (lhs2);
   unsimplified.push_back (-cond);
@@ -6731,7 +6731,7 @@ void Closure::add_ite_matching_proof_chain (
   unsimplified.push_back (lhs1);
   unsimplified.push_back (-lhs2);
   unsimplified.push_back (-cond);
-  assert (lrat_chain.empty ());
+  CADICAL_assert (lrat_chain.empty ());
 
   LRAT_ID id3 = 0;
   if (degenerated_g_then || degenerated_h_then) {
@@ -6747,7 +6747,7 @@ void Closure::add_ite_matching_proof_chain (
   }
   unsimplified.pop_back ();
   unsimplified.push_back (cond);
-  assert (lrat_chain.empty ());
+  CADICAL_assert (lrat_chain.empty ());
 
   LRAT_ID id4 = 0;
   if (degenerated_g_else || degenerated_h_else) {
@@ -6762,7 +6762,7 @@ void Closure::add_ite_matching_proof_chain (
   unsimplified.pop_back ();
 
   if (internal->lrat) {
-    assert (!internal->lrat || (id1 && id2 && id3 && id4));
+    CADICAL_assert (!internal->lrat || (id1 && id2 && id3 && id4));
     reasons1.push_back (id1), reasons1.push_back (id2);
     reasons2.push_back (id3), reasons2.push_back (id4);
   }
@@ -6774,7 +6774,7 @@ void Closure::add_ite_matching_proof_chain (
 
 Gate *Closure::new_ite_gate (int lhs, int cond, int then_lit, int else_lit,
                              std::vector<LitClausePair> &&clauses) {
-  assert (chain.empty ());
+  CADICAL_assert (chain.empty ());
   if (else_lit == -then_lit) {
     if (then_lit < 0)
       LOG ("skipping ternary XOR %d := %d ^ %d", lhs, cond, -then_lit);
@@ -6857,15 +6857,15 @@ Gate *Closure::new_ite_gate (int lhs, int cond, int then_lit, int else_lit,
 }
 
 void check_ite_lits_normalized (const std::vector<int> &lits) {
-  assert (lits[0] > 0);
-  assert (lits[1] > 0);
-  assert (lits[0] != lits[1]);
-  assert (lits[0] != lits[2]);
-  assert (lits[1] != lits[2]);
-  assert (lits[0] != -lits[1]);
-  assert (lits[0] != -lits[2]);
-  assert (lits[1] != -lits[2]);
-#ifdef NDEBUG
+  CADICAL_assert (lits[0] > 0);
+  CADICAL_assert (lits[1] > 0);
+  CADICAL_assert (lits[0] != lits[1]);
+  CADICAL_assert (lits[0] != lits[2]);
+  CADICAL_assert (lits[1] != lits[2]);
+  CADICAL_assert (lits[0] != -lits[1]);
+  CADICAL_assert (lits[0] != -lits[2]);
+  CADICAL_assert (lits[1] != -lits[2]);
+#ifdef CADICAL_NDEBUG
   (void) lits;
 #endif
 }
@@ -6883,46 +6883,46 @@ void Closure::check_ite_implied (int lhs, int cond, int then_lit,
 void Closure::check_contained_module_rewriting (Clause *c, int lit,
                                                 bool normalized,
                                                 int except) {
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
   if (lit == except) // happens for degenerated cases
     except = 0;
   const int normalize_lit =
       (lit == except ? except : find_eager_representative (lit));
-  assert (!normalized || lit == -except || normalize_lit == lit);
+  CADICAL_assert (!normalized || lit == -except || normalize_lit == lit);
   bool found = false;
   LOG (c, "looking for (normalized) %d in ", lit);
   for (auto other : *c) {
     const int normalize_other =
         (other == except ? except : find_eager_representative (other));
     LOG ("%d -> %d ", other, normalize_other);
-    assert (!normalized || other == -except || normalize_other == other);
+    CADICAL_assert (!normalized || other == -except || normalize_other == other);
     if (normalize_other == normalize_lit) {
       found = true;
       break;
     }
   }
-  assert (found);
+  CADICAL_assert (found);
 #else
   (void) c, (void) lit, (void) normalized, (void) except;
 #endif
 }
 
 void Closure::check_ite_lrat_reasons (Gate *g, bool normalized) {
-#ifndef NDEBUG
-  assert (g->tag == Gate_Type::ITE_Gate);
+#ifndef CADICAL_NDEBUG
+  CADICAL_assert (g->tag == Gate_Type::ITE_Gate);
   if (!internal->lrat)
     return;
-  assert (g->rhs.size () == 3);
-  assert (is_tautological_ite_gate (g) || g->pos_lhs_ids.size () == 4);
-  assert (g->neg_lhs_ids.empty ());
-  assert (g->pos_lhs_ids.size () == 4);
+  CADICAL_assert (g->rhs.size () == 3);
+  CADICAL_assert (is_tautological_ite_gate (g) || g->pos_lhs_ids.size () == 4);
+  CADICAL_assert (g->neg_lhs_ids.empty ());
+  CADICAL_assert (g->pos_lhs_ids.size () == 4);
 #else
   (void) g, (void) normalized;
 #endif
 }
 
 void Closure::check_ite_gate_implied (Gate *g) {
-  assert (g->tag == Gate_Type::ITE_Gate);
+  CADICAL_assert (g->tag == Gate_Type::ITE_Gate);
   if (internal->lrat)
     return;
   check_ite_implied (g->lhs, g->rhs[0], g->rhs[1], g->rhs[2]);
@@ -6941,7 +6941,7 @@ void Closure::init_ite_gate_extraction (
       continue;
     unsigned size = 0;
 
-    assert (!c->garbage);
+    CADICAL_assert (!c->garbage);
     for (auto lit : *c) {
       const signed char v = internal->val (lit);
       if (v < 0)
@@ -6957,7 +6957,7 @@ void Closure::init_ite_gate_extraction (
     }
     if (size < 3)
       continue;
-    assert (size == 3);
+    CADICAL_assert (size == 3);
     ternary.push_back (c);
     LOG (c, "counting original ITE gate base");
     for (auto lit : *c) {
@@ -6968,8 +6968,8 @@ void Closure::init_ite_gate_extraction (
   }
 
   for (auto c : ternary) {
-    assert (!c->garbage);
-    assert (!c->redundant);
+    CADICAL_assert (!c->garbage);
+    CADICAL_assert (!c->redundant);
     unsigned positive = 0, negative = 0, twice = 0;
     for (auto lit : *c) {
       if (internal->val (lit))
@@ -6978,7 +6978,7 @@ void Closure::init_ite_gate_extraction (
       if (!count_not_lit)
         goto CONTINUE_WITH_NEXT_TERNARY_CLAUSE;
       const unsigned count_lit = largecount (lit);
-      assert (count_lit);
+      CADICAL_assert (count_lit);
       if (count_lit > 1 && count_not_lit > 1)
         ++twice;
       if (lit < 0)
@@ -6988,7 +6988,7 @@ void Closure::init_ite_gate_extraction (
     }
     if (twice < 2)
       goto CONTINUE_WITH_NEXT_TERNARY_CLAUSE;
-    assert (c->size != 2);
+    CADICAL_assert (c->size != 2);
     for (auto lit : *c)
       internal->occs (lit).push_back (c);
     if (positive && negative)
@@ -7010,9 +7010,9 @@ void Closure::reset_ite_gate_extraction () {
 
 void Closure::copy_conditional_equivalences (int lit,
                                              lit_implications &condbin) {
-  assert (condbin.empty ());
+  CADICAL_assert (condbin.empty ());
   for (auto c : internal->occs (lit)) {
-    assert (c->size != 2);
+    CADICAL_assert (c->size != 2);
     int first = 0, second = 0;
     for (auto other : *c) {
       if (internal->val (other))
@@ -7022,21 +7022,21 @@ void Closure::copy_conditional_equivalences (int lit,
       if (!first)
         first = other;
       else {
-        assert (!second);
+        CADICAL_assert (!second);
         second = other;
       }
     }
-    assert (first), assert (second);
+    CADICAL_assert (first), CADICAL_assert (second);
     lit_implication p (first, second, c);
 
     if (internal->vlit (first) < internal->vlit (second)) {
-      assert (p.first == first);
-      assert (p.second == second);
+      CADICAL_assert (p.first == first);
+      CADICAL_assert (p.second == second);
     } else {
-      assert (internal->vlit (second) < internal->vlit (first));
+      CADICAL_assert (internal->vlit (second) < internal->vlit (first));
       p.swap ();
-      assert (p.first == second);
-      assert (p.second == first);
+      CADICAL_assert (p.first == second);
+      CADICAL_assert (p.second == first);
     }
     LOG (c, "literal %d condition binary clause %d %d", lit, first, second);
     condbin.push_back (p);
@@ -7088,7 +7088,7 @@ Closure::find_lit_implication_second_literal (
       [] (const lit_implication &a, const lit_implication &b) {
         return a.second < b.second;
       });
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
   auto found2 = std::binary_search (
       begin, end, lit_implication{lit, lit},
       [] (const lit_implication &a, const lit_implication &b) {
@@ -7097,7 +7097,7 @@ Closure::find_lit_implication_second_literal (
 #endif
 
   if (found < end && found->second == lit) {
-    assert (found2 == (found < end));
+    CADICAL_assert (found2 == (found < end));
     return found;
   }
   return end;
@@ -7110,24 +7110,24 @@ void Closure::search_condeq (int lit, int pos_lit,
                              lit_implications::const_iterator neg_begin,
                              lit_implications::const_iterator neg_end,
                              lit_equivalences &condeq) {
-  assert (neg_lit == -pos_lit);
-  assert (pos_begin < pos_end);
-  assert (neg_begin < neg_end);
-  assert (pos_begin->first == pos_lit);
-  assert (neg_begin->first == neg_lit);
-  assert (pos_end <= neg_begin || neg_end <= pos_begin);
+  CADICAL_assert (neg_lit == -pos_lit);
+  CADICAL_assert (pos_begin < pos_end);
+  CADICAL_assert (neg_begin < neg_end);
+  CADICAL_assert (pos_begin->first == pos_lit);
+  CADICAL_assert (neg_begin->first == neg_lit);
+  CADICAL_assert (pos_end <= neg_begin || neg_end <= pos_begin);
   for (lit_implications::const_iterator p = pos_begin; p != pos_end; p++) {
     const int other = p->second;
     const int not_other = -other;
     const lit_implications::const_iterator other_clause =
         find_lit_implication_second_literal (not_other, neg_begin, neg_end);
-    assert (std::find (begin (*p->clause), end (*p->clause), lit) !=
+    CADICAL_assert (std::find (begin (*p->clause), end (*p->clause), lit) !=
             end (*p->clause));
     if (other_clause != neg_end) {
-      assert (std::find (begin (*other_clause->clause),
+      CADICAL_assert (std::find (begin (*other_clause->clause),
                          end (*other_clause->clause),
                          neg_lit) != end (*other_clause->clause));
-      assert (std::find (begin (*p->clause), end (*p->clause), other) !=
+      CADICAL_assert (std::find (begin (*p->clause), end (*p->clause), other) !=
               end (*p->clause));
       lit_equivalence equivalence (neg_lit, other_clause->clause, other,
                                    p->clause);
@@ -7138,8 +7138,8 @@ void Closure::search_condeq (int lit, int pos_lit,
         equivalence.check_invariant ();
       LOG ("found conditional %d equivalence %d = %d", lit,
            equivalence.first, equivalence.second);
-      assert (equivalence.first > 0);
-      assert (internal->vlit (equivalence.first) <
+      CADICAL_assert (equivalence.first > 0);
+      CADICAL_assert (internal->vlit (equivalence.first) <
               internal->vlit (equivalence.second));
       check_ternary (lit, neg_lit, -other);
       check_ternary (lit, -neg_lit, other);
@@ -7187,9 +7187,9 @@ void Closure::extract_condeq_pairs (int lit, lit_implications &condbin,
   }
 
   for (;;) {
-    assert (pos_begin != end);
-    assert (next_lit == pos_begin->first);
-    assert (next_lit > 0);
+    CADICAL_assert (pos_begin != end);
+    CADICAL_assert (next_lit == pos_begin->first);
+    CADICAL_assert (next_lit > 0);
     const int pos_lit = next_lit;
     lit_implications::const_iterator pos_end = pos_begin + 1;
     LOG ("searching for first other literal after finding lit %d",
@@ -7202,8 +7202,8 @@ void Closure::extract_condeq_pairs (int lit, lit_implications &condbin,
         break;
       pos_end++;
     }
-    assert (pos_end != end);
-    assert (next_lit == pos_end->first);
+    CADICAL_assert (pos_end != end);
+    CADICAL_assert (next_lit == pos_end->first);
     const int neg_lit = -pos_lit;
     if (next_lit != neg_lit) {
       if (next_lit < 0) {
@@ -7254,7 +7254,7 @@ void Closure::extract_condeq_pairs (int lit, lit_implications &condbin,
     }
     if (neg_end == end)
       return;
-    assert (next_lit == neg_end->first);
+    CADICAL_assert (next_lit == neg_end->first);
     if (next_lit < 0) {
       pos_begin = neg_end + 1;
       for (;;) {
@@ -7273,9 +7273,9 @@ void Closure::extract_condeq_pairs (int lit, lit_implications &condbin,
 void Closure::find_conditional_equivalences (int lit,
                                              lit_implications &condbin,
                                              lit_equivalences &condeq) {
-  assert (condbin.empty ());
-  assert (condeq.empty ());
-  assert (internal->occs (lit).size () > 1);
+  CADICAL_assert (condbin.empty ());
+  CADICAL_assert (condeq.empty ());
+  CADICAL_assert (internal->occs (lit).size () > 1);
   copy_conditional_equivalences (lit, condbin);
   MSORT (internal->opts.radixsortlim, begin (condbin), end (condbin),
          litpair_rank (this->internal), litpair_smaller (this->internal));
@@ -7303,7 +7303,7 @@ void Closure::merge_condeq (int cond, lit_equivalences &condeq,
     const int then_lit = p.second;
     if (internal->lrat)
       p.check_invariant ();
-    assert (lhs > 0);
+    CADICAL_assert (lhs > 0);
     while (q != end_not_condeq && q->first < lhs)
       ++q;
     while (q != end_not_condeq && q->first == lhs) {
@@ -7315,8 +7315,8 @@ void Closure::merge_condeq (int cond, lit_equivalences &condeq,
       if (internal->lrat) {
         // The then/else literal is the second of the pair, hence the swap
         // of the reasons
-        assert (p.first_clause && p.second_clause);
-        assert (not_cond_pair.first_clause && not_cond_pair.second_clause);
+        CADICAL_assert (p.first_clause && p.second_clause);
+        CADICAL_assert (not_cond_pair.first_clause && not_cond_pair.second_clause);
         LOG (p.second_clause, "pairing %d", then_lit);
         LOG (p.first_clause, "pairing %d", -then_lit);
         LOG (not_cond_pair.second_clause, "pairing %d", else_lit);
@@ -7374,7 +7374,7 @@ void Closure::extract_ite_gates_of_variable (int idx) {
 }
 
 void Closure::extract_ite_gates () {
-  assert (!full_watching);
+  CADICAL_assert (!full_watching);
   if (!internal->opts.congruenceite)
     return;
   START (extractites);
@@ -7398,15 +7398,15 @@ void Closure::extract_ite_gates () {
 void Closure::extract_gates () {
   START (extract);
   extract_and_gates ();
-  assert (internal->unsat || lrat_chain.empty ());
-  assert (internal->unsat || chain.empty ());
+  CADICAL_assert (internal->unsat || lrat_chain.empty ());
+  CADICAL_assert (internal->unsat || chain.empty ());
   if (internal->unsat || internal->terminated_asynchronously ()) {
     STOP (extract);
     return;
   }
   extract_xor_gates ();
-  assert (internal->unsat || lrat_chain.empty ());
-  assert (internal->unsat || chain.empty ());
+  CADICAL_assert (internal->unsat || lrat_chain.empty ());
+  CADICAL_assert (internal->unsat || chain.empty ());
 
   if (internal->unsat || internal->terminated_asynchronously ()) {
     STOP (extract);
@@ -7459,30 +7459,30 @@ bool Internal::extract_gates () {
   Closure closure (this);
 
   closure.init_closure ();
-  assert (unsat || closure.chain.empty ());
-  assert (unsat || lrat_chain.empty ());
+  CADICAL_assert (unsat || closure.chain.empty ());
+  CADICAL_assert (unsat || lrat_chain.empty ());
   closure.extract_binaries ();
-  assert (unsat || closure.chain.empty ());
-  assert (unsat || lrat_chain.empty ());
+  CADICAL_assert (unsat || closure.chain.empty ());
+  CADICAL_assert (unsat || lrat_chain.empty ());
   closure.extract_gates ();
-  assert (unsat || closure.chain.empty ());
-  assert (unsat || lrat_chain.empty ());
+  CADICAL_assert (unsat || closure.chain.empty ());
+  CADICAL_assert (unsat || lrat_chain.empty ());
   internal->clear_watches ();
   internal->connect_watches ();
   closure.reset_extraction ();
 
   if (!unsat) {
     closure.find_units ();
-    assert (unsat || closure.chain.empty ());
-    assert (unsat || lrat_chain.empty ());
+    CADICAL_assert (unsat || closure.chain.empty ());
+    CADICAL_assert (unsat || lrat_chain.empty ());
     if (!internal->unsat) {
       closure.find_equivalences ();
-      assert (unsat || closure.chain.empty ());
-      assert (unsat || lrat_chain.empty ());
+      CADICAL_assert (unsat || closure.chain.empty ());
+      CADICAL_assert (unsat || lrat_chain.empty ());
 
       if (!unsat) {
         const int propagated = closure.propagate_units_and_equivalences ();
-        assert (unsat || closure.chain.empty ());
+        CADICAL_assert (unsat || closure.chain.empty ());
         if (!unsat && propagated)
           closure.forward_subsume_matching_clauses ();
       }
@@ -7496,11 +7496,11 @@ bool Internal::extract_gates () {
     propagated2 = propagated = 0;
     propagate ();
   }
-  assert (closure.new_unwatched_binary_clauses.empty ());
+  CADICAL_assert (closure.new_unwatched_binary_clauses.empty ());
   internal->reset_occs ();
   internal->reset_noccs ();
-  assert (!internal->occurring ());
-  assert (lrat_chain.empty ());
+  CADICAL_assert (!internal->occurring ());
+  CADICAL_assert (lrat_chain.empty ());
 
   const int64_t new_merged = stats.congruence.congruent;
 
@@ -7511,14 +7511,14 @@ bool Internal::extract_gates () {
 
   STOP_SIMPLIFIER (congruence, CONGRUENCE);
   report ('c', !opts.reportall && !(stats.congruence.congruent - old));
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
   size_t watched = 0;
   for (auto v : vars) {
     for (auto sgn = -1; sgn <= 1; sgn += 2) {
       const int lit = v * sgn;
       for (auto w : watches (lit)) {
         if (w.binary ())
-          assert (!w.clause->garbage);
+          CADICAL_assert (!w.clause->garbage);
         if (w.clause->garbage)
           continue;
         ++watched;
@@ -7534,9 +7534,9 @@ bool Internal::extract_gates () {
     LOG (c, "watched");
     ++nb_clauses;
   }
-  assert (watched == nb_clauses * 2);
+  CADICAL_assert (watched == nb_clauses * 2);
 #endif
-  assert (!internal->occurring ());
+  CADICAL_assert (!internal->occurring ());
 
   if (new_merged == old_merged) {
     congruence_delay.bumpreasons.interval++;

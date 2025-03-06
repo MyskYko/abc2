@@ -13,7 +13,7 @@ namespace CaDiCaL {
 /*------------------------------------------------------------------------*/
 
 void Internal::learn_empty_clause () {
-  assert (!unsat);
+  CADICAL_assert (!unsat);
   build_chain_for_empty ();
   LOG ("learned empty clause");
   external->check_learned_empty_clause ();
@@ -29,7 +29,7 @@ void Internal::learn_empty_clause () {
 }
 
 void Internal::learn_unit_clause (int lit) {
-  assert (!unsat);
+  CADICAL_assert (!unsat);
   LOG ("learned unit clause %d, stored at position %d", lit, vlit (lit));
   external->check_learned_unit_clause (lit);
   int64_t id = ++clause_id;
@@ -50,13 +50,13 @@ void Internal::learn_unit_clause (int lit) {
 // whether the 'queue.assigned' pointer has to be moved in 'unassign'.
 
 void Internal::bump_queue (int lit) {
-  assert (opts.bump);
+  CADICAL_assert (opts.bump);
   const int idx = vidx (lit);
   if (!links[idx].next)
     return;
   queue.dequeue (links, idx);
   queue.enqueue (links, idx);
-  assert (stats.bumped != INT64_MAX);
+  CADICAL_assert (stats.bumped != INT64_MAX);
   btab[idx] = ++stats.bumped;
   LOG ("moved to front variable %d and bumped to %" PRId64 "", idx,
        btab[idx]);
@@ -74,7 +74,7 @@ void Internal::bump_queue (int lit) {
 // and simply put a hard limit here.  It is less elegant but easy to port.
 
 static inline bool evsids_limit_hit (double score) {
-  assert (sizeof (score) == 8); // assume IEEE 754 64-bit double
+  CADICAL_assert (sizeof (score) == 8); // assume IEEE 754 64-bit double
   return score > 1e150;         // MAX_DOUBLE is around 1.8e308
 }
 
@@ -92,7 +92,7 @@ void Internal::rescale_variable_scores () {
   }
   PHASE ("rescore", stats.rescored, "rescoring %d variable scores by 1/%g",
          max_var, divider);
-  assert (divider > 0);
+  CADICAL_assert (divider > 0);
   double factor = 1.0 / divider;
   for (auto idx : vars)
     stab[idx] *= factor;
@@ -103,19 +103,19 @@ void Internal::rescale_variable_scores () {
 }
 
 void Internal::bump_variable_score (int lit) {
-  assert (opts.bump);
+  CADICAL_assert (opts.bump);
   int idx = vidx (lit);
   double old_score = score (idx);
-  assert (!evsids_limit_hit (old_score));
+  CADICAL_assert (!evsids_limit_hit (old_score));
   double new_score = old_score + score_inc;
   if (evsids_limit_hit (new_score)) {
     LOG ("bumping %g score of %d hits EVSIDS score limit", old_score, idx);
     rescale_variable_scores ();
     old_score = score (idx);
-    assert (!evsids_limit_hit (old_score));
+    CADICAL_assert (!evsids_limit_hit (old_score));
     new_score = old_score + score_inc;
   }
-  assert (!evsids_limit_hit (new_score));
+  CADICAL_assert (!evsids_limit_hit (new_score));
   LOG ("new %g score of %d", new_score, idx);
   score (idx) = new_score;
   if (scores.contains (idx))
@@ -135,8 +135,8 @@ void Internal::bump_variable (int lit) {
 // factor (if we are currently using scores).
 
 void Internal::bump_variable_score_inc () {
-  assert (use_scores ());
-  assert (!evsids_limit_hit (score_inc));
+  CADICAL_assert (use_scores ());
+  CADICAL_assert (!evsids_limit_hit (score_inc));
   double f = 1e3 / opts.scorefactor;
   double new_score_inc = score_inc * f;
   if (evsids_limit_hit (new_score_inc)) {
@@ -145,7 +145,7 @@ void Internal::bump_variable_score_inc () {
     rescale_variable_scores ();
     new_score_inc = score_inc * f;
   }
-  assert (!evsids_limit_hit (new_score_inc));
+  CADICAL_assert (!evsids_limit_hit (new_score_inc));
   LOG ("bumped score increment from %g to %g with factor %g", score_inc,
        new_score_inc, f);
   score_inc = new_score_inc;
@@ -174,7 +174,7 @@ struct analyze_bumped_smaller {
 
 void Internal::bump_variables () {
 
-  assert (opts.bump);
+  CADICAL_assert (opts.bump);
 
   START (bump);
 
@@ -208,7 +208,7 @@ int Internal::recompute_glue (Clause *c) {
   const int64_t stamp = ++stats.recomputed;
   for (const auto &lit : *c) {
     int level = var (lit).level;
-    assert (gtab[level] <= stamp);
+    CADICAL_assert (gtab[level] <= stamp);
     if (gtab[level] == stamp)
       continue;
     gtab[level] = stamp;
@@ -252,7 +252,7 @@ void Internal::bump_clause2 (Clause *c) { bump_clause (c); }
 inline void Internal::analyze_literal (int lit, int &open,
                                        int &resolvent_size,
                                        int &antecedent_size) {
-  assert (lit);
+  CADICAL_assert (lit);
   Var &v = var (lit);
   Flags &f = flags (lit);
 
@@ -261,7 +261,7 @@ inline void Internal::analyze_literal (int lit, int &open,
       return;
     f.seen = true;
     unit_analyzed.push_back (lit);
-    assert (val (lit) < 0);
+    CADICAL_assert (val (lit) < 0);
     int64_t id = unit_id (-lit);
     unit_chain.push_back (id);
     return;
@@ -272,10 +272,10 @@ inline void Internal::analyze_literal (int lit, int &open,
 
   // before marking as seen, get reason and check for missed unit
 
-  assert (val (lit) < 0);
-  assert (v.level <= level);
+  CADICAL_assert (val (lit) < 0);
+  CADICAL_assert (v.level <= level);
   if (v.reason == external_reason) {
-    assert (!opts.exteagerreasons);
+    CADICAL_assert (!opts.exteagerreasons);
     v.reason = learn_external_reason_clause (-lit, 0, true);
     if (!v.reason) { // actually a unit
       --antecedent_size;
@@ -284,10 +284,10 @@ inline void Internal::analyze_literal (int lit, int &open,
         return;
       f.seen = true;
       unit_analyzed.push_back (lit);
-      assert (val (lit) < 0);
+      CADICAL_assert (val (lit) < 0);
       const unsigned uidx = vlit (-lit);
       int64_t id = unit_clauses (uidx);
-      assert (id);
+      CADICAL_assert (id);
       unit_chain.push_back (id);
       return;
     }
@@ -296,7 +296,7 @@ inline void Internal::analyze_literal (int lit, int &open,
   f.seen = true;
   analyzed.push_back (lit);
 
-  assert (v.reason != external_reason);
+  CADICAL_assert (v.reason != external_reason);
   if (v.level < level)
     clause.push_back (lit);
   Level &l = control[v.level];
@@ -315,8 +315,8 @@ inline void Internal::analyze_literal (int lit, int &open,
 inline void Internal::analyze_reason (int lit, Clause *reason, int &open,
                                       int &resolvent_size,
                                       int &antecedent_size) {
-  assert (reason);
-  assert (reason != external_reason);
+  CADICAL_assert (reason);
+  CADICAL_assert (reason != external_reason);
   bump_clause (reason);
   if (lrat)
     lrat_chain.push_back (reason->id);
@@ -339,8 +339,8 @@ inline void Internal::analyze_reason (int lit, Clause *reason, int &open,
 // 30 million propagations, which then is increased geometrically by 10%.
 
 inline bool Internal::bump_also_reason_literal (int lit) {
-  assert (lit);
-  assert (val (lit) < 0);
+  CADICAL_assert (lit);
+  CADICAL_assert (val (lit) < 0);
   Flags &f = flags (lit);
   if (f.seen)
     return false;
@@ -357,10 +357,10 @@ inline bool Internal::bump_also_reason_literal (int lit) {
 
 inline void Internal::bump_also_reason_literals (int lit, int depth_limit,
                                                  size_t analyzed_limit) {
-  assert (lit);
-  assert (depth_limit > 0);
+  CADICAL_assert (lit);
+  CADICAL_assert (depth_limit > 0);
   const Var &v = var (lit);
-  assert (val (lit));
+  CADICAL_assert (val (lit));
   if (!v.level)
     return;
   Clause *reason = v.reason;
@@ -381,7 +381,7 @@ inline void Internal::bump_also_reason_literals (int lit, int depth_limit,
 }
 
 inline void Internal::bump_also_all_reason_literals () {
-  assert (opts.bump);
+  CADICAL_assert (opts.bump);
   if (!opts.bumpreason)
     return;
   if (averages.current.decisions > opts.bumpreasonrate) {
@@ -395,7 +395,7 @@ inline void Internal::bump_also_all_reason_literals () {
     delay[stable].bumpreasons.limit--;
     return;
   }
-  assert (opts.bumpreasondepth > 0);
+  CADICAL_assert (opts.bumpreasondepth > 0);
   const int depth_limit = opts.bumpreasondepth + stable;
   size_t saved_analyzed = analyzed.size ();
   size_t analyzed_limit = saved_analyzed * opts.bumpreasonlimit;
@@ -409,7 +409,7 @@ inline void Internal::bump_also_all_reason_literals () {
     for (size_t i = saved_analyzed; i != analyzed.size (); i++) {
       const int lit = analyzed[i];
       Flags &f = flags (lit);
-      assert (f.seen);
+      CADICAL_assert (f.seen);
       f.seen = false;
     }
     delay[stable].bumpreasons.interval++;
@@ -428,12 +428,12 @@ void Internal::clear_unit_analyzed_literals () {
   LOG ("clearing %zd unit analyzed literals", unit_analyzed.size ());
   for (const auto &lit : unit_analyzed) {
     Flags &f = flags (lit);
-    assert (f.seen);
-    assert (!var (lit).level);
+    CADICAL_assert (f.seen);
+    CADICAL_assert (!var (lit).level);
     f.seen = false;
-    assert (!f.keep);
-    assert (!f.poison);
-    assert (!f.removable);
+    CADICAL_assert (!f.keep);
+    CADICAL_assert (!f.poison);
+    CADICAL_assert (!f.removable);
   }
   unit_analyzed.clear ();
 }
@@ -442,11 +442,11 @@ void Internal::clear_analyzed_literals () {
   LOG ("clearing %zd analyzed literals", analyzed.size ());
   for (const auto &lit : analyzed) {
     Flags &f = flags (lit);
-    assert (f.seen);
+    CADICAL_assert (f.seen);
     f.seen = false;
-    assert (!f.keep);
-    assert (!f.poison);
-    assert (!f.removable);
+    CADICAL_assert (!f.keep);
+    CADICAL_assert (!f.poison);
+    CADICAL_assert (!f.removable);
   }
   analyzed.clear ();
 #if 0 // to expensive, even for debugging mode
@@ -454,7 +454,7 @@ void Internal::clear_analyzed_literals () {
     return;
   for (auto idx : vars) {
     Flags &f = flags (idx);
-    assert (!f.seen);
+    CADICAL_assert (!f.seen);
   }
 #endif
 }
@@ -517,7 +517,7 @@ Clause *Internal::new_driving_clause (const int glue, int &jump) {
 
   } else {
 
-    assert (clause.size () > 1);
+    CADICAL_assert (clause.size () > 1);
 
     // We have to get the last assigned literals into the watch position.
     // Sorting all literals with respect to reverse assignment order is
@@ -545,7 +545,7 @@ Clause *Internal::new_driving_clause (const int glue, int &jump) {
 // not have to fix the clause
 
 inline int Internal::otfs_find_backtrack_level (int &forced) {
-  assert (opts.otfs);
+  CADICAL_assert (opts.otfs);
   int res = 0;
 
   for (const auto &lit : *conflict) {
@@ -570,8 +570,8 @@ inline int Internal::otfs_find_backtrack_level (int &forced) {
 
 inline int Internal::find_conflict_level (int &forced) {
 
-  assert (conflict);
-  assert (opts.chrono || opts.otfs || external_prop);
+  CADICAL_assert (conflict);
+  CADICAL_assert (opts.chrono || opts.otfs || external_prop);
 
   int res = 0, count = 0;
 
@@ -649,7 +649,7 @@ inline int Internal::determine_actual_backtrack_level (int jump) {
 
   int res;
 
-  assert (level > jump);
+  CADICAL_assert (level > jump);
 
   if (!opts.chrono) {
     res = jump;
@@ -693,7 +693,7 @@ inline int Internal::determine_actual_backtrack_level (int jump) {
       }
       LOG ("best variable bumped %" PRId64 "", bumped (best_idx));
     }
-    assert (best_idx);
+    CADICAL_assert (best_idx);
     LOG ("best variable %d at trail position %d", best_idx, best_pos);
 
     // Now find the frame and decision level in the control stack of that
@@ -725,7 +725,7 @@ inline int Internal::determine_actual_backtrack_level (int jump) {
 /*------------------------------------------------------------------------*/
 
 void Internal::eagerly_subsume_recently_learned_clauses (Clause *c) {
-  assert (opts.eagersubsume);
+  CADICAL_assert (opts.eagersubsume);
   LOG (c, "trying eager subsumption with");
   mark (c);
   int64_t lim = stats.eagertried + opts.eagersubsumelim;
@@ -767,20 +767,20 @@ void Internal::eagerly_subsume_recently_learned_clauses (Clause *c) {
 /*------------------------------------------------------------------------*/
 
 Clause *Internal::on_the_fly_strengthen (Clause *new_conflict, int uip) {
-  assert (new_conflict);
-  assert (new_conflict->size > 2);
+  CADICAL_assert (new_conflict);
+  CADICAL_assert (new_conflict->size > 2);
   LOG (new_conflict, "applying OTFS on lit %d", uip);
   auto sorted = std::vector<int> ();
   sorted.reserve (new_conflict->size);
-  assert (sorted.empty ());
+  CADICAL_assert (sorted.empty ());
   ++stats.otfs.strengthened;
 
   int *lits = new_conflict->literals;
 
-  assert (lits[0] == uip || lits[1] == uip);
+  CADICAL_assert (lits[0] == uip || lits[1] == uip);
   const int other_init = lits[0] ^ lits[1] ^ uip;
 
-  assert (mini_chain.empty ());
+  CADICAL_assert (mini_chain.empty ());
 
   const int old_size = new_conflict->size;
   int new_size = 0;
@@ -793,7 +793,7 @@ Clause *Internal::on_the_fly_strengthen (Clause *new_conflict, int uip) {
 
   LOG (new_conflict, "removing all units in");
 
-  assert (lits[0] == uip || lits[1] == uip);
+  CADICAL_assert (lits[0] == uip || lits[1] == uip);
   const int other = lits[0] ^ lits[1] ^ uip;
   lits[0] = other;
   lits[1] = lits[--new_size];
@@ -803,9 +803,9 @@ Clause *Internal::on_the_fly_strengthen (Clause *new_conflict, int uip) {
     remove_watch (watches (other_init), new_conflict);
   remove_watch (watches (uip), new_conflict);
 
-  assert (!lrat || lrat_chain.back () == new_conflict->id);
+  CADICAL_assert (!lrat || lrat_chain.back () == new_conflict->id);
   if (lrat) {
-    assert (!lrat_chain.empty ());
+    CADICAL_assert (!lrat_chain.empty ());
     for (const auto &id : unit_chain) {
       mini_chain.push_back (id);
     }
@@ -819,16 +819,16 @@ Clause *Internal::on_the_fly_strengthen (Clause *new_conflict, int uip) {
     clear_unit_analyzed_literals ();
     unit_chain.clear ();
   }
-  assert (unit_analyzed.empty ());
+  CADICAL_assert (unit_analyzed.empty ());
   // sort the clause
   {
     int highest_pos = 0;
     int highest_level = 0;
     for (int i = 1; i < new_size; i++) {
       const unsigned other = lits[i];
-      assert (val (other) < 0);
+      CADICAL_assert (val (other) < 0);
       const int level = var (other).level;
-      assert (level);
+      CADICAL_assert (level);
       LOG ("checking %d", other);
       if (level <= highest_level)
         continue;
@@ -842,11 +842,11 @@ Clause *Internal::on_the_fly_strengthen (Clause *new_conflict, int uip) {
 
     if (new_size == 1) {
       LOG (new_conflict, "new size = 1, so interrupting");
-      assert (!opts.exteagerreasons);
+      CADICAL_assert (!opts.exteagerreasons);
       return 0;
     } else {
       otfs_strengthen_clause (new_conflict, uip, new_size, sorted);
-      assert (new_size == new_conflict->size);
+      CADICAL_assert (new_size == new_conflict->size);
     }
   }
 
@@ -867,7 +867,7 @@ Clause *Internal::on_the_fly_strengthen (Clause *new_conflict, int uip) {
 inline void Internal::otfs_subsume_clause (Clause *subsuming,
                                            Clause *subsumed) {
   stats.subsumed++;
-  assert (subsuming->size <= subsumed->size);
+  CADICAL_assert (subsuming->size <= subsumed->size);
   LOG (subsumed, "subsumed");
   if (subsumed->redundant)
     stats.subred++;
@@ -885,9 +885,9 @@ inline void Internal::otfs_subsume_clause (Clause *subsuming,
   stats.current.irredundant++;
   stats.added.irredundant++;
   stats.irrlits += subsuming->size;
-  assert (stats.current.redundant > 0);
+  CADICAL_assert (stats.current.redundant > 0);
   stats.current.redundant--;
-  assert (stats.added.redundant > 0);
+  CADICAL_assert (stats.added.redundant > 0);
   stats.added.redundant--;
   // ... and keep 'stats.added.total'.
 }
@@ -899,7 +899,7 @@ inline void Internal::otfs_subsume_clause (Clause *subsuming,
 void Internal::otfs_strengthen_clause (Clause *c, int lit, int new_size,
                                        const std::vector<int> &old) {
   stats.strengthened++;
-  assert (c->size > 2);
+  CADICAL_assert (c->size > 2);
   (void) shrink_clause (c, new_size);
   if (proof) {
     proof->otfs_strengthen_clause (c, old, mini_chain);
@@ -940,11 +940,11 @@ void Internal::analyze () {
 
   START (analyze);
 
-  assert (conflict);
-  assert (lrat_chain.empty ());
-  assert (unit_chain.empty ());
-  assert (unit_analyzed.empty ());
-  assert (clause.empty ());
+  CADICAL_assert (conflict);
+  CADICAL_assert (lrat_chain.empty ());
+  CADICAL_assert (unit_chain.empty ());
+  CADICAL_assert (unit_analyzed.empty ());
+  CADICAL_assert (clause.empty ());
 
   // First update moving averages of trail height at conflict.
   //
@@ -975,8 +975,8 @@ void Internal::analyze () {
 
     if (forced) {
 
-      assert (forced);
-      assert (conflict_level > 0);
+      CADICAL_assert (forced);
+      CADICAL_assert (conflict_level > 0);
       LOG ("single highest level literal %d", forced);
 
       // The pseudo code in the SAT'18 paper actually backtracks to the
@@ -1042,8 +1042,8 @@ void Internal::analyze () {
   Clause *reason = conflict;
   LOG (reason, "analyzing conflict");
 
-  assert (clause.empty ());
-  assert (lrat_chain.empty ());
+  CADICAL_assert (clause.empty ());
+  CADICAL_assert (lrat_chain.empty ());
 
   const auto &t = &trail;
   int i = t->size ();      // Start at end-of-trail.
@@ -1060,43 +1060,43 @@ void Internal::analyze () {
     analyze_reason (uip, reason, open, resolvent_size, antecedent_size);
     if (resolved == 0)
       conflict_size = antecedent_size - 1;
-    assert (resolvent_size == open + (int) clause.size ());
+    CADICAL_assert (resolvent_size == open + (int) clause.size ());
 
     if (otfs && resolved > 0 && antecedent_size > 2 &&
         resolvent_size < antecedent_size) {
-      assert (reason != conflict);
+      CADICAL_assert (reason != conflict);
       LOG (analyzed, "found candidate for OTFS conflict");
       LOG (clause, "found candidate for OTFS conflict");
       LOG (reason, "found candidate (size %d) for OTFS resolvent",
            antecedent_size);
       const int other = reason->literals[0] ^ reason->literals[1] ^ uip;
-      assert (other != uip);
+      CADICAL_assert (other != uip);
       reason = on_the_fly_strengthen (reason, uip);
       if (opts.bump)
         bump_variables ();
 
-      assert (conflict_size);
+      CADICAL_assert (conflict_size);
       if (!reason) {
         uip = -other;
-        assert (open == 1);
+        CADICAL_assert (open == 1);
         LOG ("clause is actually unit %d, stopping", -uip);
         reverse (begin (mini_chain), end (mini_chain));
         for (auto id : mini_chain)
           lrat_chain.push_back (id);
         mini_chain.clear ();
         clear_analyzed_levels ();
-        assert (!opts.exteagerreasons);
+        CADICAL_assert (!opts.exteagerreasons);
         clause.clear ();
         break;
       }
-      assert (conflict_size >= 2);
+      CADICAL_assert (conflict_size >= 2);
 
       if (resolved == 1 && resolvent_size < conflict_size) {
         // here both clauses are part of the CNF, so one subsumes the other
         otfs_subsume_clause (reason, conflict);
         LOG (reason, "changing conflict to");
         --conflict_size;
-        assert (conflict_size == reason->size);
+        CADICAL_assert (conflict_size == reason->size);
         ++stats.otfs.subsumed;
         ++stats.subsumed;
       }
@@ -1134,14 +1134,14 @@ void Internal::analyze () {
       open = 0;
       analyze_reason (0, reason, open, resolvent_size, antecedent_size);
       conflict_size = antecedent_size - 1;
-      assert (open > 1);
+      CADICAL_assert (open > 1);
     }
 
     ++resolved;
 
     uip = 0;
     while (!uip) {
-      assert (i > 0);
+      CADICAL_assert (i > 0);
       const int lit = (*t)[--i];
       if (!flags (lit).seen)
         continue;
@@ -1152,13 +1152,13 @@ void Internal::analyze () {
       break;
     reason = var (uip).reason;
     if (reason == external_reason) {
-      assert (!opts.exteagerreasons);
+      CADICAL_assert (!opts.exteagerreasons);
       reason = learn_external_reason_clause (-uip, 0, true);
       var (uip).reason = reason;
     }
-    assert (reason != external_reason);
+    CADICAL_assert (reason != external_reason);
     LOG (reason, "analyzing %d reason", uip);
-    assert (resolvent_size);
+    CADICAL_assert (resolvent_size);
     --resolvent_size;
   }
   LOG ("first UIP %d", uip);
@@ -1173,7 +1173,7 @@ void Internal::analyze () {
   UPDATE_AVERAGE (averages.current.glue.slow, glue);
   stats.learned.literals += size;
   stats.learned.clauses++;
-  assert (glue < size);
+  CADICAL_assert (glue < size);
 
   // up to this point lrat_chain contains the proof for current clause in
   // reversed order. in minimize and shrink the clause is changed and

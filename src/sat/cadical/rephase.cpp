@@ -281,7 +281,7 @@ void Internal::rephase () {
         break;
       }
   } else {
-    assert (!stable && opts.walk && opts.walknonstable);
+    CADICAL_assert (!stable && opts.walk && opts.walknonstable);
     // flipping,(random,best,walk,flipping,best,walk)^\omega
     if (!count)
       type = rephase_flipping ();
@@ -310,7 +310,7 @@ void Internal::rephase () {
         break;
       }
   }
-  assert (type);
+  CADICAL_assert (type);
 
   int64_t delta = opts.rephaseint * (stats.rephased.total + 1);
   lim.rephase = stats.conflicts + delta;

@@ -29,8 +29,8 @@ int Internal::unlucky (int res) {
 
 int Internal::trivially_false_satisfiable () {
   LOG ("checking that all clauses contain a negative literal");
-  assert (!level);
-  assert (assumptions.empty ());
+  CADICAL_assert (!level);
+  CADICAL_assert (assumptions.empty ());
   for (const auto &c : clauses) {
     if (terminated_asynchronously (100))
       return unlucky (-1);
@@ -66,7 +66,7 @@ int Internal::trivially_false_satisfiable () {
     search_assume_decision (-idx);
     if (propagate ())
       continue;
-    assert (level > 0);
+    CADICAL_assert (level > 0);
     LOG ("propagation failed including redundant clauses");
     return unlucky (0);
   }
@@ -76,8 +76,8 @@ int Internal::trivially_false_satisfiable () {
 
 int Internal::trivially_true_satisfiable () {
   LOG ("checking that all clauses contain a positive literal");
-  assert (!level);
-  assert (assumptions.empty ());
+  CADICAL_assert (!level);
+  CADICAL_assert (assumptions.empty ());
   for (const auto &c : clauses) {
     if (terminated_asynchronously (100))
       return unlucky (-1);
@@ -113,7 +113,7 @@ int Internal::trivially_true_satisfiable () {
     search_assume_decision (idx);
     if (propagate ())
       continue;
-    assert (level > 0);
+    CADICAL_assert (level > 0);
     LOG ("propagation failed including redundant clauses");
     return unlucky (0);
   }
@@ -136,7 +136,7 @@ inline bool Internal::lucky_propagate_discrepency (int dec) {
     return true;
   } else {
     analyze ();
-    assert (!level);
+    CADICAL_assert (!level);
     no_conflict = propagate ();
     if (!no_conflict) {
       analyze ();
@@ -149,9 +149,9 @@ inline bool Internal::lucky_propagate_discrepency (int dec) {
 
 int Internal::forward_false_satisfiable () {
   LOG ("checking increasing variable index false assignment");
-  assert (!unsat);
-  assert (!level);
-  assert (assumptions.empty ());
+  CADICAL_assert (!unsat);
+  CADICAL_assert (!level);
+  CADICAL_assert (assumptions.empty ());
   for (auto idx : vars) {
   START:
     if (terminated_asynchronously (100))
@@ -167,16 +167,16 @@ int Internal::forward_false_satisfiable () {
       goto START;
   }
   VERBOSE (1, "forward assuming variables false satisfies formula");
-  assert (satisfied ());
+  CADICAL_assert (satisfied ());
   stats.lucky.forward.zero++;
   return 10;
 }
 
 int Internal::forward_true_satisfiable () {
   LOG ("checking increasing variable index true assignment");
-  assert (!unsat);
-  assert (!level);
-  assert (assumptions.empty ());
+  CADICAL_assert (!unsat);
+  CADICAL_assert (!level);
+  CADICAL_assert (assumptions.empty ());
   for (auto idx : vars) {
   START:
     if (terminated_asynchronously (10))
@@ -192,7 +192,7 @@ int Internal::forward_true_satisfiable () {
       goto START;
   }
   VERBOSE (1, "forward assuming variables true satisfies formula");
-  assert (satisfied ());
+  CADICAL_assert (satisfied ());
   stats.lucky.forward.one++;
   return 10;
 }
@@ -201,9 +201,9 @@ int Internal::forward_true_satisfiable () {
 
 int Internal::backward_false_satisfiable () {
   LOG ("checking decreasing variable index false assignment");
-  assert (!unsat);
-  assert (!level);
-  assert (assumptions.empty ());
+  CADICAL_assert (!unsat);
+  CADICAL_assert (!level);
+  CADICAL_assert (assumptions.empty ());
   for (int idx = max_var; idx > 0; idx--) {
   START:
     if (terminated_asynchronously (10))
@@ -219,16 +219,16 @@ int Internal::backward_false_satisfiable () {
       goto START;
   }
   VERBOSE (1, "backward assuming variables false satisfies formula");
-  assert (satisfied ());
+  CADICAL_assert (satisfied ());
   stats.lucky.backward.zero++;
   return 10;
 }
 
 int Internal::backward_true_satisfiable () {
   LOG ("checking decreasing variable index true assignment");
-  assert (!unsat);
-  assert (!level);
-  assert (assumptions.empty ());
+  CADICAL_assert (!unsat);
+  CADICAL_assert (!level);
+  CADICAL_assert (assumptions.empty ());
   for (int idx = max_var; idx > 0; idx--) {
   START:
     if (terminated_asynchronously (10))
@@ -244,7 +244,7 @@ int Internal::backward_true_satisfiable () {
       goto START;
   }
   VERBOSE (1, "backward assuming variables true satisfies formula");
-  assert (satisfied ());
+  CADICAL_assert (satisfied ());
   stats.lucky.backward.one++;
   return 10;
 }
@@ -259,8 +259,8 @@ int Internal::backward_true_satisfiable () {
 
 int Internal::positive_horn_satisfiable () {
   LOG ("checking that all clauses are positive horn satisfiable");
-  assert (!level);
-  assert (assumptions.empty ());
+  CADICAL_assert (!level);
+  CADICAL_assert (assumptions.empty ());
   for (const auto &c : clauses) {
     if (terminated_asynchronously (10))
       return unlucky (-1);
@@ -289,7 +289,7 @@ int Internal::positive_horn_satisfiable () {
       LOG (c, "no positive unassigned literal in");
       return unlucky (0);
     }
-    assert (positive_literal > 0);
+    CADICAL_assert (positive_literal > 0);
     LOG (c, "found positive literal %d in", positive_literal);
     search_assume_decision (positive_literal);
     if (propagate ())
@@ -310,16 +310,16 @@ int Internal::positive_horn_satisfiable () {
     return unlucky (0);
   }
   VERBOSE (1, "clauses are positive horn satisfied");
-  assert (!conflict);
-  assert (satisfied ());
+  CADICAL_assert (!conflict);
+  CADICAL_assert (satisfied ());
   stats.lucky.horn.positive++;
   return 10;
 }
 
 int Internal::negative_horn_satisfiable () {
   LOG ("checking that all clauses are negative horn satisfiable");
-  assert (!level);
-  assert (assumptions.empty ());
+  CADICAL_assert (!level);
+  CADICAL_assert (assumptions.empty ());
   for (const auto &c : clauses) {
     if (terminated_asynchronously (10))
       return unlucky (-1);
@@ -350,7 +350,7 @@ int Internal::negative_horn_satisfiable () {
       LOG (c, "no negative unassigned literal in");
       return unlucky (0);
     }
-    assert (negative_literal < 0);
+    CADICAL_assert (negative_literal < 0);
     LOG (c, "found negative literal %d in", negative_literal);
     search_assume_decision (negative_literal);
     if (propagate ())
@@ -371,8 +371,8 @@ int Internal::negative_horn_satisfiable () {
     return unlucky (0);
   }
   VERBOSE (1, "clauses are negative horn satisfied");
-  assert (!conflict);
-  assert (satisfied ());
+  CADICAL_assert (!conflict);
+  CADICAL_assert (satisfied ());
   stats.lucky.horn.negative++;
   return 10;
 }
@@ -380,7 +380,7 @@ int Internal::negative_horn_satisfiable () {
 /*------------------------------------------------------------------------*/
 
 int Internal::lucky_phases () {
-  assert (!level);
+  CADICAL_assert (!level);
   require_mode (SEARCH);
   if (!opts.lucky)
     return 0;
@@ -394,7 +394,7 @@ int Internal::lucky_phases () {
 
   START (search);
   START (lucky);
-  assert (!searching_lucky_phases);
+  CADICAL_assert (!searching_lucky_phases);
   searching_lucky_phases = true;
   stats.lucky.tried++;
   const int64_t active_before = stats.active;
@@ -414,11 +414,11 @@ int Internal::lucky_phases () {
   if (!res)
     res = negative_horn_satisfiable ();
   if (res < 0)
-    assert (termination_forced), res = 0;
+    CADICAL_assert (termination_forced), res = 0;
   if (res == 10)
     stats.lucky.succeeded++;
   report ('l', !res);
-  assert (searching_lucky_phases);
+  CADICAL_assert (searching_lucky_phases);
 
   const int64_t units = active_before - stats.active;
 

@@ -29,7 +29,7 @@ namespace CaDiCaL {
 
 #define STATE(S) \
   do { \
-    assert (is_power_of_two (S)); \
+    CADICAL_assert (is_power_of_two (S)); \
     if (_state == S) \
       break; \
     _state = S; \
@@ -264,28 +264,28 @@ static void log_api_call_returns (Internal *internal, const char *name,
   } while (0)
 
 void Solver::trace_api_call (const char *s0) const {
-  assert (trace_api_file);
+  CADICAL_assert (trace_api_file);
   LOG ("TRACE %s", s0);
   fprintf (trace_api_file, "%s\n", s0);
   fflush (trace_api_file);
 }
 
 void Solver::trace_api_call (const char *s0, int i1) const {
-  assert (trace_api_file);
+  CADICAL_assert (trace_api_file);
   LOG ("TRACE %s %d", s0, i1);
   fprintf (trace_api_file, "%s %d\n", s0, i1);
   fflush (trace_api_file);
 }
 
 void Solver::trace_api_call (const char *s0, const char *s1) const {
-  assert (trace_api_file);
+  CADICAL_assert (trace_api_file);
   LOG ("TRACE %s %s", s0, s1);
   fprintf (trace_api_file, "%s %s\n", s0, s1);
   fflush (trace_api_file);
 }
 
 void Solver::trace_api_call (const char *s0, const char *s1, int i2) const {
-  assert (trace_api_file);
+  CADICAL_assert (trace_api_file);
   LOG ("TRACE %s %s %d", s0, s1, i2);
   fprintf (trace_api_file, "%s %s %d\n", s0, s1, i2);
   fflush (trace_api_file);
@@ -402,8 +402,8 @@ Solver::~Solver () {
 #ifndef NTRACING
   if (close_trace_api_file) {
     close_trace_api_file = false;
-    assert (trace_api_file);
-    assert (tracing_api_calls_through_environment_variable_method);
+    CADICAL_assert (trace_api_file);
+    CADICAL_assert (tracing_api_calls_through_environment_variable_method);
     fclose (trace_api_file);
     tracing_api_calls_through_environment_variable_method = false;
   }
@@ -739,7 +739,7 @@ void Solver::implied (std::vector<int> &entrailed) {
 
 int Solver::call_external_solve_and_check_results (bool preprocess_only) {
   transition_to_steady_state ();
-  assert (state () & READY);
+  CADICAL_assert (state () & READY);
   STATE (SOLVING);
   const int res = external->solve (preprocess_only);
   if (res == 10)
@@ -812,8 +812,8 @@ int Solver::val (int lit) {
   external->conclude_sat ();
   int res = external->ival (lit);
   LOG_API_CALL_RETURNS ("val", lit, res);
-  assert (state () == SATISFIED);
-  assert (res == lit || res == -lit);
+  CADICAL_assert (state () == SATISFIED);
+  CADICAL_assert (res == lit || res == -lit);
   return res;
 }
 
@@ -826,7 +826,7 @@ bool Solver::flip (int lit) {
            "can only flip when no external propagator is present");
   bool res = external->flip (lit);
   LOG_API_CALL_RETURNS ("flip", lit, res);
-  assert (state () == SATISFIED);
+  CADICAL_assert (state () == SATISFIED);
   return res;
 }
 
@@ -839,7 +839,7 @@ bool Solver::flippable (int lit) {
            "can only flip when no external propagator is present");
   bool res = external->flippable (lit);
   LOG_API_CALL_RETURNS ("flippable", lit, res);
-  assert (state () == SATISFIED);
+  CADICAL_assert (state () == SATISFIED);
   return res;
 }
 
@@ -851,7 +851,7 @@ bool Solver::failed (int lit) {
            "can only get failed assumptions in unsatisfied state");
   bool res = external->failed (lit);
   LOG_API_CALL_RETURNS ("failed", lit, res);
-  assert (state () == UNSATISFIED);
+  CADICAL_assert (state () == UNSATISFIED);
   return res;
 }
 
@@ -862,7 +862,7 @@ bool Solver::constraint_failed () {
            "can only determine if constraint failed in unsatisfied state");
   bool res = external->failed_constraint ();
   LOG_API_CALL_RETURNS ("constraint_failed", res);
-  assert (state () == UNSATISFIED);
+  CADICAL_assert (state () == UNSATISFIED);
   return res;
 }
 
@@ -1125,7 +1125,7 @@ bool Solver::trace_proof (FILE *external_file, const char *name) {
       "can only start proof tracing to '%s' right after initialization",
       name);
   File *internal_file = File::write (internal, external_file, name);
-  assert (internal_file);
+  CADICAL_assert (internal_file);
   internal->trace (internal_file);
   LOG_API_CALL_RETURNS ("trace_proof", name, true);
   return true;
@@ -1252,7 +1252,7 @@ void Solver::conclude () {
     external->conclude_sat ();
   else if (state () == INCONCLUSIVE)
     external->conclude_unknown ();
-  assert (state () == UNSATISFIED || state () == SATISFIED ||
+  CADICAL_assert (state () == UNSATISFIED || state () == SATISFIED ||
           state () == INCONCLUSIVE);
   LOG_API_CALL_END ("conclude");
 }
@@ -1261,7 +1261,7 @@ void Solver::conclude () {
 
 void Solver::build (FILE *file, const char *prefix) {
 
-  assert (file == stdout || file == stderr);
+  CADICAL_assert (file == stdout || file == stderr);
 
   Terminal *terminal;
 
@@ -1278,7 +1278,7 @@ void Solver::build (FILE *file, const char *prefix) {
   const char *b = date ();
   const char *f = flags ();
 
-  assert (v);
+  CADICAL_assert (v);
 
   fputs (prefix, file);
   if (terminal)
@@ -1375,7 +1375,7 @@ const char *Solver::read_dimacs (FILE *external_file, const char *name,
   REQUIRE (state () == CONFIGURING,
            "can only read DIMACS file right after initialization");
   File *file = File::read (internal, external_file, name);
-  assert (file);
+  CADICAL_assert (file);
   const char *err = read_dimacs (file, vars, strict);
   delete file;
   LOG_API_CALL_RETURNS ("read_dimacs", name, err);
@@ -1405,7 +1405,7 @@ const char *Solver::read_dimacs (FILE *external_file, const char *name,
   REQUIRE (state () == CONFIGURING,
            "can only read DIMACS file right after initialization");
   File *file = File::read (internal, external_file, name);
-  assert (file);
+  CADICAL_assert (file);
   const char *err = read_dimacs (file, vars, strict, &incremental, &cubes);
   delete file;
   LOG_API_CALL_RETURNS ("read_dimacs", name, err);
@@ -1532,7 +1532,7 @@ public:
   ClauseCounter () : vars (0), clauses (0) {}
   bool clause (const vector<int> &c) {
     for (const auto &lit : c) {
-      assert (lit != INT_MIN);
+      CADICAL_assert (lit != INT_MIN);
       int idx = abs (lit);
       if (idx > vars)
         vars = idx;

@@ -81,12 +81,12 @@ void Options::initialize_from_environment (int &val, const char *name,
                                            const int L, const int H) {
   char key[80], *q;
   const char *p;
-  assert (strlen (name) + strlen ("CADICAL_") + 1 < sizeof (key));
+  CADICAL_assert (strlen (name) + strlen ("CADICAL_") + 1 < sizeof (key));
   for (p = "CADICAL_", q = key; *p; p++)
     *q++ = *p;
   for (p = name; *p; p++)
     *q++ = toupper (*p);
-  assert (q < key + sizeof (key));
+  CADICAL_assert (q < key + sizeof (key));
   *q = 0;
   const char *val_str = getenv (key);
   if (!val_str)
@@ -102,7 +102,7 @@ void Options::initialize_from_environment (int &val, const char *name,
 // Initialize all the options to their default value 'V'.
 
 Options::Options (Internal *s) : internal (s) {
-  assert (number_of_options == sizeof Options::table / sizeof (Option));
+  CADICAL_assert (number_of_options == sizeof Options::table / sizeof (Option));
 
   // First initialize them according to defaults in 'options.hpp'.
   //
@@ -119,12 +119,12 @@ Options::Options (Internal *s) : internal (s) {
     if (strcmp (prev, #N) > 0) \
       FATAL ("'%s' ordered before '" #N "' in 'options.hpp'", prev); \
     N = (int) (V); \
-    assert (&val (i) == &N); \
+    CADICAL_assert (&val (i) == &N); \
     /* The order of initializing static data is undefined and thus */ \
     /* it might be the case that the 'table' is not initialized yet. */ \
     /* Thus this construction just reinitializes the table too even */ \
     /* though it might not be necessary. */ \
-    assert (!table[i].name || !strcmp (table[i].name, #N)); \
+    CADICAL_assert (!table[i].name || !strcmp (table[i].name, #N)); \
     table[i] = {#N,        (int) (V),  (int) (L), (int) (H), \
                 (int) (O), (bool) (P), D}; \
     prev = #N; \
@@ -135,11 +135,11 @@ Options::Options (Internal *s) : internal (s) {
 
   // Check consistency in debugging mode.
   //
-#ifndef NDEBUG
-  assert (i == number_of_options);
-  assert (!has ("aaaaa"));
-  assert (!has ("non-existing-option"));
-  assert (!has ("zzzzz"));
+#ifndef CADICAL_NDEBUG
+  CADICAL_assert (i == number_of_options);
+  CADICAL_assert (!has ("aaaaa"));
+  CADICAL_assert (!has ("non-existing-option"));
+  CADICAL_assert (!has ("zzzzz"));
 #endif
 
   // Now overwrite default options with environment values.
@@ -153,7 +153,7 @@ Options::Options (Internal *s) : internal (s) {
 /*------------------------------------------------------------------------*/
 
 void Options::set (Option *o, int new_val) {
-  assert (o);
+  CADICAL_assert (o);
   int &val = o->val (this), old_val = val;
   if (old_val == new_val) {
     LOG ("keeping value '%d' of option '%s'", old_val, o->name);
@@ -278,7 +278,7 @@ void Options::optimize (int val) {
     LOG ("optimization mode '%d' for '%s' " \
          "gives '%" PRId64 "' instead of '%d", \
          val, #N, new_val, (int) (V)); \
-    assert (new_val <= INT_MAX); \
+    CADICAL_assert (new_val <= INT_MAX); \
     N = (int) new_val; \
     increased++; \
   } while (0);
@@ -299,8 +299,8 @@ void Options::disable_preprocessing () {
     if (!(N)) \
       break; \
     LOG ("plain mode disables '%s'", #N); \
-    assert ((L) == 0); \
-    assert ((H) == 1); \
+    CADICAL_assert ((L) == 0); \
+    CADICAL_assert ((H) == 1); \
     count++; \
     N = 0; \
   } while (0);

@@ -36,7 +36,7 @@ namespace CaDiCaL {
 //   q1 = arena.copy (p1, bytes1);
 //   ...
 //   qn = arena.copy (pn, bytesn);
-//   assert (bytes1 + ... + bytesn <= bytes);
+//   CADICAL_assert (bytes1 + ... + bytesn <= bytes);
 //   arena.swap ();
 //   ...
 //   if (!arena.contains (q)) delete q;
@@ -45,7 +45,7 @@ namespace CaDiCaL {
 //   q1 = arena.copy (p1, bytes1);
 //   ...
 //   qn = arena.copy (pn, bytesn);
-//   assert (bytes1 + ... + bytesn <= bytes);
+//   CADICAL_assert (bytes1 + ... + bytesn <= bytes);
 //   arena.swap ();
 //   ...
 //
@@ -88,7 +88,7 @@ public:
   char *copy (const char *p, size_t bytes) {
     char *res = to.top;
     to.top += bytes;
-    assert (to.top <= to.end);
+    CADICAL_assert (to.top <= to.end);
     memcpy (res, p, bytes);
     return res;
   }

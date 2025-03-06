@@ -5,8 +5,8 @@ namespace CaDiCaL {
 /*------------------------------------------------------------------------*/
 
 inline unsigned LratChecker::l2u (int lit) {
-  assert (lit);
-  assert (lit != INT_MIN);
+  CADICAL_assert (lit);
+  CADICAL_assert (lit != INT_MIN);
   unsigned res = 2 * (abs (lit) - 1);
   if (lit < 0)
     res++;
@@ -15,13 +15,13 @@ inline unsigned LratChecker::l2u (int lit) {
 
 signed char &LratChecker::mark (int lit) {
   const unsigned u = l2u (lit);
-  assert (u < marks.size ());
+  CADICAL_assert (u < marks.size ());
   return marks[u];
 }
 
 signed char &LratChecker::checked_lit (int lit) {
   const unsigned u = l2u (lit);
-  assert (u < checked_lits.size ());
+  CADICAL_assert (u < checked_lits.size ());
   return checked_lits[u];
 }
 
@@ -29,7 +29,7 @@ signed char &LratChecker::checked_lit (int lit) {
 
 LratCheckerClause *LratChecker::new_clause () {
   const size_t size = imported_clause.size ();
-  assert (size <= UINT_MAX);
+  CADICAL_assert (size <= UINT_MAX);
   const int off = size ? 1 : 0;
   const size_t bytes =
       sizeof (LratCheckerClause) + (size - off) * sizeof (int);
@@ -42,9 +42,9 @@ LratCheckerClause *LratChecker::new_clause () {
   res->used = false;
   res->tautological = false;
   int *literals = res->literals, *p = literals;
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
   for (auto &b : checked_lits)
-    assert (!b); // = false;
+    CADICAL_assert (!b); // = false;
 #endif
   for (const auto &lit : imported_clause) {
     *p++ = lit;
@@ -62,19 +62,19 @@ LratCheckerClause *LratChecker::new_clause () {
 }
 
 void LratChecker::delete_clause (LratCheckerClause *c) {
-  assert (c);
+  CADICAL_assert (c);
   if (!c->garbage) {
-    assert (num_clauses);
+    CADICAL_assert (num_clauses);
     num_clauses--;
   } else {
-    assert (num_garbage);
+    CADICAL_assert (num_garbage);
     num_garbage--;
   }
   delete[] (char *) c;
 }
 
 void LratChecker::enlarge_clauses () {
-  assert (num_clauses == size_clauses);
+  CADICAL_assert (num_clauses == size_clauses);
   const uint64_t new_size_clauses = size_clauses ? 2 * size_clauses : 1;
   LOG ("LRAT CHECKER enlarging clauses of checker from %" PRIu64
        " to %" PRIu64,
@@ -107,7 +107,7 @@ void LratChecker::collect_garbage_clauses () {
   for (LratCheckerClause *c = garbage, *next; c; c = next)
     next = c->next, delete_clause (c);
 
-  assert (!num_garbage);
+  CADICAL_assert (!num_garbage);
   garbage = 0;
 }
 
@@ -125,7 +125,7 @@ LratChecker::LratChecker (Internal *i)
     uint64_t nonce = random.next ();
     if (!(nonce & 1))
       nonce++;
-    assert (nonce), assert (nonce & 1);
+    CADICAL_assert (nonce), CADICAL_assert (nonce & 1);
     nonces[n] = nonce;
   }
 
@@ -151,7 +151,7 @@ LratChecker::~LratChecker () {
 
 void LratChecker::enlarge_vars (int64_t idx) {
 
-  assert (0 < idx), assert (idx <= INT_MAX);
+  CADICAL_assert (0 < idx), CADICAL_assert (idx <= INT_MAX);
 
   int64_t new_size_vars = size_vars ? 2 * size_vars : 2;
   while (idx >= new_size_vars)
@@ -163,13 +163,13 @@ void LratChecker::enlarge_vars (int64_t idx) {
   marks.resize (2 * new_size_vars);
   checked_lits.resize (2 * new_size_vars);
 
-  assert (idx < new_size_vars);
+  CADICAL_assert (idx < new_size_vars);
   size_vars = new_size_vars;
 }
 
 inline void LratChecker::import_literal (int lit) {
-  assert (lit);
-  assert (lit != INT_MIN);
+  CADICAL_assert (lit);
+  CADICAL_assert (lit != INT_MIN);
   int idx = abs (lit);
   if (idx >= size_vars)
     enlarge_vars (idx);
@@ -184,7 +184,7 @@ void LratChecker::import_clause (const vector<int> &c) {
 /*------------------------------------------------------------------------*/
 
 uint64_t LratChecker::reduce_hash (uint64_t hash, uint64_t size) {
-  assert (size > 0);
+  CADICAL_assert (size > 0);
   unsigned shift = 32;
   uint64_t res = hash;
   while ((((uint64_t) 1) << shift) > size) {
@@ -192,12 +192,12 @@ uint64_t LratChecker::reduce_hash (uint64_t hash, uint64_t size) {
     shift >>= 1;
   }
   res &= size - 1;
-  assert (res < size);
+  CADICAL_assert (res < size);
   return res;
 }
 
 uint64_t LratChecker::compute_hash (const int64_t id) {
-  assert (id > 0);
+  CADICAL_assert (id > 0);
   unsigned j = id % num_nonces;
   uint64_t tmp = nonces[j] * (uint64_t) id;
   return last_hash = tmp;
@@ -236,23 +236,23 @@ bool LratChecker::check_resolution (vector<int64_t> proof_chain) {
     return true;
   }
   // LOG (imported_clause, "LRAT CHECKER checking clause with resolution");
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
   for (auto &b : checked_lits)
-    assert (!b); // = false;
+    CADICAL_assert (!b); // = false;
 #endif
   if (!proof_chain.size () || proof_chain.back () < 0)
     return false;
   LratCheckerClause *c = *find (proof_chain.back ());
-  assert (c);
+  CADICAL_assert (c);
   for (int *i = c->literals; i < c->literals + c->size; i++) {
     int lit = *i;
     checked_lit (lit) = true;
-    assert (!checked_lit (-lit));
+    CADICAL_assert (!checked_lit (-lit));
   }
   for (auto p = proof_chain.end () - 2; p >= proof_chain.begin (); p--) {
     auto &id = *p;
     c = *find (id);
-    assert (c); // since this is checked in check already
+    CADICAL_assert (c); // since this is checked in check already
     for (int *i = c->literals; i < c->literals + c->size; i++) {
       int lit = *i;
       if (!checked_lit (-lit))
@@ -298,16 +298,16 @@ bool LratChecker::check_resolution (vector<int64_t> proof_chain) {
 bool LratChecker::check (vector<int64_t> proof_chain) {
   LOG (imported_clause, "LRAT CHECKER checking clause");
   stats.checks++;
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
   for (auto &b : checked_lits)
-    assert (!b); // = false;
+    CADICAL_assert (!b); // = false;
 #endif
   bool taut = false;
   for (const auto &lit : imported_clause) { // tautological clauses
     checked_lit (-lit) = true;
     if (checked_lit (lit)) {
       LOG (imported_clause, "LRAT CHECKER clause tautological");
-      assert (!proof_chain.size ()); // would be unnecessary hence a bug
+      CADICAL_assert (!proof_chain.size ()); // would be unnecessary hence a bug
       taut = true;
     }
   }
@@ -468,7 +468,7 @@ void LratChecker::add_original_clause (int64_t id, bool,
       fatal_message_end ();
     }
   }
-  assert (id);
+  CADICAL_assert (id);
   insert ();
   imported_clause.clear ();
   STOP (checking);
@@ -483,7 +483,7 @@ void LratChecker::add_derived_clause (int64_t id, bool,
   stats.derived++;
   import_clause (c);
   last_id = id;
-  assert (id == current_id + 1);
+  CADICAL_assert (id == current_id + 1);
   current_id = id;
   if (size_clauses) {
     LratCheckerClause **p = find (id), *d = *p;
@@ -495,7 +495,7 @@ void LratChecker::add_derived_clause (int64_t id, bool,
       fatal_message_end ();
     }
   }
-  assert (id);
+  CADICAL_assert (id);
   bool failed = true;
   if (check (proof_chain) && check_resolution (proof_chain)) {
     failed = false;
@@ -547,7 +547,7 @@ void LratChecker::add_assumption (int a) { assumptions.push_back (a); }
 void LratChecker::add_constraint (const vector<int> &c) {
   constraint.clear ();
   for (auto &lit : c) {
-    assert (lit);
+    CADICAL_assert (lit);
     if (std::find (constraint.begin (), constraint.end (), lit) !=
         constraint.end ())
       continue;
@@ -591,7 +591,7 @@ void LratChecker::conclude_unsat (ConclusionType conclusion,
     }
     return;
   } else {
-    assert (conclusion == CONSTRAINT);
+    CADICAL_assert (conclusion == CONSTRAINT);
     if (constraint.size () != ids.size ()) {
       fatal_message_start ();
       fputs ("not complete conclusion given for constraint\n", stderr);
@@ -646,7 +646,7 @@ void LratChecker::delete_clause (int64_t id, bool, const vector<int> &c) {
 
     // Remove from hash table, mark as garbage, connect to garbage list.
     num_garbage++;
-    assert (num_clauses);
+    CADICAL_assert (num_clauses);
     num_clauses--;
     *p = d->next;
     d->next = garbage;
@@ -676,7 +676,7 @@ void LratChecker::weaken_minus (int64_t id, const vector<int> &c) {
   LOG (c, "LRAT CHECKER saving clause[%" PRId64 "] to restore later", id);
   import_clause (c);
 
-  assert (id <= current_id);
+  CADICAL_assert (id <= current_id);
   last_id = id;
   LratCheckerClause **p = find (id), *d = *p;
   if (d) {
@@ -756,7 +756,7 @@ void LratChecker::finalize_clause (int64_t id, const vector<int> &c) {
   stats.finalized++;
   num_finalized++;
   import_clause (c);
-  assert (id <= current_id);
+  CADICAL_assert (id <= current_id);
   last_id = id;
   LratCheckerClause **p = find (id), *d = *p;
   if (d) {

@@ -15,15 +15,15 @@ Profiles::Profiles (Internal *s)
 }
 
 void Internal::start_profiling (Profile &profile, double s) {
-  assert (profile.level <= opts.profile);
-  assert (!profile.active);
+  CADICAL_assert (profile.level <= opts.profile);
+  CADICAL_assert (!profile.active);
   profile.started = s;
   profile.active = true;
 }
 
 void Internal::stop_profiling (Profile &profile, double s) {
-  assert (profile.level <= opts.profile);
-  assert (profile.active);
+  CADICAL_assert (profile.level <= opts.profile);
+  CADICAL_assert (profile.active);
   profile.value += s - profile.started;
   profile.active = false;
 }
@@ -34,7 +34,7 @@ double Internal::update_profiles () {
   do { \
     Profile &profile = profiles.NAME; \
     if (profile.active) { \
-      assert (profile.level <= opts.profile); \
+      CADICAL_assert (profile.level <= opts.profile); \
       profile.value += now - profile.started; \
       profile.started = now; \
     } \
@@ -77,7 +77,7 @@ void Internal::print_profile () {
   PROFILES
 #undef PROFILE
 
-  assert (n <= size);
+  CADICAL_assert (n <= size);
 
   // Explicit bubble sort to avoid heap allocation since 'print_profile'
   // is also called during catching a signal after out of heap memory.

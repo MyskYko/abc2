@@ -20,17 +20,17 @@
     (S).begin = (S).end = (S).allocated = 0; \
   } while (0)
 
-#define TOP_STACK(S) (END_STACK (S)[assert (!EMPTY_STACK (S)), -1])
+#define TOP_STACK(S) (END_STACK (S)[CADICAL_assert (!EMPTY_STACK (S)), -1])
 
 #define PEEK_STACK(S, N) \
-  (BEGIN_STACK (S)[assert ((N) < SIZE_STACK (S)), (N)])
+  (BEGIN_STACK (S)[CADICAL_assert ((N) < SIZE_STACK (S)), (N)])
 
 #define POKE_STACK(S, N, E) \
   do { \
     PEEK_STACK (S, N) = (E); \
   } while (0)
 
-#define POP_STACK(S) (assert (!EMPTY_STACK (S)), *--(S).end)
+#define POP_STACK(S) (CADICAL_assert (!EMPTY_STACK (S)), *--(S).end)
 
 #define PUSH_STACK(S, E) \
   do { \
@@ -51,14 +51,14 @@
 #define RESIZE_STACK(S, NEW_SIZE) \
   do { \
     const size_t TMP_NEW_SIZE = (NEW_SIZE); \
-    assert (TMP_NEW_SIZE <= SIZE_STACK (S)); \
+    CADICAL_assert (TMP_NEW_SIZE <= SIZE_STACK (S)); \
     (S).end = (S).begin + TMP_NEW_SIZE; \
   } while (0)
 
 #define SET_END_OF_STACK(S, P) \
   do { \
-    assert (BEGIN_STACK (S) <= (P)); \
-    assert ((P) <= END_STACK (S)); \
+    CADICAL_assert (BEGIN_STACK (S) <= (P)); \
+    CADICAL_assert ((P) <= END_STACK (S)); \
     if ((P) == END_STACK (S)) \
       break; \
     (S).end = (P); \
@@ -72,12 +72,12 @@
 
 #define REMOVE_STACK(T, S, E) \
   do { \
-    assert (!EMPTY_STACK (S)); \
+    CADICAL_assert (!EMPTY_STACK (S)); \
     T *END_REMOVE_STACK = END_STACK (S); \
     T *P_REMOVE_STACK = BEGIN_STACK (S); \
     while (*P_REMOVE_STACK != (E)) { \
       P_REMOVE_STACK++; \
-      assert (P_REMOVE_STACK != END_REMOVE_STACK); \
+      CADICAL_assert (P_REMOVE_STACK != END_REMOVE_STACK); \
     } \
     P_REMOVE_STACK++; \
     while (P_REMOVE_STACK != END_REMOVE_STACK) { \

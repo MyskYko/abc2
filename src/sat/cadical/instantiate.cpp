@@ -13,7 +13,7 @@ namespace CaDiCaL {
 
 void Internal::collect_instantiation_candidates (
     Instantiator &instantiator) {
-  assert (occurring ());
+  CADICAL_assert (occurring ());
   for (auto idx : vars) {
     if (frozen (idx))
       continue;
@@ -63,8 +63,8 @@ void Internal::collect_instantiation_candidates (
 
 inline void Internal::inst_assign (int lit) {
   LOG ("instantiate assign %d", lit);
-  assert (!val (lit));
-  assert ((int) num_assigned < max_var);
+  CADICAL_assert (!val (lit));
+  CADICAL_assert ((int) num_assigned < max_var);
   num_assigned++;
   set_val (lit, 1);
   trail.push_back (lit);
@@ -123,12 +123,12 @@ bool Internal::inst_propagate () { // Adapted from 'propagate'.
             k++;
           if (v < 0) {
             k = lits + 2;
-            assert (w.clause->pos <= size);
+            CADICAL_assert (w.clause->pos <= size);
             while (k != middle && (v = val (r = *k)) < 0)
               k++;
           }
           w.clause->pos = k - lits;
-          assert (lits + 2 <= k), assert (k <= w.clause->end ());
+          CADICAL_assert (lits + 2 <= k), CADICAL_assert (k <= w.clause->end ());
           if (v > 0) {
             j[-1].blit = r;
           } else if (!v) {
@@ -138,14 +138,14 @@ bool Internal::inst_propagate () { // Adapted from 'propagate'.
             watch_literal (r, lit, w.clause);
             j--;
           } else if (!u) {
-            assert (v < 0);
+            CADICAL_assert (v < 0);
             if (lrat) {
               inst_chain.push_back (w.clause);
             }
             inst_assign (other);
           } else {
-            assert (u < 0);
-            assert (v < 0);
+            CADICAL_assert (u < 0);
+            CADICAL_assert (v < 0);
             if (lrat) {
               inst_chain.push_back (w.clause);
             }
@@ -176,7 +176,7 @@ bool Internal::instantiate_candidate (int lit, Clause *c) {
   stats.instried++;
   if (c->garbage)
     return false;
-  assert (!level);
+  CADICAL_assert (!level);
   bool found = false, satisfied = false, inactive = false;
   int unassigned = 0;
   for (const auto &other : *c) {
@@ -203,13 +203,13 @@ bool Internal::instantiate_candidate (int lit, Clause *c) {
   if (unassigned < 3)
     return false;
   size_t before = trail.size ();
-  assert (propagated == before);
-  assert (active (lit));
-  assert (inst_chain.empty ());
+  CADICAL_assert (propagated == before);
+  CADICAL_assert (active (lit));
+  CADICAL_assert (inst_chain.empty ());
   LOG (c, "trying to instantiate %d in", lit);
-  assert (!c->garbage);
+  CADICAL_assert (!c->garbage);
   c->instantiated = true;
-  assert (lrat_chain.empty ());
+  CADICAL_assert (lrat_chain.empty ());
   level++;
   inst_assign (lit); // Assume 'lit' to true.
   for (const auto &other : *c) {
@@ -217,23 +217,23 @@ bool Internal::instantiate_candidate (int lit, Clause *c) {
       continue;
     const signed char tmp = val (other);
     if (tmp) {
-      assert (tmp < 0);
+      CADICAL_assert (tmp < 0);
       continue;
     }
     inst_assign (-other); // Assume other to false.
   }
   bool ok = inst_propagate ();  // Propagate.
-  assert (lrat_chain.empty ()); // chain will be built here
+  CADICAL_assert (lrat_chain.empty ()); // chain will be built here
   if (ok) {
     inst_chain.clear ();
   } else if (lrat) { // analyze conflict for lrat
-    assert (inst_chain.size ());
+    CADICAL_assert (inst_chain.size ());
     Clause *reason = inst_chain.back ();
     inst_chain.pop_back ();
     lrat_chain.push_back (reason->id);
     for (const auto &other : *reason) {
       Flags &f = flags (other);
-      assert (!f.seen);
+      CADICAL_assert (!f.seen);
       f.seen = true;
       analyzed.push_back (other);
     }
@@ -242,7 +242,7 @@ bool Internal::instantiate_candidate (int lit, Clause *c) {
     const int other = trail.back ();
     LOG ("instantiate unassign %d", other);
     trail.pop_back ();
-    assert (val (other) > 0);
+    CADICAL_assert (val (other) > 0);
     num_assigned--;
     set_val (other, 0);
     // this is a variant of conflict analysis which is only needed for lrat
@@ -263,7 +263,7 @@ bool Internal::instantiate_candidate (int lit, Clause *c) {
       inst_chain.pop_back ();
     }
   }
-  assert (inst_chain.empty ());
+  CADICAL_assert (inst_chain.empty ());
   // post processing step for lrat
   if (!ok && lrat) {
     if (flags (lit).seen)
@@ -284,12 +284,12 @@ bool Internal::instantiate_candidate (int lit, Clause *c) {
     clear_analyzed_literals ();
     reverse (lrat_chain.begin (), lrat_chain.end ());
   }
-  assert (analyzed.empty ());
+  CADICAL_assert (analyzed.empty ());
   propagated = before;
-  assert (level == 1);
+  CADICAL_assert (level == 1);
   level = 0;
   if (ok) {
-    assert (lrat_chain.empty ());
+    CADICAL_assert (lrat_chain.empty ());
     LOG ("instantiation failed");
     return false;
   }
@@ -298,7 +298,7 @@ bool Internal::instantiate_candidate (int lit, Clause *c) {
   strengthen_clause (c, lit);
   watch_clause (c);
   lrat_chain.clear ();
-  assert (c->size > 1);
+  CADICAL_assert (c->size > 1);
   LOG ("instantiation succeeded");
   stats.instantiated++;
   return true;
@@ -310,7 +310,7 @@ bool Internal::instantiate_candidate (int lit, Clause *c) {
 // 'collect_instantiation_candidates' routine.
 
 void Internal::instantiate (Instantiator &instantiator) {
-  assert (opts.instantiate);
+  CADICAL_assert (opts.instantiate);
   START (instantiate);
   stats.instrounds++;
 #ifndef QUIET
@@ -324,7 +324,7 @@ void Internal::instantiate (Instantiator &instantiator) {
     if (!propagate ()) {
       LOG ("propagation after connecting watches failed");
       learn_empty_clause ();
-      assert (unsat);
+      CADICAL_assert (unsat);
     }
   }
   PHASE ("instantiate", stats.instrounds,

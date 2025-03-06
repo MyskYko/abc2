@@ -37,7 +37,7 @@ inline const char *Parser::parse_string (const char *str, char prev) {
 
 inline const char *Parser::parse_positive_int (int &ch, int &res,
                                                const char *name) {
-  assert (isdigit (ch));
+  CADICAL_assert (isdigit (ch));
   res = ch - '0';
   while (isdigit (ch = parse_char ())) {
     int digit = ch - '0';
@@ -143,7 +143,7 @@ const char *Parser::parse_dimacs_non_profiled (int &vars, int strict) {
   // or 'p inccnf' of incremental 'INCCNF' file.
   //
   if (ch == 'c') {
-    assert (!found_inccnf_header);
+    CADICAL_assert (!found_inccnf_header);
     if (strict == STRICT) {
       const char *err = parse_string ("nf ", 'c');
       if (err)
@@ -277,8 +277,8 @@ const char *Parser::parse_dimacs_non_profiled (int &vars, int strict) {
   size_t num_cubes = 0;
 #endif
   if (ch == 'a') {
-    assert (parse_inccnf_too);
-    assert (found_inccnf_header);
+    CADICAL_assert (parse_inccnf_too);
+    CADICAL_assert (found_inccnf_header);
     if (!*parse_inccnf_too)
       *parse_inccnf_too = true;
     for (;;) {
@@ -419,7 +419,7 @@ const char *Parser::parse_solution_non_profiled () {
 // implicit 'return' in PER in the non-profiled versions.
 
 const char *Parser::parse_dimacs (int &vars, int strict) {
-  assert (strict == FORCED || strict == RELAXED || strict == STRICT);
+  CADICAL_assert (strict == FORCED || strict == RELAXED || strict == STRICT);
   START (parse);
   const char *err = parse_dimacs_non_profiled (vars, strict);
   STOP (parse);

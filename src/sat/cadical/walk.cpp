@@ -52,9 +52,9 @@ inline static double fitcbval (double size) {
   const double x2 = cbvals[i + 1][0], x1 = cbvals[i][0];
   const double y2 = cbvals[i + 1][1], y1 = cbvals[i][1];
   const double dx = x2 - x1, dy = y2 - y1;
-  assert (dx);
+  CADICAL_assert (dx);
   const double res = dy * (size - x1) / dx + y1;
-  assert (res > 0);
+  CADICAL_assert (res > 0);
   return res;
 }
 
@@ -71,7 +71,7 @@ Walker::Walker (Internal *i, double size, int64_t l)
   //
   const bool use_size_based_cb = (internal->stats.walk.count & 1);
   const double cb = use_size_based_cb ? fitcbval (size) : 2.0;
-  assert (cb);
+  CADICAL_assert (cb);
   const double base = 1 / cb; // scores are 'base^0,base^1,base^2,...
 
   double next = 1;
@@ -95,7 +95,7 @@ inline double Walker::score (unsigned i) {
 
 Clause *Internal::walk_pick_clause (Walker &walker) {
   require_mode (WALK);
-  assert (!walker.broken.empty ());
+  CADICAL_assert (!walker.broken.empty ());
   int64_t size = walker.broken.size ();
   if (size > INT_MAX)
     size = INT_MAX;
@@ -113,12 +113,12 @@ Clause *Internal::walk_pick_clause (Walker &walker) {
 unsigned Internal::walk_break_value (int lit) {
 
   require_mode (WALK);
-  assert (val (lit) > 0);
+  CADICAL_assert (val (lit) > 0);
 
   unsigned res = 0; // The computed break-count of 'lit'.
 
   for (auto &w : watches (lit)) {
-    assert (w.blit != lit);
+    CADICAL_assert (w.blit != lit);
     if (val (w.blit) > 0)
       continue;
     if (w.binary ()) {
@@ -127,7 +127,7 @@ unsigned Internal::walk_break_value (int lit) {
     }
 
     Clause *c = w.clause;
-    assert (lit == c->literals[0]);
+    CADICAL_assert (lit == c->literals[0]);
 
     // Now try to find a second satisfied literal starting at 'literals[1]'
     // shifting all the traversed literals to right by one position in order
@@ -186,16 +186,16 @@ unsigned Internal::walk_break_value (int lit) {
 
 int Internal::walk_pick_lit (Walker &walker, Clause *c) {
   LOG ("picking literal by break-count");
-  assert (walker.scores.empty ());
+  CADICAL_assert (walker.scores.empty ());
   double sum = 0;
   int64_t propagations = 0;
   for (const auto lit : *c) {
-    assert (active (lit));
+    CADICAL_assert (active (lit));
     if (var (lit).level == 1) {
       LOG ("skipping assumption %d for scoring", -lit);
       continue;
     }
-    assert (active (lit));
+    CADICAL_assert (active (lit));
     propagations++;
     unsigned tmp = walk_break_value (-lit);
     double score = walker.score (tmp);
@@ -204,10 +204,10 @@ int Internal::walk_pick_lit (Walker &walker, Clause *c) {
     sum += score;
   }
   LOG ("scored %zd literals", walker.scores.size ());
-  assert (!walker.scores.empty ());
+  CADICAL_assert (!walker.scores.empty ());
   walker.propagations += propagations;
   stats.propagations.walk += propagations;
-  assert (walker.scores.size () <= (size_t) c->size);
+  CADICAL_assert (walker.scores.size () <= (size_t) c->size);
   const double lim = sum * walker.random.generate_double ();
   LOG ("score sum %g limit %g", sum, lim);
   const auto end = c->end ();
@@ -215,7 +215,7 @@ int Internal::walk_pick_lit (Walker &walker, Clause *c) {
   auto j = walker.scores.begin ();
   int res;
   for (;;) {
-    assert (i != end);
+    CADICAL_assert (i != end);
     res = *i++;
     if (var (res).level > 1)
       break;
@@ -241,14 +241,14 @@ void Internal::walk_flip_lit (Walker &walker, int lit) {
 
   require_mode (WALK);
   LOG ("flipping assign %d", lit);
-  assert (val (lit) < 0);
+  CADICAL_assert (val (lit) < 0);
 
   // First flip the literal value.
   //
   const int tmp = sign (lit);
   const int idx = abs (lit);
   set_val (idx, tmp);
-  assert (val (lit) > 0);
+  CADICAL_assert (val (lit) > 0);
 
   // Then remove 'c' and all other now satisfied (made) clauses.
   {
@@ -288,12 +288,12 @@ void Internal::walk_flip_lit (Walker &walker, int lit) {
       const int size = d->size;
       for (int i = 0; i < size; i++) {
         const int other = literals[i];
-        assert (active (other));
+        CADICAL_assert (active (other));
         literals[i] = prev;
         prev = other;
         if (other == lit)
           break;
-        assert (val (other) < 0);
+        CADICAL_assert (val (other) < 0);
       }
 
       // If 'lit' is in 'd' then move it to the front to watch it.
@@ -348,11 +348,11 @@ void Internal::walk_flip_lit (Walker &walker, int lit) {
       Clause *d = w.clause;
       LOG (d, "unwatch %d in", -lit);
       int *literals = d->literals, replacement = 0, prev = -lit;
-      assert (literals[0] == -lit);
+      CADICAL_assert (literals[0] == -lit);
       const int size = d->size;
       for (int i = 1; i < size; i++) {
         const int other = literals[i];
-        assert (active (other));
+        CADICAL_assert (active (other));
         literals[i] = prev; // shift all to right
         prev = other;
         const signed char tmp = val (other);
@@ -364,7 +364,7 @@ void Internal::walk_flip_lit (Walker &walker, int lit) {
       if (replacement) {
         literals[1] = -lit;
         literals[0] = replacement;
-        assert (-lit != replacement);
+        CADICAL_assert (-lit != replacement);
         watch_literal (replacement, -lit, d);
       } else {
         for (int i = size - 1; i > 0; i--) { // undo shift
@@ -372,7 +372,7 @@ void Internal::walk_flip_lit (Walker &walker, int lit) {
           literals[i] = prev;
           prev = other;
         }
-        assert (literals[0] == -lit);
+        CADICAL_assert (literals[0] == -lit);
         LOG (d, "broken");
         walker.broken.push_back (d);
 #ifdef LOGGING
@@ -426,7 +426,7 @@ int Internal::walk_round (int64_t limit, bool prev) {
   // We want to see more messages during initial local search.
   //
   if (localsearching) {
-    assert (!force_phase_messages);
+    CADICAL_assert (!force_phase_messages);
     force_phase_messages = true;
   }
 #endif
@@ -483,7 +483,7 @@ int Internal::walk_round (int64_t limit, bool prev) {
       const int idx = abs (lit);
       LOG ("initial assign %d to assumption phase", tmp < 0 ? -idx : idx);
       set_val (idx, tmp);
-      assert (level == 1);
+      CADICAL_assert (level == 1);
       var (idx).level = 1;
     }
     if (!failed)
@@ -500,7 +500,7 @@ int Internal::walk_round (int64_t limit, bool prev) {
         continue;
       }
       if (vals[idx]) {
-        assert (var (idx).level == 1);
+        CADICAL_assert (var (idx).level == 1);
         LOG ("skipping assumed variable %d", idx);
         continue;
       }
@@ -509,9 +509,9 @@ int Internal::walk_round (int64_t limit, bool prev) {
         tmp = phases.prev[idx];
       if (!tmp)
         tmp = sign (decide_phase (idx, true));
-      assert (tmp == 1 || tmp == -1);
+      CADICAL_assert (tmp == 1 || tmp == -1);
       set_val (idx, tmp);
-      assert (level == 2);
+      CADICAL_assert (level == 2);
       var (idx).level = 2;
       LOG ("initial assign %d to decision phase", tmp < 0 ? -idx : idx);
     }
@@ -542,7 +542,7 @@ int Internal::walk_round (int64_t limit, bool prev) {
       //
       for (int i = 0; satisfied < 2 && i < size; i++) {
         const int lit = lits[i];
-        assert (active (lit)); // Due to garbage collection.
+        CADICAL_assert (active (lit)); // Due to garbage collection.
         if (val (lit) > 0) {
           swap (lits[satisfied], lits[i]);
           if (!satisfied++)
@@ -566,7 +566,7 @@ int Internal::walk_round (int64_t limit, bool prev) {
         watched++;
 #endif
       } else {
-        assert (satisfiable); // at least one non-assumed variable ...
+        CADICAL_assert (satisfiable); // at least one non-assumed variable ...
         LOG (c, "broken");
         walker.broken.push_back (c);
       }
@@ -673,7 +673,7 @@ int Internal::walk_round (int64_t limit, bool prev) {
     if (active (idx))
       set_val (idx, 0);
 
-  assert (level == 2);
+  CADICAL_assert (level == 2);
   level = 0;
 
   clear_watches ();
@@ -681,7 +681,7 @@ int Internal::walk_round (int64_t limit, bool prev) {
 
 #ifndef QUIET
   if (localsearching) {
-    assert (force_phase_messages);
+    CADICAL_assert (force_phase_messages);
     force_phase_messages = false;
   }
 #endif

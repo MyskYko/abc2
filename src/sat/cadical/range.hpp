@@ -1,7 +1,7 @@
 #ifndef _range_hpp_INCLUDED
 #define _range_hpp_INCLUDED
 
-#include <cassert>
+#include <cCADICAL_assert>
 
 namespace CaDiCaL {
 
@@ -62,9 +62,9 @@ class Range {
   int &n;
 
 public:
-  iterator begin () const { return assert (n >= 0), iterator (inc (0)); }
-  iterator end () const { return assert (n >= 0), iterator (inc (n)); }
-  Range (int &m) : n (m) { assert (m >= 0); }
+  iterator begin () const { return CADICAL_assert (n >= 0), iterator (inc (0)); }
+  iterator end () const { return CADICAL_assert (n >= 0), iterator (inc (n)); }
+  Range (int &m) : n (m) { CADICAL_assert (m >= 0); }
 };
 
 // Same, but iterating over literals '-1,1,-2,2,....,-max_var,max_var'.
@@ -89,9 +89,9 @@ class Sange {
   int &n;
 
 public:
-  iterator begin () const { return assert (n >= 0), iterator (inc (0)); }
-  iterator end () const { return assert (n >= 0), iterator (inc (n)); }
-  Sange (int &m) : n (m) { assert (m >= 0); }
+  iterator begin () const { return CADICAL_assert (n >= 0), iterator (inc (0)); }
+  iterator end () const { return CADICAL_assert (n >= 0), iterator (inc (n)); }
+  Sange (int &m) : n (m) { CADICAL_assert (m >= 0); }
 };
 
 } // namespace CaDiCaL

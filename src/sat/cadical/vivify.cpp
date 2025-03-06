@@ -50,26 +50,26 @@ inline void Internal::vivify_subsume_clause (Clause *subsuming,
                                              Clause *subsumed) {
   stats.subsumed++;
   stats.vivifysubs++;
-#ifndef NDEBUG
-  assert (subsuming);
-  assert (subsumed);
-  assert (subsuming != subsumed);
-  assert (!subsumed->garbage);
+#ifndef CADICAL_NDEBUG
+  CADICAL_assert (subsuming);
+  CADICAL_assert (subsumed);
+  CADICAL_assert (subsuming != subsumed);
+  CADICAL_assert (!subsumed->garbage);
   // size after removeing units;
   int real_size_subsuming = 0, real_size_subsumed = 0;
   for (auto lit : *subsuming) {
     if (!val (lit) || var (lit).level)
       ++real_size_subsuming;
     else
-      assert (val (lit) < 0);
+      CADICAL_assert (val (lit) < 0);
   }
   for (auto lit : *subsumed) {
     if (!val (lit) || var (lit).level)
       ++real_size_subsumed;
     else
-      assert (val (lit) < 0);
+      CADICAL_assert (val (lit) < 0);
   }
-  assert (real_size_subsuming <= real_size_subsumed);
+  CADICAL_assert (real_size_subsuming <= real_size_subsumed);
 #endif
   LOG (subsumed, "subsumed");
   if (subsumed->redundant) {
@@ -80,7 +80,7 @@ inline void Internal::vivify_subsume_clause (Clause *subsuming,
     ++stats.vivifysubirr;
   }
   if (subsuming->garbage) {
-    assert (subsuming->size == 2);
+    CADICAL_assert (subsuming->size == 2);
     LOG (subsuming,
          "binary subsuming clause was already deleted, so undeleting");
     subsuming->garbage = false;
@@ -104,9 +104,9 @@ inline void Internal::vivify_subsume_clause (Clause *subsuming,
   stats.current.irredundant++;
   stats.added.irredundant++;
   stats.irrlits += subsuming->size;
-  assert (stats.current.redundant > 0);
+  CADICAL_assert (stats.current.redundant > 0);
   stats.current.redundant--;
-  assert (stats.added.redundant > 0);
+  CADICAL_assert (stats.added.redundant > 0);
   stats.added.redundant--;
   // ... and keep 'stats.added.total'.
 }
@@ -117,12 +117,12 @@ inline void Internal::demote_clause (Clause *c) {
   stats.subsumed++;
   stats.vivifydemote++;
   LOG (c, "demoting");
-  assert (!c->redundant);
+  CADICAL_assert (!c->redundant);
   mark_removed (c);
   c->redundant = true;
-  assert (stats.current.irredundant > 0);
+  CADICAL_assert (stats.current.irredundant > 0);
   stats.current.irredundant--;
-  assert (stats.added.irredundant > 0);
+  CADICAL_assert (stats.added.irredundant > 0);
   stats.added.irredundant--;
   stats.irrlits -= c->size;
   stats.current.redundant++;
@@ -142,12 +142,12 @@ inline void Internal::demote_clause (Clause *c) {
 inline void Internal::vivify_assign (int lit, Clause *reason) {
   require_mode (VIVIFY);
   const int idx = vidx (lit);
-  assert (!vals[idx]);
-  assert (!flags (idx).eliminated () || !reason);
+  CADICAL_assert (!vals[idx]);
+  CADICAL_assert (!flags (idx).eliminated () || !reason);
   Var &v = var (idx);
   v.level = level;               // required to reuse decisions
   v.trail = (int) trail.size (); // used in 'vivify_better_watch'
-  assert ((int) num_assigned < max_var);
+  CADICAL_assert ((int) num_assigned < max_var);
   num_assigned++;
   v.reason = level ? reason : 0; // for conflict analysis
   if (!level)
@@ -155,8 +155,8 @@ inline void Internal::vivify_assign (int lit, Clause *reason) {
   const signed char tmp = sign (lit);
   vals[idx] = tmp;
   vals[-idx] = -tmp;
-  assert (val (lit) > 0);
-  assert (val (-lit) < 0);
+  CADICAL_assert (val (lit) > 0);
+  CADICAL_assert (val (-lit) < 0);
   trail.push_back (lit);
   LOG (reason, "vivify assign %d", lit);
 }
@@ -168,8 +168,8 @@ void Internal::vivify_assume (int lit) {
   level++;
   control.push_back (Level (lit, trail.size ()));
   LOG ("vivify decide %d", lit);
-  assert (level > 0);
-  assert (propagated == trail.size ());
+  CADICAL_assert (level > 0);
+  CADICAL_assert (propagated == trail.size ());
   vivify_assign (lit, 0);
 }
 
@@ -179,7 +179,7 @@ void Internal::vivify_assume (int lit) {
 
 bool Internal::vivify_propagate (int64_t &ticks) {
   require_mode (VIVIFY);
-  assert (!unsat);
+  CADICAL_assert (!unsat);
   START (propagate);
   int64_t before = propagated2 = propagated;
   for (;;) {
@@ -239,12 +239,12 @@ bool Internal::vivify_propagate (int64_t &ticks) {
             k++;
           if (v < 0) {
             k = lits + 2;
-            assert (w.clause->pos <= size);
+            CADICAL_assert (w.clause->pos <= size);
             while (k != middle && (v = val (r = *k)) < 0)
               k++;
           }
           w.clause->pos = k - lits;
-          assert (lits + 2 <= k), assert (k <= w.clause->end ());
+          CADICAL_assert (lits + 2 <= k), CADICAL_assert (k <= w.clause->end ());
           if (v > 0)
             j[-1].blit = r;
           else if (!v) {
@@ -261,7 +261,7 @@ bool Internal::vivify_propagate (int64_t &ticks) {
               continue;
             }
             ticks++;
-            assert (v < 0);
+            CADICAL_assert (v < 0);
             vivify_chain_for_units (other, w.clause);
             vivify_assign (other, w.clause);
             lrat_chain.clear ();
@@ -270,8 +270,8 @@ bool Internal::vivify_propagate (int64_t &ticks) {
               LOG ("ignoring conflict due to clause to vivify");
               continue;
             }
-            assert (u < 0);
-            assert (v < 0);
+            CADICAL_assert (u < 0);
+            CADICAL_assert (v < 0);
             conflict = w.clause;
             break;
           }
@@ -395,7 +395,7 @@ struct vivify_clause_later {
     // Among redundant clauses (in redundant mode) prefer small glue.
     //
     if (a->redundant) {
-      assert (b->redundant);
+      CADICAL_assert (b->redundant);
       if (a->glue > b->glue)
         return true;
       if (a->glue < b->glue)
@@ -474,9 +474,9 @@ void Internal::flush_vivification_schedule (std::vector<Clause *> &schedule,
     if (k == eop) {
       LOG (c, "found subsumed");
       LOG (prev, "subsuming");
-      assert (!c->garbage);
-      assert (!prev->garbage);
-      assert (c->redundant || !prev->redundant);
+      CADICAL_assert (!c->garbage);
+      CADICAL_assert (!prev->garbage);
+      CADICAL_assert (c->redundant || !prev->redundant);
       mark_garbage (c);
       subsumed++;
       j--;
@@ -494,7 +494,7 @@ void Internal::flush_vivification_schedule (std::vector<Clause *> &schedule,
     schedule.resize (j - schedule.begin ());
     shrink_vector (schedule);
   } else
-    assert (j == end);
+    CADICAL_assert (j == end);
 }
 
 /*------------------------------------------------------------------------*/
@@ -513,7 +513,7 @@ bool Internal::consider_to_vivify_clause (Clause *c) {
     return false;
   if (!c->redundant)
     return true;
-  assert (c->redundant);
+  CADICAL_assert (c->redundant);
 
   // likely_to_be_kept_clause is too aggressive at removing tier-3 clauses
   return true;
@@ -550,14 +550,14 @@ struct vivify_better_watch {
 
 void Internal::vivify_strengthen (Clause *c) {
 
-  assert (!clause.empty ());
+  CADICAL_assert (!clause.empty ());
 
   if (clause.size () == 1) {
 
     backtrack_without_updating_phases ();
     const int unit = clause[0];
     LOG (c, "vivification shrunken to unit %d", unit);
-    assert (!val (unit));
+    CADICAL_assert (!val (unit));
     assign_unit (unit);
     // lrat_chain.clear ();   done in search_assign
     stats.vivifyunits++;
@@ -590,12 +590,12 @@ void Internal::vivify_strengthen (Clause *c) {
       new_level = level1 - 1;
     }
 
-    assert (new_level >= 0);
+    CADICAL_assert (new_level >= 0);
     if (new_level < level)
       backtrack (new_level);
 
-    assert (val (lit0) >= 0);
-    assert (val (lit1) >= 0 || (val (lit0) > 0 && val (lit1) < 0 &&
+    CADICAL_assert (val (lit0) >= 0);
+    CADICAL_assert (val (lit1) >= 0 || (val (lit0) > 0 && val (lit1) < 0 &&
                                 var (lit0).level <= var (lit1).level));
 
     Clause *d = new_clause_as (c);
@@ -631,12 +631,12 @@ void Internal::vivify_sort_watched (Clause *c) {
     new_level = level1 - 1;
   }
 
-  assert (new_level >= 0);
+  CADICAL_assert (new_level >= 0);
   if (new_level < level)
     backtrack (new_level);
 
-  assert (val (lit0) >= 0);
-  assert (val (lit1) >= 0 || (val (lit0) > 0 && val (lit1) < 0 &&
+  CADICAL_assert (val (lit0) >= 0);
+  CADICAL_assert (val (lit1) >= 0 || (val (lit0) > 0 && val (lit1) < 0 &&
                               var (lit0).level <= var (lit1).level));
 }
 // Conflict analysis from 'start' which learns a decision only clause.
@@ -652,8 +652,8 @@ void Internal::vivify_analyze (Clause *start, bool &subsumes,
   const auto &t = &trail; // normal trail, so next_trail is wrong
   int i = t->size ();     // Start at end-of-trail.
   Clause *reason = start;
-  assert (reason);
-  assert (!trail.empty ());
+  CADICAL_assert (reason);
+  CADICAL_assert (!trail.empty ());
   int uip = trail.back ();
   bool mark_implied = (implied);
 
@@ -692,7 +692,7 @@ void Internal::vivify_analyze (Clause *start, bool &subsumes,
           continue;
         }
 
-        assert (val (other));
+        CADICAL_assert (val (other));
         if (f.seen)
           continue;
         LOG ("pushing lit %d", other);
@@ -704,7 +704,7 @@ void Internal::vivify_analyze (Clause *start, bool &subsumes,
         promote_clause (start, new_glue);
       }
       if (subsumes) {
-        assert (reason);
+        CADICAL_assert (reason);
         LOG (reason, "clause found subsuming");
         LOG (candidate, "clause found subsumed");
         *subsuming = reason;
@@ -718,7 +718,7 @@ void Internal::vivify_analyze (Clause *start, bool &subsumes,
 
     uip = 0;
     while (!uip && i > 0) {
-      assert (i > 0);
+      CADICAL_assert (i > 0);
       const int lit = (*t)[--i];
       if (!var (lit).level)
         continue;
@@ -739,16 +739,16 @@ void Internal::vivify_analyze (Clause *start, bool &subsumes,
 void Internal::vivify_deduce (Clause *candidate, Clause *conflict,
                               int implied, Clause **subsuming,
                               bool &redundant) {
-  assert (lrat_chain.empty ());
+  CADICAL_assert (lrat_chain.empty ());
   bool subsumes;
   Clause *reason;
 
-  assert (clause.empty ());
+  CADICAL_assert (clause.empty ());
   if (implied) {
     reason = candidate;
     mark2 (candidate);
     const int not_implied = -implied;
-    assert (var (not_implied).level);
+    CADICAL_assert (var (not_implied).level);
     Flags &f = flags (not_implied);
     f.seen = true;
     LOG ("pushing implied lit %d", not_implied);
@@ -756,8 +756,8 @@ void Internal::vivify_deduce (Clause *candidate, Clause *conflict,
     clause.push_back (implied);
   } else {
     reason = (conflict ? conflict : candidate);
-    assert (reason);
-    assert (!reason->garbage);
+    CADICAL_assert (reason);
+    CADICAL_assert (!reason->garbage);
     mark2 (candidate);
     subsumes = (candidate != reason);
     redundant = reason->redundant;
@@ -767,7 +767,7 @@ void Internal::vivify_deduce (Clause *candidate, Clause *conflict,
     for (auto lit : *reason) {
       const Var &v = var (lit);
       Flags &f = flags (lit);
-      assert (val (lit) < 0);
+      CADICAL_assert (val (lit) < 0);
       if (!v.level) {
         if (!lrat)
           continue;
@@ -783,7 +783,7 @@ void Internal::vivify_deduce (Clause *candidate, Clause *conflict,
         analyzed.push_back (lit);
         continue;
       }
-      assert (v.level);
+      CADICAL_assert (v.level);
       if (!marked2 (lit)) {
         LOG ("lit %d is not marked", lit);
         subsumes = false;
@@ -798,8 +798,8 @@ void Internal::vivify_deduce (Clause *candidate, Clause *conflict,
       promote_clause (reason, new_glue);
     }
     if (subsumes) {
-      assert (candidate != reason);
-#ifndef NDEBUG
+      CADICAL_assert (candidate != reason);
+#ifndef CADICAL_NDEBUG
       int nonfalse_reason = 0;
       for (auto lit : *reason)
         if (!fixed (lit))
@@ -810,7 +810,7 @@ void Internal::vivify_deduce (Clause *candidate, Clause *conflict,
         if (!fixed (lit))
           ++nonfalse_candidate;
 
-      assert (nonfalse_reason <= nonfalse_candidate);
+      CADICAL_assert (nonfalse_reason <= nonfalse_candidate);
 #endif
       LOG (candidate, "vivify subsumed 0");
       LOG (reason, "vivify subsuming 0");
@@ -826,7 +826,7 @@ void Internal::vivify_deduce (Clause *candidate, Clause *conflict,
                   redundant);
   unmark (candidate);
   if (subsumes) {
-    assert (*subsuming);
+    CADICAL_assert (*subsuming);
     LOG (candidate, "vivify subsumed");
     LOG (*subsuming, "vivify subsuming");
     if (lrat)
@@ -854,7 +854,7 @@ bool Internal::vivify_shrinkable (const std::vector<int> &sorted,
         return true;
       }
     } else {
-      assert (value < 0);
+      CADICAL_assert (value < 0);
       const Var &v = var (lit);
       const Flags &f = flags (lit);
       if (!v.level)
@@ -885,7 +885,7 @@ inline void Internal::vivify_increment_stats (const Vivifier &vivifier) {
     ++stats.vivifystred3;
     break;
   default:
-    assert (vivifier.tier == Vivify_Mode::IRREDUNDANT);
+    CADICAL_assert (vivifier.tier == Vivify_Mode::IRREDUNDANT);
     ++stats.vivifystrirr;
     break;
   }
@@ -902,11 +902,11 @@ bool Internal::vivify_instantiate (
   conflict = nullptr;
   const int lit = sorted.back ();
   LOG ("vivify instantiation");
-  assert (!var (lit).reason);
-  assert (var (lit).level);
-  assert (val (lit));
+  CADICAL_assert (!var (lit).reason);
+  CADICAL_assert (var (lit).level);
+  CADICAL_assert (val (lit));
   backtrack (level - 1);
-  assert (val (lit) == 0);
+  CADICAL_assert (val (lit) == 0);
   stats.vivifydecs++;
   vivify_assume (lit);
   bool ok = vivify_propagate (ticks);
@@ -916,7 +916,7 @@ bool Internal::vivify_instantiate (
     // strengthen clause
     if (lrat) {
       clear_analyzed_literals ();
-      assert (lrat_chain.empty ());
+      CADICAL_assert (lrat_chain.empty ());
       vivify_build_lrat (0, c, lrat_stack);
       vivify_build_lrat (0, conflict, lrat_stack);
       clear_analyzed_literals ();
@@ -928,7 +928,7 @@ bool Internal::vivify_instantiate (
     strengthen_clause (c, remove);
     vivify_sort_watched (c);
     watch_clause (c);
-    assert (!conflict);
+    CADICAL_assert (!conflict);
     return true;
   } else {
     LOG ("vivify instantiation failed");
@@ -942,13 +942,13 @@ bool Internal::vivify_instantiate (
 
 bool Internal::vivify_clause (Vivifier &vivifier, Clause *c) {
 
-  assert (c->size > 2); // see (NO-BINARY) below
-  assert (analyzed.empty ());
+  CADICAL_assert (c->size > 2); // see (NO-BINARY) below
+  CADICAL_assert (analyzed.empty ());
 
   c->vivify = false;  // mark as checked / tried
   c->vivified = true; // and globally remember
 
-  assert (!c->garbage);
+  CADICAL_assert (!c->garbage);
 
   auto &lrat_stack = vivifier.lrat_stack;
   auto &ticks = vivifier.ticks;
@@ -973,7 +973,7 @@ bool Internal::vivify_clause (Vivifier &vivifier, Clause *c) {
       sorted.push_back (lit);
   }
 
-  assert (sorted.size () > 1);
+  CADICAL_assert (sorted.size () > 1);
   if (sorted.size () == 2) {
     LOG ("skipping actual binary");
     return false;
@@ -1027,7 +1027,7 @@ bool Internal::vivify_clause (Vivifier &vivifier, Clause *c) {
     }
     if (forced) {
       LOG ("clause is reason forcing %d", forced);
-      assert (var (forced).level);
+      CADICAL_assert (var (forced).level);
       backtrack_without_updating_phases (var (forced).level - 1);
     }
 
@@ -1039,7 +1039,7 @@ bool Internal::vivify_clause (Vivifier &vivifier, Clause *c) {
       int l = 1; // This is the decision level we want to reuse.
 
       for (const auto &lit : sorted) {
-        assert (!fixed (lit));
+        CADICAL_assert (!fixed (lit));
         const int decision = control[l].decision;
         if (-lit == decision) {
           LOG ("reusing decision %d at decision level %d", decision, l);
@@ -1103,25 +1103,25 @@ bool Internal::vivify_clause (Vivifier &vivifier, Clause *c) {
     if (tmp) { // literal already assigned
 
       const Var &v = var (lit);
-      assert (v.level);
+      CADICAL_assert (v.level);
       if (!v.reason) {
         LOG ("skipping decision %d", lit);
         continue;
       }
 
       if (tmp < 0) {
-        assert (v.level);
+        CADICAL_assert (v.level);
         LOG ("literal %d is already false and can be removed", lit);
         continue;
       }
 
-      assert (tmp > 0);
+      CADICAL_assert (tmp > 0);
       LOG ("subsumed since literal %d already true", lit);
       subsume = lit; // will be able to subsume candidate '@5'
       break;
     }
 
-    assert (!tmp);
+    CADICAL_assert (!tmp);
 
     stats.vivifydecs++;
     vivify_assume (-lit);
@@ -1150,7 +1150,7 @@ bool Internal::vivify_clause (Vivifier &vivifier, Clause *c) {
   Clause *subsuming = nullptr;
   bool redundant = false;
   const int level_after_assumptions = level;
-  assert (level_after_assumptions);
+  CADICAL_assert (level_after_assumptions);
   vivify_deduce (c, conflict, subsume, &subsuming, redundant);
 
   bool res;
@@ -1166,7 +1166,7 @@ bool Internal::vivify_clause (Vivifier &vivifier, Clause *c) {
   }
 
   if (subsuming) {
-    assert (c != subsuming);
+    CADICAL_assert (c != subsuming);
     LOG (c, "deleting subsumed clause");
     if (c->redundant && subsuming->redundant && c->glue < subsuming->glue) {
       promote_clause (c, c->glue);
@@ -1203,19 +1203,19 @@ bool Internal::vivify_clause (Vivifier &vivifier, Clause *c) {
   } else if (subsume) {
     LOG (c, "no vivification instantiation with implied literal %d",
          subsume);
-    assert (!c->redundant);
-    assert (redundant);
+    CADICAL_assert (!c->redundant);
+    CADICAL_assert (redundant);
     res = false;
     ++stats.vivifyimplied;
   } else {
-    assert (level > 2);
-    assert ((size_t) level == sorted.size ());
+    CADICAL_assert (level > 2);
+    CADICAL_assert ((size_t) level == sorted.size ());
     LOG (c, "vivification failed on");
     lrat_chain.clear ();
-    assert (!subsume);
+    CADICAL_assert (!subsume);
     if (!subsume && opts.vivifyinst) {
       res = vivify_instantiate (sorted, c, lrat_stack, ticks);
-      assert (!conflict);
+      CADICAL_assert (!conflict);
     } else {
       LOG ("cannot apply instantiation");
       res = false;
@@ -1253,7 +1253,7 @@ bool Internal::vivify_clause (Vivifier &vivifier, Clause *c) {
 void Internal::vivify_build_lrat (
     int lit, Clause *reason,
     std::vector<std::tuple<int, Clause *, bool>> &stack) {
-  assert (stack.empty ());
+  CADICAL_assert (stack.empty ());
   stack.push_back ({lit, reason, false});
   while (!stack.empty ()) {
     int lit;
@@ -1271,8 +1271,8 @@ void Internal::vivify_build_lrat (
       if (lit && reason) {
         Flags &f = flags (lit);
         f.seen = true;
-        analyzed.push_back (lit); // assert (val (other) < 0);
-        assert (flags (lit).seen);
+        analyzed.push_back (lit); // CADICAL_assert (val (other) < 0);
+        CADICAL_assert (flags (lit).seen);
       }
       continue;
     } else
@@ -1309,11 +1309,11 @@ inline void Internal::vivify_chain_for_units (int lit, Clause *reason) {
   // equivalence if (opts.chrono && assignment_level (lit, reason)) return;
   if (level)
     return; // not decision level 0
-  assert (lrat_chain.empty ());
+  CADICAL_assert (lrat_chain.empty ());
   for (auto &reason_lit : *reason) {
     if (lit == reason_lit)
       continue;
-    assert (val (reason_lit));
+    CADICAL_assert (val (reason_lit));
     const int signed_reason_lit = val (reason_lit) * reason_lit;
     int64_t id = unit_id (signed_reason_lit);
     lrat_chain.push_back (id);
@@ -1344,7 +1344,7 @@ vivify_ref create_ref (Internal *internal, Clause *c) {
       }
       {
         const int64_t lit_count = internal->noccs (lit);
-        assert (lit_count);
+        CADICAL_assert (lit_count);
         LOG ("checking literal %d with %zd occurrences", lit, lit_count);
         if (lit_count <= best_count)
           continue;
@@ -1353,9 +1353,9 @@ vivify_ref create_ref (Internal *internal, Clause *c) {
       }
     CONTINUE_WITH_NEXT_LITERAL:;
     }
-    assert (best);
-    assert (best_count);
-    assert (best_count < UINT32_MAX);
+    CADICAL_assert (best);
+    CADICAL_assert (best_count);
+    CADICAL_assert (best_count < UINT32_MAX);
     ref.count[i] =
         ((uint64_t) best_count << 32) + (uint64_t) internal->vlit (best);
     LOG ("final count at position %d is %d - %d: %lu", i, best, best_count,
@@ -1402,7 +1402,7 @@ void Internal::vivify_initialize (Vivifier &vivifier, int64_t &ticks) {
 
   // Disconnect all watches since we sort literals within clauses.
   //
-  assert (watching ());
+  CADICAL_assert (watching ());
 #if 0
   clear_watches ();
 #endif
@@ -1521,7 +1521,7 @@ inline std::vector<Clause *> &current_schedule (Vivifier &vivifier) {
 struct vivify_refcount_rank {
   int offset;
   vivify_refcount_rank (int j) : offset (j) {
-    assert (offset < COUNTREF_COUNTS);
+    CADICAL_assert (offset < COUNTREF_COUNTS);
   }
   typedef uint64_t Type;
   Type operator() (const vivify_ref &a) const { return a.count[offset]; }
@@ -1530,7 +1530,7 @@ struct vivify_refcount_rank {
 struct vivify_refcount_smaller {
   int offset;
   vivify_refcount_smaller (int j) : offset (j) {
-    assert (offset < COUNTREF_COUNTS);
+    CADICAL_assert (offset < COUNTREF_COUNTS);
   }
   bool operator() (const vivify_ref &a, const vivify_ref &b) const {
     const auto s = vivify_refcount_rank (offset) (a);
@@ -1576,7 +1576,7 @@ void Internal::vivify_round (Vivifier &vivifier, int64_t ticks_limit) {
          "starting %c vivification round ticks limit %" PRId64 "",
          vivifier.tag, ticks_limit);
 
-  assert (watching ());
+  CADICAL_assert (watching ());
 
   auto &refs_schedule = current_refs_schedule (vivifier);
   auto &schedule = current_schedule (vivifier);
@@ -1645,7 +1645,7 @@ void Internal::vivify_round (Vivifier &vivifier, int64_t ticks_limit) {
   // Limit the number of propagations during vivification as in 'probe'.
   //
   const int64_t limit = ticks_limit - stats.ticks.vivify;
-  assert (limit >= 0);
+  CADICAL_assert (limit >= 0);
 
   // the clauses might still contain set literals, so propagation since the
   // beginning
@@ -1770,7 +1770,7 @@ void set_vivifier_mode (Vivifier &vivifier, Vivify_Mode tier) {
     vivifier.tag = 'w';
     break;
   default:
-    assert (tier == Vivify_Mode::IRREDUNDANT);
+    CADICAL_assert (tier == Vivify_Mode::IRREDUNDANT);
     vivifier.tag = 'x';
     break;
   }
@@ -1801,8 +1801,8 @@ bool Internal::vivify () {
     return false;
   if (level)
     backtrack ();
-  assert (opts.vivify);
-  assert (!level);
+  CADICAL_assert (opts.vivify);
+  CADICAL_assert (!level);
 
   SET_EFFORT_LIMIT (totallimit, vivify, true);
 
@@ -1854,12 +1854,12 @@ bool Internal::vivify () {
     if (limit < stats.ticks.vivify)
       limit = stats.ticks.vivify;
     const double effort = (total * tier1effort) / sumeffort;
-    assert (std::numeric_limits<int64_t>::max () - (int64_t) effort >=
+    CADICAL_assert (std::numeric_limits<int64_t>::max () - (int64_t) effort >=
             limit);
     limit += effort;
     if (limit - shared_effort > stats.ticks.vivify) {
       limit -= shared_effort;
-      assert (limit >= 0);
+      CADICAL_assert (limit >= 0);
       vivify_round (vivifier, limit);
     } else {
       LOG ("building the schedule already used our entire ticks budget for "
@@ -1874,12 +1874,12 @@ bool Internal::vivify () {
     if (limit < stats.ticks.vivify)
       limit = stats.ticks.vivify;
     const double effort = (total * tier2effort) / sumeffort;
-    assert (std::numeric_limits<int64_t>::max () - (int64_t) effort >=
+    CADICAL_assert (std::numeric_limits<int64_t>::max () - (int64_t) effort >=
             limit);
     limit += effort;
     if (limit - shared_effort > stats.ticks.vivify) {
       limit -= shared_effort;
-      assert (limit >= 0);
+      CADICAL_assert (limit >= 0);
       set_vivifier_mode (vivifier, Vivify_Mode::TIER2);
       vivify_round (vivifier, limit);
     } else {
@@ -1893,12 +1893,12 @@ bool Internal::vivify () {
     if (limit < stats.ticks.vivify)
       limit = stats.ticks.vivify;
     const double effort = (total * tier3effort) / sumeffort;
-    assert (std::numeric_limits<int64_t>::max () - (int64_t) effort >=
+    CADICAL_assert (std::numeric_limits<int64_t>::max () - (int64_t) effort >=
             limit);
     limit += effort;
     if (limit - shared_effort > stats.ticks.vivify) {
       limit -= shared_effort;
-      assert (limit >= 0);
+      CADICAL_assert (limit >= 0);
       set_vivifier_mode (vivifier, Vivify_Mode::TIER3);
       vivify_round (vivifier, limit);
     } else {
@@ -1912,12 +1912,12 @@ bool Internal::vivify () {
     if (limit < stats.ticks.vivify)
       limit = stats.ticks.vivify;
     const double effort = (total * irreffort) / sumeffort;
-    assert (std::numeric_limits<int64_t>::max () - (int64_t) effort >=
+    CADICAL_assert (std::numeric_limits<int64_t>::max () - (int64_t) effort >=
             limit);
     limit += effort;
     if (limit - shared_effort > stats.ticks.vivify) {
       limit -= shared_effort;
-      assert (limit >= 0);
+      CADICAL_assert (limit >= 0);
       set_vivifier_mode (vivifier, Vivify_Mode::IRREDUNDANT);
       const int old = stats.vivifystrirr;
       const int old_tried = stats.vivifychecks;

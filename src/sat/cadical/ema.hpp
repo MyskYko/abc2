@@ -36,7 +36,7 @@ struct EMA {
         updated (0),
 #endif
         value (0), biased (0), alpha (a), beta (1 - a), exp (!!beta) {
-    assert (beta >= 0);
+    CADICAL_assert (beta >= 0);
   }
 
   operator double () const { return value; }
@@ -56,7 +56,7 @@ struct EMA {
 
 #define INIT_EMA(E, WINDOW) \
   do { \
-    assert ((WINDOW) >= 1); \
+    CADICAL_assert ((WINDOW) >= 1); \
     double ALPHA = 1.0 / (double) (WINDOW); \
     E = EMA (ALPHA); \
     LOG ("init " #E " EMA target alpha %g window %d", ALPHA, \

@@ -9,7 +9,7 @@ void Internal::reset_subsume_bits () {
 }
 
 void Internal::check_var_stats () {
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
   int64_t fixed = 0, eliminated = 0, substituted = 0, pure = 0, unused = 0;
   for (auto idx : vars) {
     Flags &f = flags (idx);
@@ -26,13 +26,13 @@ void Internal::check_var_stats () {
     if (f.pure ())
       pure++;
   }
-  assert (stats.now.fixed == fixed);
-  assert (stats.now.eliminated == eliminated);
-  assert (stats.now.substituted == substituted);
-  assert (stats.now.pure == pure);
+  CADICAL_assert (stats.now.fixed == fixed);
+  CADICAL_assert (stats.now.eliminated == eliminated);
+  CADICAL_assert (stats.now.substituted == substituted);
+  CADICAL_assert (stats.now.pure == pure);
   int64_t inactive = unused + fixed + eliminated + substituted + pure;
-  assert (stats.inactive == inactive);
-  assert (max_var == stats.active + stats.inactive);
+  CADICAL_assert (stats.inactive == inactive);
+  CADICAL_assert (max_var == stats.active + stats.inactive);
 #endif
 }
 

@@ -18,7 +18,7 @@ void Internal::init_averages () {
   INIT_EMA (averages.current.trail.fast, opts.ematrailfast);
   INIT_EMA (averages.current.trail.slow, opts.ematrailslow);
 
-  assert (!averages.swapped);
+  CADICAL_assert (!averages.swapped);
 }
 
 void Internal::swap_averages () {

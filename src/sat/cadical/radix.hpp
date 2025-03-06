@@ -1,7 +1,7 @@
 #ifndef _radix_hpp_INCLUDED
 #define _radix_hpp_INCLUDED
 
-#include <cassert>
+#include <cCADICAL_assert>
 #include <cstring>
 #include <iterator>
 #include <vector>
@@ -42,7 +42,7 @@ template <class I, class Rank> void rsort (I first, I last, Rank rank) {
   typedef typename iterator_traits<I>::value_type T;
   typedef typename Rank::Type R;
 
-  assert (first <= last);
+  CADICAL_assert (first <= last);
   const size_t n = last - first;
   if (n <= 1)
     return;
@@ -119,7 +119,7 @@ template <class I, class Rank> void rsort (I first, I last, Rank rank) {
     }
 
     if (!initialized) {
-      assert (&*c == &*a); // MS VC++
+      CADICAL_assert (&*c == &*a); // MS VC++
       v.resize (n);
       b = v.begin ();
       initialized = true;
@@ -145,9 +145,9 @@ template <class I, class Rank> void rsort (I first, I last, Rank rank) {
   delete[] count;
 #endif
 
-#ifndef NDEBUG
+#ifndef CADICAL_NDEBUG
   for (I p = first; p + 1 != last; p++)
-    assert (rank (p[0]) <= rank (p[1]));
+    CADICAL_assert (rank (p[0]) <= rank (p[1]));
 #endif
 }
 
