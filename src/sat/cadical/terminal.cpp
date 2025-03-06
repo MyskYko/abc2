@@ -2,6 +2,10 @@
 
 #include "internal.hpp"
 
+#ifdef WIN32
+#define isatty _isatty
+#endif
+
 namespace CaDiCaL {
 
 Terminal::Terminal (FILE *f) : file (f), reset_on_exit (false) {

@@ -17,9 +17,8 @@ extern "C" {
 
 #ifdef WIN32
 
-#include <cstdio>
+#include <windows.h>
 
-#define unlink _unlink
 #define access _access
 #define R_OK 4
 #define W_OK 2

@@ -11,7 +11,7 @@
 
 extern "C" {
 
-#ifdef __WIN32
+#ifdef WIN32
 
 #ifndef __WIN32_WINNT
 #define __WIN32_WINNT 0x0600
@@ -43,7 +43,7 @@ namespace CaDiCaL {
 
 /*------------------------------------------------------------------------*/
 
-#ifdef __WIN32
+#ifdef WIN32
 
 double absolute_real_time () {
   FILETIME f;
@@ -106,7 +106,7 @@ double Internal::process_time () const {
 
 /*------------------------------------------------------------------------*/
 
-#ifdef __WIN32
+#ifdef WIN32
 
 uint64_t current_resident_set_size () {
   PROCESS_MEMORY_COUNTERS pmc;
