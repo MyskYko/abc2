@@ -180,7 +180,7 @@ struct cadical_kitten {
   unsigneds core;
   unsigneds rcore;
   unsigneds eclause;
-  unsigneds export;
+  unsigneds export_;
   unsigneds klause;
   unsigneds klauses;
   unsigneds resolved;
@@ -497,9 +497,9 @@ static void clear_cadical_kitten (cadical_kitten *cadical_kitten) {
     const size_t BYTES = old_vars * sizeof *(P); \
     memcpy ((P), OLD_PTR, BYTES); \
     void *NEW_PTR = (P); \
-    (P) = OLD_PTR; \
+    (P) = (T*)OLD_PTR;           \
     DEALLOC ((P), old_size / 2); \
-    (P) = NEW_PTR; \
+    (P) = (T*)NEW_PTR;            \
   } while (0)
 
 #define RESIZE2(T, P)                            \
@@ -509,9 +509,9 @@ static void clear_cadical_kitten (cadical_kitten *cadical_kitten) {
     const size_t BYTES = old_lits * sizeof *(P); \
     memcpy ((P), OLD_PTR, BYTES); \
     void *NEW_PTR = (P); \
-    (P) = OLD_PTR; \
+    (P) = (T*)OLD_PTR;       \
     DEALLOC ((P), old_size); \
-    (P) = NEW_PTR; \
+    (P) = (T*)NEW_PTR;       \
   } while (0)
 
 static void enlarge_internal (cadical_kitten *cadical_kitten, size_t lit) {
@@ -852,8 +852,8 @@ static unsigned import_literal (cadical_kitten *cadical_kitten, unsigned elit) {
 
   unsigned iidx = cadical_kitten->import[eidx];
   if (!iidx) {
-    iidx = SIZE_STACK (cadical_kitten->export);
-    PUSH_STACK (cadical_kitten->export, eidx);
+    iidx = SIZE_STACK (cadical_kitten->export_);
+    PUSH_STACK (cadical_kitten->export_, eidx);
     cadical_kitten->import[eidx] = iidx + 1;
   } else
     iidx--;
@@ -866,8 +866,8 @@ static unsigned import_literal (cadical_kitten *cadical_kitten, unsigned elit) {
 
 static unsigned export_literal (cadical_kitten *cadical_kitten, unsigned ilit) {
   const unsigned iidx = ilit / 2;
-  CADICAL_assert (iidx < SIZE_STACK (cadical_kitten->export));
-  const unsigned eidx = PEEK_STACK (cadical_kitten->export, iidx);
+  CADICAL_assert (iidx < SIZE_STACK (cadical_kitten->export_));
+  const unsigned eidx = PEEK_STACK (cadical_kitten->export_, iidx);
   const unsigned elit = 2 * eidx + (ilit & 1);
   return elit;
 }
@@ -914,8 +914,8 @@ void cadical_kitten_clear (cadical_kitten *cadical_kitten) {
   for (all_kits (kit))
     CLEAR_STACK (KATCHES (kit));
 
-  while (!EMPTY_STACK (cadical_kitten->export))
-    cadical_kitten->import[POP_STACK (cadical_kitten->export)] = 0;
+  while (!EMPTY_STACK (cadical_kitten->export_))
+    cadical_kitten->import[POP_STACK (cadical_kitten->export_)] = 0;
 
   const size_t lits = cadical_kitten->size;
   const unsigned vars = lits / 2;
@@ -938,7 +938,7 @@ void cadical_kitten_release (cadical_kitten *cadical_kitten) {
   RELEASE_STACK (cadical_kitten->assumptions);
   RELEASE_STACK (cadical_kitten->core);
   RELEASE_STACK (cadical_kitten->eclause);
-  RELEASE_STACK (cadical_kitten->export);
+  RELEASE_STACK (cadical_kitten->export_);
   RELEASE_STACK (cadical_kitten->klause);
   RELEASE_STACK (cadical_kitten->klauses);
   RELEASE_STACK (cadical_kitten->resolved);
