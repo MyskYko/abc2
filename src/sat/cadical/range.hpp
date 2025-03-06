@@ -1,7 +1,7 @@
 #ifndef _range_hpp_INCLUDED
 #define _range_hpp_INCLUDED
 
-#include <cCADICAL_assert>
+#include <cassert>
 
 namespace CaDiCaL {
 

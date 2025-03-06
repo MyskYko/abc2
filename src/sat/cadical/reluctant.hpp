@@ -1,7 +1,7 @@
 #ifndef _reluctant_hpp_INCLUDED
 #define _reluctant_hpp_INCLUDED
 
-#include <cCADICAL_assert>
+#include <cassert>
 #include <cstdint>
 
 namespace CaDiCaL {

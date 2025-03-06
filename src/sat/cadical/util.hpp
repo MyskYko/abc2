@@ -1,7 +1,7 @@
 #ifndef _util_hpp_INCLUDED
 #define _util_hpp_INCLUDED
 
-#include <cCADICAL_assert>
+#include <cassert>
 #include <cstdint>
 #include <vector>
 

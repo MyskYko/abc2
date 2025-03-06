@@ -3,7 +3,7 @@
 
 #include "util.hpp" // Alphabetically after 'heap.hpp'.
 
-#include <cCADICAL_assert>
+#include <cassert>
 
 namespace CaDiCaL {
 

@@ -1,7 +1,7 @@
 #ifndef _file_hpp_INCLUDED
 #define _file_hpp_INCLUDED
 
-#include <cCADICAL_assert>
+#include <cassert>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>

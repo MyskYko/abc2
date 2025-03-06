@@ -1,7 +1,7 @@
 #ifndef _radix_hpp_INCLUDED
 #define _radix_hpp_INCLUDED
 
-#include <cCADICAL_assert>
+#include <cassert>
 #include <cstring>
 #include <iterator>
 #include <vector>

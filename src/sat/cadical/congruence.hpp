@@ -3,7 +3,7 @@
 
 #include <algorithm>
 #include <array>
-#include <cCADICAL_assert>
+#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <queue>

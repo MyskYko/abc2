@@ -1,5 +1,5 @@
 #include "reap.hpp"
-#include <cCADICAL_assert>
+#include <cassert>
 #include <climits>
 #include <cstring>
 

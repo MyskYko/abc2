@@ -11,7 +11,7 @@
 
 // Common 'C' headers.
 
-#include <cCADICAL_assert>
+#include <cassert>
 #include <cctype>
 #include <climits>
 #include <cmath>

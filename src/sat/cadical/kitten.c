@@ -2,7 +2,7 @@
 #include "random.h"
 #include "stack.h"
 
-#include <CADICAL_assert.h>
+#include <assert.h>
 #include <inttypes.h>
 #include <limits.h>
 #include <stdarg.h>

@@ -1,7 +1,7 @@
 #ifndef _watch_hpp_INCLUDED
 #define _watch_hpp_INCLUDED
 
-#include <cCADICAL_assert>
+#include <cassert>
 #include <vector>
 
 namespace CaDiCaL {
