@@ -1924,7 +1924,17 @@ unsigned cadical_kitten_compute_clausal_core (cadical_kitten *cadical_kitten,
     reason_ref = cadical_kitten->failing;
     if (reason_ref == INVALID) {
       LOG ("assumptions mutually inconsistent");
-      goto DONE;
+      //goto DONE;
+        if (learned_ptr)
+          *learned_ptr = learned;
+        
+        LOG ("clausal core of %u original clauses", original);
+        LOG ("clausal core of %" PRIu64 " learned clauses", learned);
+        cadical_kitten->statistics.original = original;
+        cadical_kitten->statistics.learned = 0;
+        UPDATE_STATUS (21);
+        
+        return original;
     }
   }
 
@@ -1962,7 +1972,7 @@ unsigned cadical_kitten_compute_clausal_core (cadical_kitten *cadical_kitten,
     }
   }
 
-DONE:
+  //DONE:
 
   if (learned_ptr)
     *learned_ptr = learned;
