@@ -16,6 +16,8 @@
 #undef LOGPREFIX
 #define LOGPREFIX "CHECK"
 
+ABC_NAMESPACE_IMPL_START
+
 void kissat_check_satisfying_assignment (kissat *solver) {
   LOG ("checking satisfying assignment");
   const int *const begin = BEGIN_STACK (solver->original);
@@ -51,9 +53,13 @@ void kissat_check_satisfying_assignment (kissat *solver) {
   LOG ("assignment satisfies all %zu original clauses", count);
 }
 
+ABC_NAMESPACE_IMPL_END
+
 #include "allocate.h"
 #include "inline.h"
 #include "sort.h"
+
+ABC_NAMESPACE_IMPL_START
 
 typedef struct hash hash;
 typedef struct bucket bucket;
@@ -191,7 +197,11 @@ void kissat_release_checker (kissat *solver) {
 
 #ifndef KISSAT_QUIET
 
+ABC_NAMESPACE_IMPL_END
+
 #include <inttypes.h>
+
+ABC_NAMESPACE_IMPL_START
 
 #define PERCENT_ADDED(NAME) kissat_percent (checker->NAME, checker->added)
 #define PERCENT_CHECKED(NAME) \
@@ -1033,3 +1043,5 @@ void dump_checker (kissat *solver) {
 #else
 int kissat_check_dummy_to_avoid_warning;
 #endif
+
+ABC_NAMESPACE_IMPL_START
