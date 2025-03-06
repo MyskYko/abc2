@@ -1003,12 +1003,12 @@ void Internal::init_citten () {
   if (!opts.elimdef)
     return;
   CADICAL_assert (!citten);
-  citten = kitten_init ();
+  citten = cadical_kitten_init ();
 }
 
 void Internal::reset_citten () {
   if (citten) {
-    kitten_release (citten);
+    cadical_kitten_release (citten);
     citten = 0;
   }
 }

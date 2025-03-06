@@ -21,7 +21,7 @@ struct proof_clause {
   int64_t id;
   vector<int> literals;
   // for lrat
-  unsigned cid; // kitten id
+  unsigned cid; // cadical_kitten id
   bool learned;
   vector<int64_t> chain;
 };

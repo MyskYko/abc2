@@ -270,7 +270,7 @@ struct Internal {
   vector<int> sweep_schedule; // remember sweep varibles to reschedule
   bool sweep_incomplete;      // sweep
 
-  kitten *citten;
+  cadical_kitten *citten;
 
   size_t num_assigned; // check for satisfied
 
@@ -1168,7 +1168,7 @@ struct Internal {
   void find_gate_clauses (Eliminator &, int pivot);
   void unmark_gate_clauses (Eliminator &);
 
-  // mine definitions for kitten in 'definition.cpp'
+  // mine definitions for cadical_kitten in 'definition.cpp'
   //
   void find_definition (Eliminator &, int);
   void init_citten ();
@@ -1206,8 +1206,8 @@ struct Internal {
 
   // sweeping in 'sweep.cpp'
   int sweep_solve ();
-  void sweep_set_kitten_ticks_limit (Sweeper &sweeper);
-  bool kitten_ticks_limit_hit (Sweeper &sweeper, const char *when);
+  void sweep_set_cadical_kitten_ticks_limit (Sweeper &sweeper);
+  bool cadical_kitten_ticks_limit_hit (Sweeper &sweeper, const char *when);
   void init_sweeper (Sweeper &sweeper);
   void release_sweeper (Sweeper &sweeper);
   void clear_sweeper (Sweeper &sweeper);
