@@ -6,6 +6,8 @@
 
 #include <inttypes.h>
 
+ABC_NAMESPACE_IMPL_START
+
 static void dump_literal (kissat *solver, unsigned ilit) {
   const int elit = kissat_export_literal (solver, ilit);
   printf ("%u(%d)", ilit, elit);
@@ -293,3 +295,5 @@ int kissat_dump (kissat *solver) {
 #else
 int kissat_dump_dummy_to_avoid_warning;
 #endif
+
+ABC_NAMESPACE_IMPL_END
