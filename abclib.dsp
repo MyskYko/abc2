@@ -2886,6 +2886,366 @@ SOURCE=.\src\sat\kissat\watch.c
 SOURCE=.\src\sat\kissat\weaken.c
 # End Source File
 # End Group
+# Begin Group "cadical"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\kitten.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\analyze.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\arena.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\assume.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\averages.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\backtrack.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\backward.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\bins.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\block.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\ccadical.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\checker.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\clause.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\collect.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\compact.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\condition.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\config.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\congruence.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\constrain.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\contract.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\cover.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\decide.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\decompose.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\deduplicate.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\definition.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\drattracer.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\elim.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\elimfast.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\ema.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\extend.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\external.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\external_propagate.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\factor.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\file.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\flags.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\flip.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\format.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\frattracer.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\gates.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\idruptracer.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\instantiate.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\internal.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\ipasir.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\lidruptracer.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\limit.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\logging.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\lookahead.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\lratchecker.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\lrattracer.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\lucky.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\message.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\minimize.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\occs.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\options.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\parse.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\phases.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\probe.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\profile.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\proof.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\propagate.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\queue.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\random.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\reap.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\reduce.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\rephase.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\report.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\resources.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\restart.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\restore.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\score.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\shrink.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\signal.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\solution.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\solver.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\stable.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\stats.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\subsume.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\sweep.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\terminal.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\ternary.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\tier.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\transred.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\unstable.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\util.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\var.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\veripbtracer.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\version.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\vivify.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\walk.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\watch.cpp
+# End Source File
+# End Group
 # End Group
 # Begin Group "opt"
 
