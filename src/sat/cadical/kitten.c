@@ -48,7 +48,7 @@ static inline void *cadical_kitten_calloc (size_t n, size_t size) {
     const size_t OLD_CAPACITY = CAPACITY_STACK (S); \
     const size_t NEW_CAPACITY = OLD_CAPACITY ? 2 * OLD_CAPACITY : 1; \
     const size_t BYTES = NEW_CAPACITY * sizeof *(S).begin; \
-    (S).begin = realloc ((S).begin, BYTES); \
+    (S).begin = (unsigned*)realloc ((S).begin, BYTES);              \
     if (!(S).begin) \
       die ("out of memory reallocating '%zu' bytes", BYTES); \
     (S).allocated = (S).begin + NEW_CAPACITY; \
