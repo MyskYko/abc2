@@ -1,6 +1,8 @@
 #ifndef _lratchecker_hpp_INCLUDED
 #define _lratchecker_hpp_INCLUDED
 
+#include "global.h"
+
 /*------------------------------------------------------------------------*/
 #include <unordered_map>
 

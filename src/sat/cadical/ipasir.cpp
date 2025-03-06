@@ -1,3 +1,5 @@
+#include "global.h"
+
 #include "ipasir.h"
 #include "ccadical.h"
 

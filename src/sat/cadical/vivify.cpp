@@ -1,3 +1,5 @@
+#include "global.h"
+
 #include "vivify.hpp"
 #include "internal.hpp"
 #include "util.hpp"

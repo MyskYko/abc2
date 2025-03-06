@@ -1,6 +1,8 @@
 #ifndef _delay_hpp_INCLUDED
 #define _delay_hpp_INCLUDED
 
+#include "global.h"
+
 #include <cstdint>
 #include <limits>
 

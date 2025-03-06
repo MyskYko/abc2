@@ -1,6 +1,8 @@
 #ifndef _cadical_hpp_INCLUDED
 #define _cadical_hpp_INCLUDED
 
+#include "global.h"
+
 #include <cstdint>
 #include <cstdio>
 #include <vector>

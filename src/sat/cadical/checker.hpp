@@ -1,6 +1,8 @@
 #ifndef _checker_hpp_INCLUDED
 #define _checker_hpp_INCLUDED
 
+#include "global.h"
+
 #include "tracer.hpp" // Alphabetically after 'checker'.
 
 #include <cstdint>

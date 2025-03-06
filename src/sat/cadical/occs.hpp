@@ -1,6 +1,8 @@
 #ifndef _occs_h_INCLUDED
 #define _occs_h_INCLUDED
 
+#include "global.h"
+
 #include <vector>
 
 namespace CaDiCaL {

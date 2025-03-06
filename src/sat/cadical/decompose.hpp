@@ -1,6 +1,8 @@
 #ifndef _decompose_hpp_INCLUDED
 #define _decompose_hpp_INCLUDED
 
+#include "global.h"
+
 namespace CaDiCaL {
 
 // This implements Tarjan's algorithm for decomposing the binary implication

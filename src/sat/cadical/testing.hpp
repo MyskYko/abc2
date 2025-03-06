@@ -1,6 +1,8 @@
 #ifndef _testing_hpp_INCLUDED
 #define _testing_hpp_INCLUDED
 
+#include "global.h"
+
 // This class provides access to 'internal' which should only be used for
 // internal testing and not for any other purpose as 'internal' is supposed
 // to be hidden.

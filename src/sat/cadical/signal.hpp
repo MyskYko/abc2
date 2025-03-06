@@ -1,6 +1,8 @@
 #ifndef _signal_hpp_INCLUDED
 #define _signal_hpp_INCLUDED
 
+#include "global.h"
+
 namespace CaDiCaL {
 
 // Helper class for handling signals in applications.

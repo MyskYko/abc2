@@ -1,6 +1,8 @@
 #ifndef _drattracer_h_INCLUDED
 #define _drattracer_h_INCLUDED
 
+#include "global.h"
+
 #include "tracer.hpp"
 
 namespace CaDiCaL {

@@ -1,6 +1,8 @@
 #ifndef _clause_hpp_INCLUDED
 #define _clause_hpp_INCLUDED
 
+#include "global.h"
+
 #include "util.hpp"
 #include <climits>
 #include <cstdint>

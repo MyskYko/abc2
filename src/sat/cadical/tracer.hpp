@@ -1,6 +1,8 @@
 #ifndef _tracer_hpp_INCLUDED
 #define _tracer_hpp_INCLUDED
 
+#include "global.h"
+
 #include <cstdint>
 #include <vector>
 

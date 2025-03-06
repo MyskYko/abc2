@@ -1,4 +1,6 @@
 // vim: set tw=300: set VIM text width to 300 characters for this file.
+#include "global.h"
+
 
 #include "internal.hpp"
 

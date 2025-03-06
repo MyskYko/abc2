@@ -1,6 +1,8 @@
 #ifndef _sweep_hpp_INCLUDED
 #define _sweep_hpp_INCLUDED
 
+#include "global.h"
+
 namespace CaDiCaL {
 
 struct Internal;

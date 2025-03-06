@@ -1,6 +1,8 @@
 #ifndef _var_hpp_INCLUDED
 #define _var_hpp_INCLUDED
 
+#include "global.h"
+
 namespace CaDiCaL {
 
 struct Clause;

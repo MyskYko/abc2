@@ -1,3 +1,5 @@
+#include "global.h"
+
 #include "congruence.hpp"
 #include "internal.hpp"
 #include <algorithm>
@@ -7504,8 +7506,10 @@ bool Internal::extract_gates () {
 
   const int64_t new_merged = stats.congruence.congruent;
 
+#ifndef QUIET
   phase ("congruence-phase", stats.congruence.rounds, "merged %ld literals",
          new_merged - old_merged);
+#endif
   if (!unsat && !internal->propagate ())
     unsat = true;
 

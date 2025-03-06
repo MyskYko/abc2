@@ -1,6 +1,8 @@
 #ifndef _veripbtracer_h_INCLUDED
 #define _veripbtracer_h_INCLUDED
 
+#include "global.h"
+
 class FileTracer;
 
 namespace CaDiCaL {

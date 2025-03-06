@@ -1,6 +1,8 @@
 #ifndef _vivify_hpp_INCLUDED
 #define _vivify_hpp_INCLUDED
 
+#include "global.h"
+
 #include "util.hpp"
 
 #include <array>

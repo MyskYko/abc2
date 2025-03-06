@@ -1,6 +1,8 @@
 #ifndef _flags_hpp_INCLUDED
 #define _flags_hpp_INCLUDED
 
+#include "global.h"
+
 namespace CaDiCaL {
 
 struct Flags { // Variable flags.

@@ -1,6 +1,8 @@
 #ifndef _level_hpp_INCLUDED
 #define _level_hpp_INCLUDED
 
+#include "global.h"
+
 #include <climits>
 
 namespace CaDiCaL {

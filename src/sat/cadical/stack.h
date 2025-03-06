@@ -1,6 +1,8 @@
 #ifndef _stack_h_INCLUDED
 #define _stack_h_INCLUDED
 
+#include "global.h"
+
 #include <stdlib.h>
 
 #define STACK(TYPE) \

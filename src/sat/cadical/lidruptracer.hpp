@@ -1,6 +1,8 @@
 #ifndef _lidruptracer_h_INCLUDED
 #define _lidruptracer_h_INCLUDED
 
+#include "global.h"
+
 class FileTracer;
 
 namespace CaDiCaL {

@@ -1,6 +1,8 @@
 #ifndef _heap_hpp_INCLUDED
 #define _heap_hpp_INCLUDED
 
+#include "global.h"
+
 #include "util.hpp" // Alphabetically after 'heap.hpp'.
 
 #include <cassert>

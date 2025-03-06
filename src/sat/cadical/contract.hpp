@@ -1,6 +1,8 @@
 #ifndef _contract_hpp_INCLUDED
 #define _contract_hpp_INCLUDED
 
+#include "global.h"
+
 /*------------------------------------------------------------------------*/
 #ifndef NCONTRACTS
 /*------------------------------------------------------------------------*/

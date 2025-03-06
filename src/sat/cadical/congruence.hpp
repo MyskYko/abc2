@@ -1,6 +1,8 @@
 #ifndef _congruenc_hpp_INCLUDED
 #define _congruenc_hpp_INCLUDED
 
+#include "global.h"
+
 #include <algorithm>
 #include <array>
 #include <cassert>

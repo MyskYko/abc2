@@ -1,6 +1,8 @@
 #ifndef _limit_hpp_INCLUDED
 #define _limit_hpp_INCLUDED
 
+#include "global.h"
+
 #include <cstdint>
 #include <limits>
 

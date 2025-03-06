@@ -1,6 +1,8 @@
 #ifndef _factor_hpp_INCLUDED
 #define _factor_hpp_INCLUDED
 
+#include "global.h"
+
 #include "clause.hpp"
 #include "heap.hpp"
 

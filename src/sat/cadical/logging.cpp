@@ -1,3 +1,5 @@
+#include "global.h"
+
 #ifdef LOGGING
 
 #include "internal.hpp"

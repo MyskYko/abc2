@@ -1,6 +1,8 @@
 #ifndef _phases_hpp_INCLUDED
 #define _phases_hpp_INCLUDED
 
+#include "global.h"
+
 namespace CaDiCaL {
 
 struct Phases {

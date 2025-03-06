@@ -1,6 +1,8 @@
 #ifndef _options_hpp_INCLUDED
 #define _options_hpp_INCLUDED
 
+#include "global.h"
+
 /*------------------------------------------------------------------------*/
 
 // In order to add a new option, simply add a new line below. Make sure that

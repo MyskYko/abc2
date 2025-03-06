@@ -1,3 +1,5 @@
+#include "global.h"
+
 #include "reap.hpp"
 #include <cassert>
 #include <climits>

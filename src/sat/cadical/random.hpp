@@ -1,6 +1,8 @@
 #ifndef _random_hpp_INCLUDED
 #define _random_hpp_INCLUDED
 
+#include "global.h"
+
 #include <cstdint>
 
 // Random number generator.

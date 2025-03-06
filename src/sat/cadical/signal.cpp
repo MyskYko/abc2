@@ -1,3 +1,5 @@
+#include "global.h"
+
 #include "signal.hpp"
 #include "cadical.hpp"
 #include "resources.hpp"

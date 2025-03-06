@@ -1,6 +1,8 @@
 #ifndef _parse_hpp_INCLUDED
 #define _parse_hpp_INCLUDED
 
+#include "global.h"
+
 #include <cassert>
 #include <vector>
 

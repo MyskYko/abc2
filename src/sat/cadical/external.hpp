@@ -1,6 +1,8 @@
 #ifndef _external_hpp_INCLUDED
 #define _external_hpp_INCLUDED
 
+#include "global.h"
+
 /*------------------------------------------------------------------------*/
 
 #include "range.hpp"

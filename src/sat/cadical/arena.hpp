@@ -1,6 +1,8 @@
 #ifndef _arena_hpp_INCLUDED
 #define _arena_hpp_INCLUDED
 
+#include "global.h"
+
 namespace CaDiCaL {
 
 // This memory allocation arena provides fixed size pre-allocated memory for

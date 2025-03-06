@@ -1,6 +1,8 @@
 #ifndef _radix_hpp_INCLUDED
 #define _radix_hpp_INCLUDED
 
+#include "global.h"
+
 #include <cassert>
 #include <cstring>
 #include <iterator>

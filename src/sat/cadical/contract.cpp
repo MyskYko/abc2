@@ -1,3 +1,5 @@
+#include "global.h"
+
 #ifndef NCONTRACTS
 
 #include "internal.hpp"

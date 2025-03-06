@@ -1,6 +1,8 @@
 #ifndef _terminal_hpp_INCLUDED
 #define _terminal_hpp_INCLUDED
 
+#include "global.h"
+
 namespace CaDiCaL {
 
 class Terminal {

@@ -1,3 +1,5 @@
+#include "global.h"
+
 namespace CaDiCaL {
 
 const char *version ();

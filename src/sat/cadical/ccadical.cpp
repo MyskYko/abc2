@@ -1,3 +1,5 @@
+#include "global.h"
+
 #include "cadical.hpp"
 
 #include <cstdlib>

@@ -1,6 +1,8 @@
 #ifndef _config_hpp_INCLUDED
 #define _config_hpp_INCLUDED
 
+#include "global.h"
+
 namespace CaDiCaL {
 
 class Options;

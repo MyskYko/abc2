@@ -1,6 +1,8 @@
 #ifndef _cover_hpp_INCLUDED
 #define _cover_hpp_INCLUDED
 
+#include "global.h"
+
 /*------------------------------------------------------------------------*/
 
 // This header only provides the 'COVER' macro for testing.  It is unrelated

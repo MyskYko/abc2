@@ -1,3 +1,5 @@
+#include "global.h"
+
 /*------------------------------------------------------------------------*/
 
 // To simplify the build process without 'make', you can disable the

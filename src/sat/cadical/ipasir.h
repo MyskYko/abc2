@@ -1,6 +1,8 @@
 #ifndef _ipasir_h_INCLUDED
 #define _ipasir_h_INCLUDED
 
+#include "global.h"
+
 /*------------------------------------------------------------------------*/
 #ifdef __cplusplus
 extern "C" {

@@ -1,6 +1,8 @@
 #ifndef _resources_hpp_INCLUDED
 #define _resources_hpp_INCLUDED
 
+#include "global.h"
+
 #include <cstdint>
 
 namespace CaDiCaL {

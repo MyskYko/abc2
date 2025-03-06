@@ -1,6 +1,8 @@
 #ifndef _format_hpp_INCLUDED
 #define _format_hpp_INCLUDED
 
+#include "global.h"
+
 #include <cstdarg>
 #include <cstdint>
 

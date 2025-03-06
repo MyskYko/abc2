@@ -1,6 +1,8 @@
 #ifndef _bins_hpp_INCLUDED
 #define _bins_hpp_INCLUDED
 
+#include "global.h"
+
 #include "util.hpp" // Alphabetically after 'bins'.
 
 namespace CaDiCaL {

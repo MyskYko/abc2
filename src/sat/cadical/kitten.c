@@ -1,3 +1,5 @@
+#include "global.h"
+
 #include "kitten.h"
 #include "random.h"
 #include "stack.h"

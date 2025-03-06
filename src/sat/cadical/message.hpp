@@ -1,6 +1,8 @@
 #ifndef _message_h_INCLUDED
 #define _message_h_INCLUDED
 
+#include "global.h"
+
 /*------------------------------------------------------------------------*/
 
 // Macros for compact message code.

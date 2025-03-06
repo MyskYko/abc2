@@ -1,6 +1,8 @@
 #ifndef _stats_hpp_INCLUDED
 #define _stats_hpp_INCLUDED
 
+#include "global.h"
+
 #include <cstdint>
 #include <cstdlib>
 #include <vector>

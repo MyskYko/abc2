@@ -1,6 +1,8 @@
 #ifndef _queue_hpp_INCLUDED
 #define _queue_hpp_INCLUDED
 
+#include "global.h"
+
 #include <vector>
 
 namespace CaDiCaL {

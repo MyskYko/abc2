@@ -1,3 +1,5 @@
+#include "global.h"
+
 #ifndef QUIET
 
 #include "internal.hpp"

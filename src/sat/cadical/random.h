@@ -1,6 +1,8 @@
 #ifndef _random_h_INCLUDED
 #define _random_h_INCLUDED
 
+#include "global.h"
+
 #include <assert.h>
 #include <stdbool.h>
 #include <stdint.h>

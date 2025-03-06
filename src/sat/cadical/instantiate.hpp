@@ -1,6 +1,8 @@
 #ifndef _instantiate_hpp_INCLUDED
 #define _instantiate_hpp_INCLUDED
 
+#include "global.h"
+
 namespace CaDiCaL {
 
 // We are trying to remove literals in clauses, which occur in few clauses

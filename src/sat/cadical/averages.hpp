@@ -1,6 +1,8 @@
 #ifndef _averages_hpp_INCLUDED
 #define _averages_hpp_INCLUDED
 
+#include "global.h"
+
 #include "ema.hpp" // alphabetically after 'averages.hpp'
 
 namespace CaDiCaL {

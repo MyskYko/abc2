@@ -1,6 +1,8 @@
 #ifndef _file_hpp_INCLUDED
 #define _file_hpp_INCLUDED
 
+#include "global.h"
+
 #include <cassert>
 #include <cstdint>
 #include <cstdio>

@@ -1,6 +1,8 @@
 #ifndef _score_hpp_INCLUDED
 #define _score_hpp_INCLUDED
 
+#include "global.h"
+
 namespace CaDiCaL {
 
 struct score_smaller {

@@ -1,6 +1,8 @@
 #ifndef _reap_h_INCLUDED
 #define _reap_h_INCLUDED
 
+#include "global.h"
+
 #include <cstddef>
 #include <vector>
 

@@ -1,3 +1,5 @@
+#include "global.h"
+
 #ifdef PROFILE_MODE
 
 #include "internal.hpp"

@@ -1,6 +1,8 @@
 #ifndef _internal_hpp_INCLUDED
 #define _internal_hpp_INCLUDED
 
+#include "global.h"
+
 /*------------------------------------------------------------------------*/
 
 // Wrapped build specific headers which should go first.

@@ -1,6 +1,8 @@
 #ifndef _elim_hpp_INCLUDED
 #define _elim_hpp_INCLUDED
 
+#include "global.h"
+
 #include "heap.hpp" // Alphabetically after 'elim.hpp'.
 
 namespace CaDiCaL {

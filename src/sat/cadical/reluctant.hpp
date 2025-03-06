@@ -1,6 +1,8 @@
 #ifndef _reluctant_hpp_INCLUDED
 #define _reluctant_hpp_INCLUDED
 
+#include "global.h"
+
 #include <cassert>
 #include <cstdint>
 

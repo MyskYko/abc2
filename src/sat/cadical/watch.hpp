@@ -1,6 +1,8 @@
 #ifndef _watch_hpp_INCLUDED
 #define _watch_hpp_INCLUDED
 
+#include "global.h"
+
 #include <cassert>
 #include <vector>
 

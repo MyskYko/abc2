@@ -1,6 +1,8 @@
 #ifndef _block_hpp_INCLUDED
 #define _block_hpp_INCLUDED
 
+#include "global.h"
+
 #include "heap.hpp" // Alphabetically after 'block.hpp'.
 
 namespace CaDiCaL {
