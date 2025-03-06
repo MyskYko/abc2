@@ -279,11 +279,11 @@ int kissat_dump (kissat *solver) {
   else
     dump_queue (solver);
   dump_values (solver);
-  printf ("binary = %" PRIu64 "\n", solver->statistics.clauses_binary);
+  printf ("binary = %" PRIu64 "\n", solver->statistics_.clauses_binary);
   printf ("irredundant = %" PRIu64 "\n",
-          solver->statistics.clauses_irredundant);
+          solver->statistics_.clauses_irredundant);
   printf ("redundant = %" PRIu64 "\n",
-          solver->statistics.clauses_redundant);
+          solver->statistics_.clauses_redundant);
   dump_binaries (solver);
   dump_clauses (solver);
   dump_extend (solver);

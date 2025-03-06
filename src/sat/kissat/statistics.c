@@ -402,7 +402,7 @@ void kissat_check_statistics (kissat *solver) {
   KISSAT_assert (!(binary & 1));
   binary /= 2;
 
-  statistics *statistics = &solver->statistics;
+  statistics *statistics = &solver->statistics_;
   KISSAT_assert (statistics->clauses_binary == binary);
   KISSAT_assert (statistics->clauses_redundant == redundant);
   KISSAT_assert (statistics->clauses_irredundant == irredundant);
