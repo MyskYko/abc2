@@ -7,6 +7,7 @@
 #define QUIET
 #define NCONTRACTS
 #define NTRACING
+#define NCLOSEFROM
 
 #ifdef CADICAL_NDEBUG
 #define CADICAL_assert(ignore) ((void)0)
