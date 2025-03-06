@@ -1040,8 +1040,11 @@ void dump_checker (kissat *solver) {
       dump_line (bucket);
 }
 
+ABC_NAMESPACE_IMPL_END
+
 #else
+ABC_NAMESPACE_IMPL_START
 int kissat_check_dummy_to_avoid_warning;
+ABC_NAMESPACE_IMPL_END
 #endif
 
-ABC_NAMESPACE_IMPL_END

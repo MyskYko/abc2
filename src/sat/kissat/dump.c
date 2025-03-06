@@ -292,8 +292,10 @@ int kissat_dump (kissat *solver) {
   return 0;
 }
 
-#else
-int kissat_dump_dummy_to_avoid_warning;
-#endif
-
 ABC_NAMESPACE_IMPL_END
+
+#else
+ABC_NAMESPACE_IMPL_START
+int kissat_dump_dummy_to_avoid_warning;
+ABC_NAMESPACE_IMPL_END
+#endif
