@@ -26,7 +26,7 @@ namespace CaDiCaL {
 static volatile bool caught_signal = false;
 static Handler *signal_handler;
 
-#ifndef __WIN32
+#ifndef WIN32
 
 static volatile bool caught_alarm = false;
 static volatile bool alarm_set = false;
@@ -46,7 +46,7 @@ void Handler::catch_alarm () { catch_signal (SIGALRM); }
 SIGNALS
 #undef SIGNAL
 
-#ifndef __WIN32
+#ifndef WIN32
 
 static void (*SIGALRM_handler) (int);
 
@@ -69,7 +69,7 @@ void Signal::reset () {
   SIG##_handler = 0;
   SIGNALS
 #undef SIGNAL
-#ifndef __WIN32
+#ifndef WIN32
   reset_alarm ();
 #endif
   caught_signal = false;
@@ -81,7 +81,7 @@ const char *Signal::name (int sig) {
     return #SIG;
   SIGNALS
 #undef SIGNAL
-#ifndef __WIN32
+#ifndef WIN32
   if (sig == SIGALRM)
     return "SIGALRM";
 #endif
@@ -95,7 +95,7 @@ const char *Signal::name (int sig) {
 // exclusive access to.  All these solutions are painful and not elegant.
 
 static void catch_signal (int sig) {
-#ifndef __WIN32
+#ifndef WIN32
   if (sig == SIGALRM && absolute_real_time () >= alarm_time) {
     if (!caught_alarm) {
       caught_alarm = true;
@@ -123,7 +123,7 @@ void Signal::set (Handler *h) {
 #undef SIGNAL
 }
 
-#ifndef __WIN32
+#ifndef WIN32
 
 void Signal::alarm (int seconds) {
   CADICAL_assert (seconds >= 0);
