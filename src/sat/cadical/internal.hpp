@@ -24,9 +24,11 @@
 
 // Less common 'C' header.
 
+#ifndef WIN32
 extern "C" {
 #include <unistd.h>
 }
+#endif
 
 /*------------------------------------------------------------------------*/
 

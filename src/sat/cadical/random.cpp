@@ -161,7 +161,11 @@ static uint64_t hash_time () {
 
 extern "C" {
 #include <sys/types.h>
+#ifdef WIN32
+#include <process.h>
+#else
 #include <unistd.h>
+#endif
 }
 
 namespace CaDiCaL {

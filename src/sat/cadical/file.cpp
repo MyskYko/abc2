@@ -13,13 +13,13 @@ extern "C" {
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <unistd.h>
 }
 
 #ifndef _WIN32
 
 extern "C" {
 #include <sys/wait.h>
+#include <unistd.h>
 }
 
 #endif
