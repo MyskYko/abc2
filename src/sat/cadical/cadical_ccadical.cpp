@@ -67,11 +67,13 @@ struct Wrapper : Learner, Terminator {
 
 } // namespace CaDiCaL
 
-using namespace CaDiCaL;
-
-extern "C" {
+ABC_NAMESPACE_IMPL_END
 
 #include "ccadical.h"
+
+ABC_NAMESPACE_IMPL_START
+
+using namespace CaDiCaL;
 
 const char *ccadical_signature (void) { return Solver::signature (); }
 
@@ -196,7 +198,6 @@ int ccadical_vars (CCaDiCaL *ptr) {
 
 int ccadical_reserve_difference (CCaDiCaL *ptr, int number_of_vars) {
   return ((Wrapper *) ptr)->solver->reserve_difference (number_of_vars);
-}
 }
 
 ABC_NAMESPACE_IMPL_END
