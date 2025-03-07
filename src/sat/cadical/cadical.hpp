@@ -599,7 +599,7 @@ public:
   //
   int reserve_difference (int number_of_vars);
 
-#ifndef NTRACING
+#ifndef CADICAL_NTRACING
   //------------------------------------------------------------------------
   // This function can be used to write API calls to a file.  The same
   // format is used which 'mobical' can read, execute and also shrink
@@ -1033,7 +1033,7 @@ private:
 
   friend class Testing; // Access to 'internal' for testing only!
 
-#ifndef NTRACING
+#ifndef CADICAL_NTRACING
   // The API calls to the solver can be traced by setting the environment
   // variable 'CADICAL_API_TRACE' to point to the path of a file to which
   // API calls are written. The same format is used which 'mobical' can

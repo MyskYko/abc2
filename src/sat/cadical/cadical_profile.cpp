@@ -1,6 +1,6 @@
 #include "global.h"
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
 
 #include "internal.hpp"
 
@@ -110,4 +110,4 @@ void Internal::print_profile () {
 
 ABC_NAMESPACE_IMPL_END
 
-#endif // ifndef QUIET
+#endif // ifndef CADICAL_QUIET

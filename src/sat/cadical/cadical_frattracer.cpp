@@ -10,7 +10,7 @@ namespace CaDiCaL {
 
 FratTracer::FratTracer (Internal *i, File *f, bool b, bool a)
     : internal (i), file (f), binary (b), with_antecedents (a)
-#ifndef QUIET
+#ifndef CADICAL_QUIET
       ,
       added (0), deleted (0), finalized (0), original (0)
 #endif
@@ -206,7 +206,7 @@ void FratTracer::add_derived_clause (int64_t id, bool,
     frat_add_derived_clause (id, clause, chain);
   else
     frat_add_derived_clause (id, clause);
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   added++;
 #endif
 }
@@ -217,7 +217,7 @@ void FratTracer::delete_clause (int64_t id, bool,
     return;
   LOG ("FRAT TRACER tracing deletion of clause");
   frat_delete_clause (id, clause);
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   deleted++;
 #endif
 }
@@ -233,7 +233,7 @@ void FratTracer::finalize_clause (int64_t id, const vector<int> &clause) {
 
 bool FratTracer::closed () { return file->closed (); }
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
 
 void FratTracer::print_statistics () {
   uint64_t bytes = file->bytes ();
@@ -255,7 +255,7 @@ void FratTracer::print_statistics () {
 void FratTracer::close (bool print) {
   CADICAL_assert (!closed ());
   file->close ();
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   if (print) {
     MSG ("FRAT proof file '%s' closed", file->name ());
     print_statistics ();
@@ -268,7 +268,7 @@ void FratTracer::close (bool print) {
 void FratTracer::flush (bool print) {
   CADICAL_assert (!closed ());
   file->flush ();
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   if (print) {
     MSG ("FRAT proof file '%s' flushed", file->name ());
     print_statistics ();

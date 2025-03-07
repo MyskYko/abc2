@@ -11,7 +11,7 @@ namespace CaDiCaL {
 LidrupTracer::LidrupTracer (Internal *i, File *f, bool b)
     : internal (i), file (f), binary (b), num_clauses (0), size_clauses (0),
       clauses (0), last_hash (0), last_id (0), last_clause (0)
-#ifndef QUIET
+#ifndef CADICAL_QUIET
       ,
       added (0), deleted (0)
 #endif
@@ -278,7 +278,7 @@ void LidrupTracer::lidrup_batch_weaken_restore_and_delete () {
       put_binary_zero ();
     else
       file->put ("0\n");
-#ifndef QUIET
+#ifndef CADICAL_QUIET
     batched++;
 #endif
   }
@@ -299,7 +299,7 @@ void LidrupTracer::lidrup_batch_weaken_restore_and_delete () {
       put_binary_zero ();
     else
       file->put ("0\n");
-#ifndef QUIET
+#ifndef CADICAL_QUIET
     batched++;
 #endif
   }
@@ -320,7 +320,7 @@ void LidrupTracer::lidrup_batch_weaken_restore_and_delete () {
       put_binary_zero ();
     else
       file->put ("0\n");
-#ifndef QUIET
+#ifndef CADICAL_QUIET
     batched++;
 #endif
   }
@@ -470,7 +470,7 @@ void LidrupTracer::add_derived_clause (int64_t id, bool,
   CADICAL_assert (imported_clause.empty ());
   LOG (clause, "LIDRUP TRACER tracing addition of derived clause");
   lidrup_add_derived_clause (id, clause, chain);
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   added++;
 #endif
 }
@@ -504,14 +504,14 @@ void LidrupTracer::delete_clause (int64_t id, bool, const vector<int> &) {
     if (!batch_delete.empty () || !batch_restore.empty ())
       lidrup_batch_weaken_restore_and_delete ();
     batch_weaken.push_back (id);
-#ifndef QUIET
+#ifndef CADICAL_QUIET
     weakened++;
 #endif
   } else {
     if (!batch_weaken.empty () || !batch_restore.empty ())
       lidrup_batch_weaken_restore_and_delete ();
     batch_delete.push_back (id);
-#ifndef QUIET
+#ifndef CADICAL_QUIET
     deleted++;
 #endif
   }
@@ -542,7 +542,7 @@ void LidrupTracer::add_original_clause (int64_t id, bool,
     return;
   if (!restored) {
     LOG (clause, "LIDRUP TRACER tracing addition of original clause");
-#ifndef QUIET
+#ifndef CADICAL_QUIET
     original++;
 #endif
     return lidrup_add_original_clause (id, clause);
@@ -555,7 +555,7 @@ void LidrupTracer::add_original_clause (int64_t id, bool,
   }
   LOG (clause, "LIDRUP TRACER tracing addition of restored clause");
   lidrup_add_restored_clause (id);
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   restore++;
 #endif
 }
@@ -586,7 +586,7 @@ void LidrupTracer::solve_query () {
     return;
   LOG (assumptions, "LIDRUP TRACER tracing solve query with assumptions");
   lidrup_solve_query ();
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   solved++;
 #endif
 }
@@ -605,7 +605,7 @@ void LidrupTracer::reset_assumptions () {
 
 bool LidrupTracer::closed () { return file->closed (); }
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
 
 void LidrupTracer::print_statistics () {
   // TODO complete this.
@@ -633,7 +633,7 @@ void LidrupTracer::print_statistics () {
 void LidrupTracer::close (bool print) {
   CADICAL_assert (!closed ());
   file->close ();
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   if (print) {
     MSG ("LIDRUP proof file '%s' closed", file->name ());
     print_statistics ();
@@ -647,7 +647,7 @@ void LidrupTracer::flush (bool print) {
   CADICAL_assert (!closed ());
   lidrup_batch_weaken_restore_and_delete ();
   file->flush ();
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   if (print) {
     MSG ("LIDRUP proof file '%s' flushed", file->name ());
     print_statistics ();

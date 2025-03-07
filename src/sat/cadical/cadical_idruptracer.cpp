@@ -11,7 +11,7 @@ namespace CaDiCaL {
 IdrupTracer::IdrupTracer (Internal *i, File *f, bool b)
     : internal (i), file (f), binary (b), num_clauses (0), size_clauses (0),
       clauses (0), last_hash (0), last_id (0), last_clause (0)
-#ifndef QUIET
+#ifndef CADICAL_QUIET
       ,
       added (0), deleted (0)
 #endif
@@ -260,7 +260,7 @@ void IdrupTracer::idrup_delete_clause (int64_t id,
       file->put ('w');
     else
       file->put ("w ");
-#ifndef QUIET
+#ifndef CADICAL_QUIET
     weakened++;
 #endif
   } else {
@@ -268,7 +268,7 @@ void IdrupTracer::idrup_delete_clause (int64_t id,
       file->put ('d');
     else
       file->put ("d ");
-#ifndef QUIET
+#ifndef CADICAL_QUIET
     deleted++;
 #endif
   }
@@ -399,7 +399,7 @@ void IdrupTracer::add_derived_clause (int64_t, bool,
   CADICAL_assert (imported_clause.empty ());
   LOG (clause, "IDRUP TRACER tracing addition of derived clause");
   idrup_add_derived_clause (clause);
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   added++;
 #endif
 }
@@ -434,7 +434,7 @@ void IdrupTracer::weaken_minus (int64_t id, const vector<int> &) {
   LOG ("IDRUP TRACER tracing weaken minus of clause[%" PRId64 "]", id);
   last_id = id;
   insert ();
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   weakened++;
 #endif
 }
@@ -455,7 +455,7 @@ void IdrupTracer::add_original_clause (int64_t id, bool,
     return;
   if (!restored) {
     LOG (clause, "IDRUP TRACER tracing addition of original clause");
-#ifndef QUIET
+#ifndef CADICAL_QUIET
     original++;
 #endif
     return idrup_add_original_clause (clause);
@@ -468,7 +468,7 @@ void IdrupTracer::add_original_clause (int64_t id, bool,
   }
   LOG (clause, "IDRUP TRACER tracing addition of restored clause");
   idrup_add_restored_clause (clause);
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   restore++;
 #endif
 }
@@ -499,7 +499,7 @@ void IdrupTracer::solve_query () {
     return;
   LOG (assumptions, "IDRUP TRACER tracing solve query with assumptions");
   idrup_solve_query ();
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   solved++;
 #endif
 }
@@ -518,7 +518,7 @@ void IdrupTracer::reset_assumptions () {
 
 bool IdrupTracer::closed () { return file->closed (); }
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
 
 void IdrupTracer::print_statistics () {
   // TODO complete this.
@@ -544,7 +544,7 @@ void IdrupTracer::print_statistics () {
 void IdrupTracer::close (bool print) {
   CADICAL_assert (!closed ());
   file->close ();
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   if (print) {
     MSG ("IDRUP proof file '%s' closed", file->name ());
     print_statistics ();
@@ -557,7 +557,7 @@ void IdrupTracer::close (bool print) {
 void IdrupTracer::flush (bool print) {
   CADICAL_assert (!closed ());
   file->flush ();
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   if (print) {
     MSG ("IDRUP proof file '%s' flushed", file->name ());
     print_statistics ();

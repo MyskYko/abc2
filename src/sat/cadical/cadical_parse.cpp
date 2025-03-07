@@ -94,7 +94,7 @@ inline const char *Parser::parse_lit (int &ch, int &lit, int &vars,
 
 const char *Parser::parse_dimacs_non_profiled (int &vars, int strict) {
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   double start = internal->time ();
 #endif
 
@@ -270,13 +270,13 @@ const char *Parser::parse_dimacs_non_profiled (int &vars, int strict) {
   if (!found_inccnf_header && parsed < clauses && strict != FORCED)
     PER ("clause missing");
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   double end = internal->time ();
   MSG ("parsed %d clauses in %.2f seconds %s time", parsed, end - start,
        internal->opts.realtime ? "real" : "process");
 #endif
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   start = end;
   size_t num_cubes = 0;
 #endif
@@ -309,7 +309,7 @@ const char *Parser::parse_dimacs_non_profiled (int &vars, int strict) {
       if (cubes)
         cubes->push_back (lit);
       if (!lit) {
-#ifndef QUIET
+#ifndef CADICAL_QUIET
         num_cubes++;
 #endif
         for (;;) {
@@ -336,7 +336,7 @@ const char *Parser::parse_dimacs_non_profiled (int &vars, int strict) {
     if (lit)
       PER ("last cube without terminating '0'");
   }
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   if (found_inccnf_header) {
     double end = internal->time ();
     MSG ("parsed %zd cubes in %.2f seconds %s time", num_cubes, end - start,
@@ -376,7 +376,7 @@ const char *Parser::parse_solution_non_profiled () {
     ch = parse_char ();
   if (ch != '\n')
     PER ("expected new-line after 's SATISFIABLE'");
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   int count = 0;
 #endif
   for (;;) {
@@ -403,7 +403,7 @@ const char *Parser::parse_solution_non_profiled () {
         PER ("variable %d occurs twice", abs (lit));
       LOG ("solution %d", lit);
       external->solution[abs (lit)] = sign (lit);
-#ifndef QUIET
+#ifndef CADICAL_QUIET
       count++;
 #endif
       if (ch == '\r')

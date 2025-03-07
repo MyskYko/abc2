@@ -762,7 +762,7 @@ void Internal::schedule_factorization (Factoring &factoring) {
         update_factor_candidate (factoring, not_lit);
     }
   }
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   size_t size_cands = factoring.schedule.size ();
   VERBOSE (2, "scheduled %zu factorization candidate literals %.0f %%",
            size_cands, percent (size_cands, max_var));
@@ -773,7 +773,7 @@ bool Internal::run_factorization (int64_t limit) {
   Factoring factoring = Factoring (this, limit);
   schedule_factorization (factoring);
   bool done = false;
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   unsigned factored = 0;
 #endif
   int64_t *ticks = &stats.ticks.factor;
@@ -817,7 +817,7 @@ bool Internal::run_factorization (int64_t limit) {
       Quotient *q = best_quotient (factoring, &reduction);
       if (q && (int) reduction > factoring.bound) {
         if (apply_factoring (factoring, q)) {
-#ifndef QUIET
+#ifndef CADICAL_QUIET
           factored++;
 #endif
         } else
@@ -836,7 +836,7 @@ bool Internal::run_factorization (int64_t limit) {
   }
   // kissat initializes scores for new variables at this point, however
   // this is actually done already during resize of internal
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   report ('f', !factored);
 #endif
   return completed;
@@ -882,7 +882,7 @@ bool Internal::factor () {
   START_SIMPLIFIER (factor, FACTOR);
   stats.factor++;
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   struct {
     int64_t variables, clauses, ticks;
   } before, after, delta;
@@ -900,7 +900,7 @@ bool Internal::factor () {
     learn_empty_clause ();
   }
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   after.variables = stats.variables_extension + stats.variables_original;
   after.clauses = stats.current.irredundant;
   after.ticks = stats.ticks.factor;

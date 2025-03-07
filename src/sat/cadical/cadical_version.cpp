@@ -4,9 +4,9 @@
 
 // To simplify the build process without 'make', you can disable the
 // generation of 'build.hpp' through '../scripts/make-build-header.sh' by
-// defining '-DNBUILD'.  Then we try to guess part of the configuration.
+// defining '-DCADICAL_NBUILD'.  Then we try to guess part of the configuration.
 
-#ifndef NBUILD
+#ifndef CADICAL_NBUILD
 #if __GNUC__ > 4
 #if __has_include(<build.hpp>)
 #include "build.hpp"
@@ -14,7 +14,7 @@
 #else
 #include "build.hpp"
 #endif // __GNUC > 4
-#endif // NBUILD
+#endif // CADICAL_NBUILD
 
 /*------------------------------------------------------------------------*/
 
@@ -24,11 +24,11 @@
 // the file '../VERSION' with '../scripts/update-version.sh'.  The standard
 // build process relies on 'VERSION' to be defined in 'build.hpp'.
 
-#ifdef NBUILD
+#ifdef CADICAL_NBUILD
 #ifndef VERSION
 #define VERSION "2.2.0-rc1"
 #endif // VERSION
-#endif // NBUILD
+#endif // CADICAL_NBUILD
 
     /*------------------------------------------------------------------------*/
 
@@ -42,7 +42,7 @@ static const char *AFFILIATIONS =
 
 /*------------------------------------------------------------------------*/
 
-// Again if we do not have 'NBUILD' or if something during configuration is
+// Again if we do not have 'CADICAL_NBUILD' or if something during configuration is
 // broken we still want to be able to compile the solver.  In this case we
 // then try our best to figure out 'COMPILER' and 'DATE', but for
 // 'IDENTIFIER' and 'FLAGS' we can only use the '0' string, which marks

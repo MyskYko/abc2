@@ -10,7 +10,7 @@ namespace CaDiCaL {
 
 DratTracer::DratTracer (Internal *i, File *f, bool b)
     : internal (i), file (f), binary (b)
-#ifndef QUIET
+#ifndef CADICAL_QUIET
       ,
       added (0), deleted (0)
 #endif
@@ -94,7 +94,7 @@ void DratTracer::add_derived_clause (int64_t, bool,
     return;
   LOG ("DRAT TRACER tracing addition of derived clause");
   drat_add_clause (clause);
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   added++;
 #endif
 }
@@ -104,7 +104,7 @@ void DratTracer::delete_clause (int64_t, bool, const vector<int> &clause) {
     return;
   LOG ("DRAT TRACER tracing deletion of clause");
   drat_delete_clause (clause);
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   deleted++;
 #endif
 }
@@ -113,7 +113,7 @@ void DratTracer::delete_clause (int64_t, bool, const vector<int> &clause) {
 
 bool DratTracer::closed () { return file->closed (); }
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
 
 void DratTracer::print_statistics () {
   uint64_t bytes = file->bytes ();
@@ -131,7 +131,7 @@ void DratTracer::print_statistics () {
 void DratTracer::close (bool print) {
   CADICAL_assert (!closed ());
   file->close ();
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   if (print) {
     MSG ("DRAT proof file '%s' closed", file->name ());
     print_statistics ();
@@ -144,7 +144,7 @@ void DratTracer::close (bool print) {
 void DratTracer::flush (bool print) {
   CADICAL_assert (!closed ());
   file->flush ();
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   if (print) {
     MSG ("DRAT proof file '%s' flushed", file->name ());
     print_statistics ();

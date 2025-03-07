@@ -162,7 +162,7 @@ bool Internal::decompose_round () {
   }
 
   int substituted = 0;
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   int non_trivial_sccs = 0;
   int before = active ();
 #endif
@@ -291,7 +291,7 @@ bool Internal::decompose_round () {
               }
 
               int other, repr = parent;
-#ifndef QUIET
+#ifndef CADICAL_QUIET
               int size = 0;
 #endif
               CADICAL_assert (!scc.empty ());
@@ -321,7 +321,7 @@ bool Internal::decompose_round () {
                 } else {
                   if (abs (other) < abs (repr))
                     repr = other;
-#ifndef QUIET
+#ifndef CADICAL_QUIET
                   size++;
 #endif
                 }
@@ -329,7 +329,7 @@ bool Internal::decompose_round () {
 
               if (unsat)
                 break;
-#ifndef QUIET
+#ifndef CADICAL_QUIET
               LOG ("SCC of representative %d of size %d", repr, size);
 #endif
               do {
@@ -359,7 +359,7 @@ bool Internal::decompose_round () {
                 clear_analyzed_literals ();
               } while (other != parent);
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
               if (size > 1)
                 non_trivial_sccs++;
 #endif
@@ -484,7 +484,7 @@ bool Internal::decompose_round () {
   // should be substituted by their representative.
 
   size_t clauses_size = clauses.size ();
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   size_t garbage = 0, replaced = 0;
 #endif
   for (size_t i = 0; substituted && !unsat && i < clauses_size; i++) {
@@ -501,7 +501,7 @@ bool Internal::decompose_round () {
     if (j == size)
       continue;
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
     replaced++;
 #endif
     LOG (c, "first substituted literal %d in", substituted);
@@ -578,7 +578,7 @@ bool Internal::decompose_round () {
     if (satisfied) {
       LOG (c, "satisfied after substitution (postponed)");
       postponed_garbage.push_back (c);
-#ifndef QUIET
+#ifndef CADICAL_QUIET
       garbage++;
 #endif
     } else if (!clause.size ()) {
@@ -589,7 +589,7 @@ bool Internal::decompose_round () {
       assign_unit (clause[0]);
       mark_garbage (c);
       new_unit = true;
-#ifndef QUIET
+#ifndef CADICAL_QUIET
       garbage++;
 #endif
     } else if (c->literals[0] != clause[0] || c->literals[1] != clause[1]) {
@@ -602,7 +602,7 @@ bool Internal::decompose_round () {
       clauses[d_clause_idx] = c;
       clauses[i] = d;
       mark_garbage (c);
-#ifndef QUIET
+#ifndef CADICAL_QUIET
       garbage++;
 #endif
     } else {

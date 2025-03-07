@@ -275,7 +275,7 @@ OPTION( walkredundant,     0,  0,  1,0,0,1, "walk redundant clauses too") \
 #define LOGOPT(...) /**/
 #endif
 
-#ifdef QUIET
+#ifdef CADICAL_QUIET
 #define QUTOPT(...) /**/
 #else
 #define QUTOPT OPTION

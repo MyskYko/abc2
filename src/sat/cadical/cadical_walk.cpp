@@ -426,7 +426,7 @@ int Internal::walk_round (int64_t limit, bool prev) {
   if (last.collect.fixed < stats.all.fixed)
     garbage_collection ();
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   // We want to see more messages during initial local search.
   //
   if (localsearching) {
@@ -603,12 +603,12 @@ int Internal::walk_round (int64_t limit, bool prev) {
     walk_save_minimum (walker);
 
     int64_t minimum = broken;
-#ifndef QUIET
+#ifndef CADICAL_QUIET
     int64_t flips = 0;
 #endif
     while (!terminated_asynchronously () && !walker.broken.empty () &&
            walker.propagations < walker.limit) {
-#ifndef QUIET
+#ifndef CADICAL_QUIET
       flips++;
 #endif
       stats.walk.flips++;
@@ -683,7 +683,7 @@ int Internal::walk_round (int64_t limit, bool prev) {
   clear_watches ();
   connect_watches ();
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   if (localsearching) {
     CADICAL_assert (force_phase_messages);
     force_phase_messages = false;

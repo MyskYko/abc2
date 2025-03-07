@@ -6,7 +6,7 @@
 ABC_NAMESPACE_CXX_HEADER_START
 
 /*------------------------------------------------------------------------*/
-#ifndef NCONTRACTS
+#ifndef CADICAL_NCONTRACTS
 /*------------------------------------------------------------------------*/
 
 // If the user violates API contracts while calling functions declared in
@@ -108,7 +108,7 @@ void require_solver_pointer_to_be_non_zero (const void *ptr,
   } while (0)
 
 /*------------------------------------------------------------------------*/
-#else // NCONTRACTS
+#else // CADICAL_NCONTRACTS
 /*------------------------------------------------------------------------*/
 
 #define REQUIRE(...) \

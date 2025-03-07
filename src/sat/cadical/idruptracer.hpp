@@ -50,7 +50,7 @@ class IdrupTracer : public FileTracer {
   bool
   find_and_delete (const int64_t); // find clause position in hash table
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   int64_t added, deleted, weakened, restore, original, solved;
 #endif
 
@@ -101,7 +101,7 @@ public:
   // logging and file io
   void connect_internal (Internal *i) override;
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   void print_statistics ();
 #endif
   bool closed () override;

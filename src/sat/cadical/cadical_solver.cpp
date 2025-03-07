@@ -253,7 +253,7 @@ static void log_api_call_returns (Internal *internal, const char *name,
 /*------------------------------------------------------------------------*/
 
 /*------------------------------------------------------------------------*/
-#ifndef NTRACING
+#ifndef CADICAL_NTRACING
 /*------------------------------------------------------------------------*/
 
 #define TRACE(...) \
@@ -310,7 +310,7 @@ void Solver::trace_api_call (const char *s0, const char *s1, int i2) const {
 static bool tracing_api_calls_through_environment_variable_method;
 
 /*------------------------------------------------------------------------*/
-#else // NTRACING
+#else // CADICAL_NTRACING
 /*------------------------------------------------------------------------*/
 
 #define TRACE(...) \
@@ -325,7 +325,7 @@ static bool tracing_nb_lidrup_env_var_method = false;
 
 Solver::Solver () {
 
-#ifndef NTRACING
+#ifndef CADICAL_NTRACING
   const char *path = getenv ("CADICAL_API_TRACE");
   if (!path)
     path = getenv ("CADICALAPITRACE");
@@ -355,7 +355,7 @@ Solver::Solver () {
   external = new External (internal);
   DeferDeletePtr<External> delete_external (external);
   STATE (CONFIGURING);
-#ifndef NTRACING
+#ifndef CADICAL_NTRACING
   if (tracing_api_calls_through_environment_variable_method)
     message ("tracing API calls to '%s'", path);
 #endif
@@ -403,7 +403,7 @@ Solver::~Solver () {
   delete internal;
   delete external;
 
-#ifndef NTRACING
+#ifndef CADICAL_NTRACING
   if (close_trace_api_file) {
     close_trace_api_file = false;
     CADICAL_assert (trace_api_file);
@@ -458,7 +458,7 @@ int Solver::reserve_difference (int number_of_vars) {
 }
 
 /*------------------------------------------------------------------------*/
-#ifndef NTRACING
+#ifndef CADICAL_NTRACING
 
 void Solver::trace_api_calls (FILE *file) {
   LOG_API_CALL_BEGIN ("trace_api_calls");
@@ -1565,7 +1565,7 @@ public:
 const char *Solver::write_dimacs (const char *path, int min_max_var) {
   LOG_API_CALL_BEGIN ("write_dimacs", path, min_max_var);
   REQUIRE_VALID_STATE ();
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   const double start = internal->time ();
 #endif
   internal->restore_clauses ();
@@ -1592,7 +1592,7 @@ const char *Solver::write_dimacs (const char *path, int min_max_var) {
   } else
     res = internal->error_message.init (
         "failed to open DIMACS file '%s' for writing", path);
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   if (!res) {
     const double end = internal->time ();
     MSG ("wrote %" PRId64 " clauses in %.2f seconds %s time",
@@ -1637,7 +1637,7 @@ const char *Solver::write_extension (const char *path) {
   LOG_API_CALL_BEGIN ("write_extension", path);
   REQUIRE_VALID_STATE ();
   const char *res = 0;
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   const double start = internal->time ();
 #endif
   File *file = File::write (internal, path);
@@ -1650,7 +1650,7 @@ const char *Solver::write_extension (const char *path) {
   } else
     res = internal->error_message.init (
         "failed to open extension file '%s' for writing", path);
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   if (!res) {
     const double end = internal->time ();
     MSG ("wrote %" PRId64 " witnesses in %.2f seconds %s time",
@@ -1704,7 +1704,7 @@ void Solver::copy (Solver &other) const {
 void Solver::section (const char *title) {
   if (state () == DELETING)
     return;
-#ifdef QUIET
+#ifdef CADICAL_QUIET
   (void) title;
 #endif
   REQUIRE_INITIALIZED ();
@@ -1714,7 +1714,7 @@ void Solver::section (const char *title) {
 void Solver::message (const char *fmt, ...) {
   if (state () == DELETING)
     return;
-#ifdef QUIET
+#ifdef CADICAL_QUIET
   (void) fmt;
 #else
   REQUIRE_INITIALIZED ();
@@ -1729,7 +1729,7 @@ void Solver::message () {
   if (state () == DELETING)
     return;
   REQUIRE_INITIALIZED ();
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   internal->message ();
 #endif
 }
@@ -1738,7 +1738,7 @@ void Solver::verbose (int level, const char *fmt, ...) {
   if (state () == DELETING)
     return;
   REQUIRE_VALID_OR_SOLVING_STATE ();
-#ifdef QUIET
+#ifdef CADICAL_QUIET
   (void) level;
   (void) fmt;
 #else

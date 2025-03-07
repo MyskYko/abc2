@@ -12,7 +12,7 @@ VeripbTracer::VeripbTracer (Internal *i, File *f, bool b, bool a, bool c)
     : internal (i), file (f), with_antecedents (a), checked_deletions (c),
       num_clauses (0), size_clauses (0), clauses (0), last_hash (0),
       last_id (0), last_clause (0)
-#ifndef QUIET
+#ifndef CADICAL_QUIET
       ,
       added (0), deleted (0)
 #endif
@@ -304,7 +304,7 @@ void VeripbTracer::add_derived_clause (int64_t id, bool redundant,
     veripb_add_derived_clause (id, redundant, clause, chain);
   else
     veripb_add_derived_clause (id, redundant, clause);
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   added++;
 #endif
 }
@@ -315,7 +315,7 @@ void VeripbTracer::delete_clause (int64_t id, bool redundant,
     return;
   LOG ("VERIPB TRACER tracing deletion of clause[%" PRId64 "]", id);
   veripb_delete_clause (id, redundant);
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   deleted++;
 #endif
 }
@@ -353,7 +353,7 @@ void VeripbTracer::strengthen (int64_t id) {
 
 bool VeripbTracer::closed () { return file->closed (); }
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
 
 void VeripbTracer::print_statistics () {
   // TODO complete
@@ -372,7 +372,7 @@ void VeripbTracer::print_statistics () {
 void VeripbTracer::close (bool print) {
   CADICAL_assert (!closed ());
   file->close ();
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   if (print) {
     MSG ("VeriPB proof file '%s' closed", file->name ());
     print_statistics ();
@@ -385,7 +385,7 @@ void VeripbTracer::close (bool print) {
 void VeripbTracer::flush (bool print) {
   CADICAL_assert (!closed ());
   file->flush ();
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   if (print) {
     MSG ("VeriPB proof file '%s' flushed", file->name ());
     print_statistics ();

@@ -32,7 +32,7 @@ Stats::Stats () {
 
 void Stats::print (Internal *internal) {
 
-#ifdef QUIET
+#ifdef CADICAL_QUIET
   (void) internal;
 #else
 
@@ -688,7 +688,7 @@ void Stats::print (Internal *internal) {
   if (all || stats.walk.count) {
     PRT ("walked:          %15" PRId64 "   %10.2f    interval",
          stats.walk.count, relative (stats.conflicts, stats.walk.count));
-#ifndef QUIET
+#ifndef CADICAL_QUIET
     if (internal->profiles.walk.value > 0)
       PRT ("  flips:         %15" PRId64 "   %10.2f M  per second",
            stats.walk.flips,
@@ -750,11 +750,11 @@ void Stats::print (Internal *internal) {
        tout.magenta_code (), internal->opts.realtime ? "real" : "process",
        tout.normal_code ());
 
-#endif // ifndef QUIET
+#endif // ifndef CADICAL_QUIET
 }
 
 void Internal::print_resource_usage () {
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   SECTION ("resources");
   uint64_t m = maximum_resident_set_size ();
   MSG ("total process time since initialization: %12.2f    seconds",

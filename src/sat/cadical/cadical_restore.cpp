@@ -101,7 +101,7 @@ void External::restore_clauses () {
     PHASE ("restore", internal->stats.restorations,
            "forced to restore all clauses");
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   {
     unsigned numtainted = 0;
     for (const auto b : tainted)
@@ -203,7 +203,7 @@ void External::restore_clauses () {
   extension.resize (q - extension.begin ());
   shrink_vector (extension);
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   if (clauses.satisfied)
     PHASE ("restore", internal->stats.restorations,
            "removed %" PRId64 " satisfied %.0f%% of %" PRId64

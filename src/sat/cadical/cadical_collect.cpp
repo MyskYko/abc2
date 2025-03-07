@@ -281,7 +281,7 @@ void Internal::delete_garbage_clauses () {
   flush_all_occs_and_watches ();
 
   LOG ("deleting garbage clauses");
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   int64_t collected_bytes = 0, collected_clauses = 0;
 #endif
   const auto end = clauses.end ();
@@ -290,7 +290,7 @@ void Internal::delete_garbage_clauses () {
     Clause *c = *j++ = *i++;
     if (!c->collect ())
       continue;
-#ifndef QUIET
+#ifndef CADICAL_QUIET
     collected_bytes += c->bytes ();
     collected_clauses++;
 #endif

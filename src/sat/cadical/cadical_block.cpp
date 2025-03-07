@@ -203,7 +203,7 @@ void Internal::block_schedule (Blocker &blocker) {
   // schedule can not be fused with the previous loop (easily) since we
   // first have to initialize 'noccs' for both 'lit' and '-lit'.
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   int skipped = 0;
 #endif
 
@@ -211,7 +211,7 @@ void Internal::block_schedule (Blocker &blocker) {
     if (!active (idx))
       continue;
     if (frozen (idx)) {
-#ifndef QUIET
+#ifndef CADICAL_QUIET
       skipped += 2;
 #endif
       continue;
@@ -220,7 +220,7 @@ void Internal::block_schedule (Blocker &blocker) {
     for (int sign = -1; sign <= 1; sign += 2) {
       const int lit = sign * idx;
       if (marked_skip (lit)) {
-#ifndef QUIET
+#ifndef CADICAL_QUIET
         skipped++;
 #endif
         continue;

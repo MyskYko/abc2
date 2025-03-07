@@ -7512,7 +7512,7 @@ bool Internal::extract_gates () {
 
   const int64_t new_merged = stats.congruence.congruent;
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   phase ("congruence-phase", stats.congruence.rounds, "merged %ld literals",
          new_merged - old_merged);
 #endif

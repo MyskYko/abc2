@@ -9,7 +9,7 @@ ABC_NAMESPACE_CXX_HEADER_START
 
 // Macros for compact message code.
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
 
 #define LINE() \
   do { \

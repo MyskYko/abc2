@@ -436,7 +436,7 @@ bool Internal::subsume_round () {
       if (cs.clause->size > 2)
         cs.clause->subsume = true;
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   int64_t scheduled = schedule.size ();
   int64_t total = stats.current.irredundant + stats.current.redundant;
   PHASE ("subsume-round", stats.subsumerounds,

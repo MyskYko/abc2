@@ -3,11 +3,11 @@
 
 #define CADICAL_NDEBUG
 
-#define NBUILD
-#define QUIET
-#define NCONTRACTS
-#define NTRACING
-#define NCLOSEFROM
+#define CADICAL_NBUILD
+#define CADICAL_QUIET
+#define CADICAL_NCONTRACTS
+#define CADICAL_NTRACING
+#define CADICAL_NCLOSEFROM
 
 #ifdef CADICAL_NDEBUG
 #define CADICAL_assert(ignore) ((void)0)

@@ -12,7 +12,7 @@ namespace CaDiCaL {
 
 LratTracer::LratTracer (Internal *i, File *f, bool b)
     : internal (i), file (f), binary (b)
-#ifndef QUIET
+#ifndef CADICAL_QUIET
       ,
       added (0), deleted (0)
 #endif
@@ -134,7 +134,7 @@ void LratTracer::add_derived_clause (int64_t id, bool,
     return;
   LOG ("LRAT TRACER tracing addition of derived clause");
   lrat_add_clause (id, clause, chain);
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   added++;
 #endif
 }
@@ -144,7 +144,7 @@ void LratTracer::delete_clause (int64_t id, bool, const vector<int> &) {
     return;
   LOG ("LRAT TRACER tracing deletion of clause");
   lrat_delete_clause (id);
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   deleted++;
 #endif
 }
@@ -160,7 +160,7 @@ void LratTracer::begin_proof (int64_t id) {
 
 bool LratTracer::closed () { return file->closed (); }
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
 
 void LratTracer::print_statistics () {
   uint64_t bytes = file->bytes ();
@@ -178,7 +178,7 @@ void LratTracer::print_statistics () {
 void LratTracer::close (bool print) {
   CADICAL_assert (!closed ());
   file->close ();
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   if (print) {
     MSG ("LRAT proof file '%s' closed", file->name ());
     print_statistics ();
@@ -191,7 +191,7 @@ void LratTracer::close (bool print) {
 void LratTracer::flush (bool print) {
   CADICAL_assert (!closed ());
   file->flush ();
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   if (print) {
     MSG ("LRAT proof file '%s' flushed", file->name ());
     print_statistics ();

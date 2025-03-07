@@ -718,7 +718,7 @@ void External::check_assignment (int (External::*a) (int) const) {
   bool satisfied = false;
   const auto end = original.end ();
   auto start = original.begin (), i = start;
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   int64_t count = 0;
 #endif
   for (; i != end; i++) {
@@ -734,7 +734,7 @@ void External::check_assignment (int (External::*a) (int) const) {
       }
       satisfied = false;
       start = i + 1;
-#ifndef QUIET
+#ifndef CADICAL_QUIET
       count++;
 #endif
     } else if (!satisfied && (this->*a) (lit) == lit)
@@ -751,7 +751,7 @@ void External::check_assignment (int (External::*a) (int) const) {
       break;
     presence_flag = true;
     satisfied = false;
-#ifndef QUIET
+#ifndef CADICAL_QUIET
     count++;
 #endif
     std::vector<int> literals;
@@ -782,7 +782,7 @@ void External::check_assignment (int (External::*a) (int) const) {
       fatal_message_end ();
     }
   }
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   VERBOSE (1, "satisfying assignment checked on %" PRId64 " clauses",
            count);
 #endif

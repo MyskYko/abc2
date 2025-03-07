@@ -735,7 +735,7 @@ void Internal::flush_probes () {
     *j++ = lit;
   }
   size_t remain = j - probes.begin ();
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   size_t flushed = probes.size () - remain;
 #endif
   probes.resize (remain);
@@ -812,7 +812,7 @@ bool Internal::probe () {
          "probing limit of %" PRId64 " propagations ", limit);
 
   int old_failed = stats.failed;
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   int64_t old_probed = stats.probed;
 #endif
   int64_t old_hbrs = stats.hbrs;
@@ -857,7 +857,7 @@ bool Internal::probe () {
   }
 
   int failed = stats.failed - old_failed;
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   int64_t probed = stats.probed - old_probed;
 #endif
   int64_t hbrs = stats.hbrs - old_hbrs;

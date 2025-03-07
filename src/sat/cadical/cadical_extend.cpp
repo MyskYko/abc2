@@ -124,7 +124,7 @@ void External::extend () {
          "mapping internal %d assignments to %d assignments",
          internal->max_var, max_var);
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   int64_t updated = 0;
 #endif
   for (unsigned i = 1; i <= (unsigned) max_var; i++) {
@@ -134,7 +134,7 @@ void External::extend () {
     if (i >= vals.size ())
       vals.resize (i + 1, false);
     vals[i] = (internal->val (ilit) > 0);
-#ifndef QUIET
+#ifndef CADICAL_QUIET
     updated++;
 #endif
   }
@@ -145,7 +145,7 @@ void External::extend () {
          extension.size ());
   const auto begin = extension.begin ();
   auto i = extension.end ();
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   int64_t flipped = 0;
 #endif
   while (i != begin) {
@@ -184,7 +184,7 @@ void External::extend () {
             vals.resize (idx + 1, false);
           vals[idx] = !vals[idx];
           internal->stats.extended++;
-#ifndef QUIET
+#ifndef CADICAL_QUIET
           flipped++;
 #endif
         }

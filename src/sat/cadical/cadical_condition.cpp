@@ -159,7 +159,7 @@ struct less_conditioned {
 long Internal::condition_round (long delta) {
 
   long limit;
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   long props = 0;
 #endif
   if (LONG_MAX - delta < stats.condprops)
@@ -264,7 +264,7 @@ long Internal::condition_round (long delta) {
   vector<int> conditional;
 
   vector<Clause *> candidates; // Gather candidate clauses.
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   size_t watched = 0; // Number of watched clauses.
 #endif
 
@@ -359,7 +359,7 @@ long Internal::condition_round (long delta) {
       Occs &os = occs (watch);
       CADICAL_assert (os.size () == minsize);
       os.push_back (c);
-#ifndef QUIET
+#ifndef CADICAL_QUIET
       watched++;
 #endif
       LOG (c, "watching %d with %zd occurrences in", watch, minsize);
@@ -482,7 +482,7 @@ long Internal::condition_round (long delta) {
   //
   long blocked = 0; // Number of Successfully blocked clauses.
   //
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   size_t untried = candidates.size ();
 #endif
   for (const auto &c : candidates) {
@@ -507,7 +507,7 @@ long Internal::condition_round (long delta) {
              untried, percent (untried, candidates.size ()), props);
       break;
     }
-#ifndef QUIET
+#ifndef CADICAL_QUIET
     untried--;
 #endif
     CADICAL_assert (!c->garbage);
@@ -597,7 +597,7 @@ long Internal::condition_round (long delta) {
         const int unassigned_lit = unassigned[next.unassigned++];
         LOG ("processing next unassigned %d", unassigned_lit);
         CADICAL_assert (!val (unassigned_lit));
-#ifndef QUIET
+#ifndef CADICAL_QUIET
         props++;
 #endif
         stats.condprops++;

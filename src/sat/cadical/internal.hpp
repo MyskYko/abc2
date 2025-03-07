@@ -300,7 +300,7 @@ struct Internal {
 
   Options opts; // run-time options
   Stats stats;  // statistics
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   Profiles profiles;         // time profiles for various functions
   bool force_phase_messages; // force 'phase (...)' messages
 #endif
@@ -1499,7 +1499,7 @@ struct Internal {
 
   bool terminating_asked ();
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   // Built in profiling in 'profile.cpp' (see also 'profile.hpp').
   //
   void start_profiling (Profile &p, double);
@@ -1669,12 +1669,12 @@ struct Internal {
 
   /*----------------------------------------------------------------------*/
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
 
   void print_prefix ();
 
   // Non-verbose messages and warnings, i.e., always printed unless 'quiet'
-  // is set, which disables messages at run-time, or even 'QUIET' is defined
+  // is set, which disables messages at run-time, or even 'CADICAL_QUIET' is defined
   // through the configuration option './configure --quiet', which disables
   // such messages completely at compile-time.
   //

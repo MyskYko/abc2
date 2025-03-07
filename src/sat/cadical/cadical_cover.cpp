@@ -509,7 +509,7 @@ int64_t Internal::cover_round () {
 
   // First connect all clauses and find all not yet tried clauses.
   //
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   int64_t untried = 0;
 #endif
   //
@@ -543,7 +543,7 @@ int64_t Internal::cover_round () {
     if (c->covered)
       continue;
     schedule.push_back (c);
-#ifndef QUIET
+#ifndef CADICAL_QUIET
     untried++;
 #endif
   }
@@ -593,7 +593,7 @@ int64_t Internal::cover_round () {
   stable_sort (schedule.begin (), schedule.end (),
                clause_covered_or_smaller ());
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   const size_t scheduled = schedule.size ();
   PHASE ("cover", stats.cover.count,
          "scheduled %zd clauses %.0f%% with %" PRId64 " untried %.0f%%",
@@ -625,7 +625,7 @@ int64_t Internal::cover_round () {
       covered++;
   }
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   const size_t remain = schedule.size ();
   const size_t tried = scheduled - remain;
   PHASE ("cover", stats.cover.count,

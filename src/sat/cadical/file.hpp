@@ -42,7 +42,7 @@ struct Internal;
 class File {
 
   Internal *internal;
-#if !defined(QUIET) || !defined(CADICAL_NDEBUG)
+#if !defined(CADICAL_QUIET) || !defined(CADICAL_NDEBUG)
   bool writing;
 #endif
 

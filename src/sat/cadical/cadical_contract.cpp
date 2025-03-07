@@ -1,6 +1,6 @@
 #include "global.h"
 
-#ifndef NCONTRACTS
+#ifndef CADICAL_NCONTRACTS
 
 #include "internal.hpp"
 

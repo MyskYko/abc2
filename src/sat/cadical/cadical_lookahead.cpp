@@ -127,7 +127,7 @@ void Internal::lookahead_flush_probes () {
     *j++ = lit;
   }
   size_t remain = j - probes.begin ();
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   size_t flushed = probes.size () - remain;
 #endif
   probes.resize (remain);
@@ -298,7 +298,7 @@ int Internal::lookahead_probing () {
 
   termination_forced = false;
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   int old_failed = stats.failed;
   int64_t old_probed = stats.probed;
 #endif
@@ -386,7 +386,7 @@ int Internal::lookahead_probing () {
       sort_watches ();
   }
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   int failed = stats.failed - old_failed;
   int64_t probed = stats.probed - old_probed;
 #endif

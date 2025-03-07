@@ -62,7 +62,7 @@ namespace CaDiCaL {
 
 File::File (Internal *i, bool w, int c, int p, FILE *f, const char *n)
     : internal (i),
-#if !defined(QUIET) || !defined(CADICAL_NDEBUG)
+#if !defined(CADICAL_QUIET) || !defined(CADICAL_NDEBUG)
       writing (w),
 #endif
       close_file (c), child_pid (p), file (f), _name (strdup (n)),
@@ -245,7 +245,7 @@ void File::delete_str_vector (std::vector<char *> &argv) {
 
 FILE *File::open_pipe (Internal *internal, const char *fmt,
                        const char *path, const char *mode) {
-#ifdef QUIET
+#ifdef CADICAL_QUIET
   (void) internal;
 #endif
   size_t prglen = 0;
@@ -295,7 +295,7 @@ FILE *File::write_pipe (Internal *internal, const char *command,
                         const char *path, int &child_pid) {
   CADICAL_assert (command[0] && command[0] != ' ');
   MSG ("writing through command '%s' to '%s'", command, path);
-#ifdef QUIET
+#ifdef CADICAL_QUIET
   (void) internal;
 #endif
   std::vector<char *> args;
@@ -347,7 +347,7 @@ FILE *File::write_pipe (Internal *internal, const char *command,
     // be closed by the parent process we have to close all of the
     // erroneously cloned fds here.
 
-#ifndef NCLOSEFROM
+#ifndef CADICAL_NCLOSEFROM
     ::closefrom (3);
 #else
     // Simplistic replacement on Unix without 'closefrom'.
@@ -360,7 +360,7 @@ FILE *File::write_pipe (Internal *internal, const char *command,
   if (absolute_command_path)
     delete[] absolute_command_path;
   delete_str_vector (args);
-#ifdef QUIET
+#ifdef CADICAL_QUIET
   (void) internal;
 #endif
 #if defined(__APPLE__) || defined(__MACH__)
@@ -441,7 +441,7 @@ File *File::write (Internal *internal, const char *path) {
 
 void File::close (bool print) {
   CADICAL_assert (file);
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   if (internal->opts.quiet)
     print = false;
   else if (internal->opts.verbose > 0)
@@ -476,7 +476,7 @@ void File::close (bool print) {
 
   // TODO what about error checking for 'fclose', 'pclose' or 'waitpid'?
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   if (print) {
     if (writing) {
       uint64_t written_bytes = bytes ();

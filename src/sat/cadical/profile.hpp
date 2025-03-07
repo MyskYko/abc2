@@ -6,7 +6,7 @@
 ABC_NAMESPACE_CXX_HEADER_START
 
 /*------------------------------------------------------------------------*/
-#ifndef QUIET
+#ifndef CADICAL_QUIET
 /*------------------------------------------------------------------------*/
 
 namespace CaDiCaL {
@@ -135,11 +135,11 @@ struct Profiles {
 
 } // namespace CaDiCaL
 
-#define NON_QUIET_PROFILE_CODE(CODE) CODE
+#define NON_CADICAL_QUIET_PROFILE_CODE(CODE) CODE
 
-#else // !defined(QUIET)
+#else // !defined(CADICAL_QUIET)
 
-#define NON_QUIET_PROFILE_CODE(CODE) /**/
+#define NON_CADICAL_QUIET_PROFILE_CODE(CODE) /**/
 
 #endif
 
@@ -149,7 +149,7 @@ struct Profiles {
 
 #define START(P) \
   do { \
-    NON_QUIET_PROFILE_CODE ( \
+    NON_CADICAL_QUIET_PROFILE_CODE ( \
         if (internal->profiles.P.level <= internal->opts.profile) \
             internal->start_profiling (internal->profiles.P, \
                                        internal->time ());) \
@@ -157,7 +157,7 @@ struct Profiles {
 
 #define STOP(P) \
   do { \
-    NON_QUIET_PROFILE_CODE ( \
+    NON_CADICAL_QUIET_PROFILE_CODE ( \
         if (internal->profiles.P.level <= internal->opts.profile) \
             internal->stop_profiling (internal->profiles.P, \
                                       internal->time ());) \
@@ -171,10 +171,10 @@ struct Profiles {
 
 #define START_SIMPLIFIER(S, M) \
   do { \
-    NON_QUIET_PROFILE_CODE (const double N = time (); \
+    NON_CADICAL_QUIET_PROFILE_CODE (const double N = time (); \
                             const int L = internal->opts.profile;) \
     if (!preprocessing && !lookingahead) { \
-      NON_QUIET_PROFILE_CODE ( \
+      NON_CADICAL_QUIET_PROFILE_CODE ( \
           if (stable && internal->profiles.stable.level <= L) \
               internal->stop_profiling (internal->profiles.stable, N); \
           if (!stable && internal->profiles.unstable.level <= L) \
@@ -183,7 +183,7 @@ struct Profiles {
               internal->stop_profiling (internal->profiles.search, N);) \
       reset_mode (SEARCH); \
     } \
-    NON_QUIET_PROFILE_CODE ( \
+    NON_CADICAL_QUIET_PROFILE_CODE ( \
         if (internal->profiles.simplify.level <= L) \
             internal->start_profiling (internal->profiles.simplify, N); \
         if (internal->profiles.S.level <= L) \
@@ -196,7 +196,7 @@ struct Profiles {
 
 #define STOP_SIMPLIFIER(S, M) \
   do { \
-    NON_QUIET_PROFILE_CODE ( \
+    NON_CADICAL_QUIET_PROFILE_CODE ( \
         const double N = time (); const int L = internal->opts.profile; \
         if (internal->profiles.S.level <= L) \
             internal->stop_profiling (internal->profiles.S, N); \
@@ -205,7 +205,7 @@ struct Profiles {
     reset_mode (M); \
     reset_mode (SIMPLIFY); \
     if (!preprocessing && !lookingahead) { \
-      NON_QUIET_PROFILE_CODE ( \
+      NON_CADICAL_QUIET_PROFILE_CODE ( \
           if (internal->profiles.search.level <= L) \
               internal->start_profiling (internal->profiles.search, N); \
           if (stable && internal->profiles.stable.level <= L) \
@@ -223,7 +223,7 @@ struct Profiles {
   do { \
     require_mode (SEARCH); \
     CADICAL_assert (!preprocessing); \
-    NON_QUIET_PROFILE_CODE ( \
+    NON_CADICAL_QUIET_PROFILE_CODE ( \
         const double N = time (); const int L = internal->opts.profile; \
         if (stable && internal->profiles.stable.level <= L) \
             internal->stop_profiling (internal->profiles.stable, N); \
@@ -242,7 +242,7 @@ struct Profiles {
     require_mode (SEARCH); \
     CADICAL_assert (!preprocessing); \
     reset_mode (WALK); \
-    NON_QUIET_PROFILE_CODE ( \
+    NON_CADICAL_QUIET_PROFILE_CODE ( \
         const double N = time (); const int L = internal->opts.profile; \
         if (internal->profiles.walk.level <= L) \
             internal->stop_profiling (internal->profiles.walk, N); \
@@ -260,7 +260,7 @@ struct Profiles {
   do { \
     require_mode (SEARCH); \
     CADICAL_assert (!preprocessing); \
-    NON_QUIET_PROFILE_CODE (START (walk);) \
+    NON_CADICAL_QUIET_PROFILE_CODE (START (walk);) \
     set_mode (WALK); \
   } while (0)
 
@@ -272,7 +272,7 @@ struct Profiles {
     require_mode (SEARCH); \
     CADICAL_assert (!preprocessing); \
     reset_mode (WALK); \
-    NON_QUIET_PROFILE_CODE (STOP (walk);) \
+    NON_CADICAL_QUIET_PROFILE_CODE (STOP (walk);) \
   } while (0)
 
 ABC_NAMESPACE_CXX_HEADER_END

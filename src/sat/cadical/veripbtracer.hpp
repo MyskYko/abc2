@@ -51,7 +51,7 @@ class VeripbTracer : public FileTracer {
   bool
   find_and_delete (const int64_t); // find clause position in hash table
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   int64_t added, deleted;
 #endif
   vector<int64_t> delete_ids;
@@ -93,7 +93,7 @@ public:
   void weaken_minus (int64_t, const vector<int> &) override;
   void strengthen (int64_t) override;
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   void print_statistics ();
 #endif
   bool closed () override;

@@ -6,7 +6,7 @@ ABC_NAMESPACE_IMPL_START
 
 namespace CaDiCaL {
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
 
 /*------------------------------------------------------------------------*/
 
@@ -291,7 +291,7 @@ void Internal::report (char type, int verbose) {
   fflush (stdout);
 }
 
-#else // ifndef QUIET
+#else // ifndef CADICAL_QUIET
 
 void Internal::report (char, int) {}
 

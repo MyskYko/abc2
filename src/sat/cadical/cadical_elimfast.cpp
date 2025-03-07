@@ -352,7 +352,7 @@ int Internal::elimfast_round (bool &completed,
 
   schedule.shrink ();
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   int64_t scheduled = schedule.size ();
 #endif
 
@@ -368,7 +368,7 @@ int Internal::elimfast_round (bool &completed,
         if (active (lit))
           occs (lit).push_back (c);
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   const int64_t old_resolutions = stats.elimres;
 #endif
   const int old_eliminated = stats.all.eliminated;
@@ -383,7 +383,7 @@ int Internal::elimfast_round (bool &completed,
   // schedule is updated dynamically and variables are potentially
   // rescheduled to be tried again if they occur in a removed clause.
   //
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   int64_t tried = 0;
 #endif
   while (!unsat && !terminated_asynchronously () &&
@@ -392,7 +392,7 @@ int Internal::elimfast_round (bool &completed,
     schedule.pop_front ();
     flags (idx).elim = false;
     try_to_fasteliminate_variable (eliminator, idx, deleted_binary_clause);
-#ifndef QUIET
+#ifndef CADICAL_QUIET
     tried++;
 #endif
     if (stats.garbage.literals <= garbage_limit)
@@ -423,7 +423,7 @@ int Internal::elimfast_round (bool &completed,
 
   int eliminated = stats.all.eliminated - old_eliminated;
   stats.all.fasteliminated += eliminated;
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   int64_t resolutions = stats.elimres - old_resolutions;
   PHASE ("fastelim-round", stats.elimfastrounds,
          "eliminated %d variables %.0f%% in %" PRId64 " resolutions",
@@ -459,7 +459,7 @@ void Internal::elimfast () {
     private_steps = true;
   }
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   int old_active_variables = active ();
   int old_eliminated = stats.all.eliminated;
 #endif
@@ -480,13 +480,13 @@ void Internal::elimfast () {
   bool phase_complete = false, deleted_binary_clause = false;
 
   int round = 1;
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   int eliminated = 0;
 #endif
 
   bool round_complete = false;
   while (!unsat && !phase_complete && !terminated_asynchronously ()) {
-#ifndef QUIET
+#ifndef CADICAL_QUIET
     int eliminated =
 #endif
         elimfast_round (round_complete, deleted_binary_clause);
@@ -558,7 +558,7 @@ void Internal::elimfast () {
     }
   }
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   eliminated = stats.all.eliminated - old_eliminated;
   PHASE ("fastelim-phase", stats.elimphases,
          "eliminated %d variables %.2f%%", eliminated,

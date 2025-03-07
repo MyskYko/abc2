@@ -197,7 +197,7 @@ int Options::get (const char *name) {
 
 void Options::print () {
   unsigned different = 0;
-#ifdef QUIET
+#ifdef CADICAL_QUIET
   const bool verbose = false;
 #endif
   char buffer[256];

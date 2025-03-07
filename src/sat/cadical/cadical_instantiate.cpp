@@ -317,7 +317,7 @@ void Internal::instantiate (Instantiator &instantiator) {
   CADICAL_assert (opts.instantiate);
   START (instantiate);
   stats.instrounds++;
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   const int64_t candidates = instantiator.candidates.size ();
   int64_t tried = 0;
 #endif
@@ -339,7 +339,7 @@ void Internal::instantiate (Instantiator &instantiator) {
          !instantiator.candidates.empty ()) {
     Instantiator::Candidate cand = instantiator.candidates.back ();
     instantiator.candidates.pop_back ();
-#ifndef QUIET
+#ifndef CADICAL_QUIET
     tried++;
 #endif
     if (!active (cand.lit))

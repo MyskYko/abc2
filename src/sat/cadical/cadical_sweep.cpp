@@ -1606,7 +1606,7 @@ const char *Internal::sweep_variable (Sweeper &sweeper, int idx) {
   LOG ("sub-solver returns '%d'", res);
   if (res == 10) {
     init_backbone_and_partition (sweeper);
-#ifndef QUIET
+#ifndef CADICAL_QUIET
     uint64_t units = stats.sweep_units;
     uint64_t solved = stats.sweep_solved;
 #endif
@@ -1635,7 +1635,7 @@ const char *Internal::sweep_variable (Sweeper &sweeper, int idx) {
         success = true;
     }
     STOP (sweepbackbone);
-#ifndef QUIET
+#ifndef CADICAL_QUIET
     units = stats.sweep_units - units;
     solved = stats.sweep_solved - solved;
 #endif
@@ -1644,7 +1644,7 @@ const char *Internal::sweep_variable (Sweeper &sweeper, int idx) {
              " units in %" PRIu64 " solver calls",
              externalize (idx), units, solved);
     CADICAL_assert (sweeper.backbone.empty ());
-#ifndef QUIET
+#ifndef CADICAL_QUIET
     uint64_t equivalences = stats.sweep_equivalences;
     solved = stats.sweep_solved;
 #endif
@@ -1676,7 +1676,7 @@ const char *Internal::sweep_variable (Sweeper &sweeper, int idx) {
         sweeper.partition.clear ();
     }
     STOP (sweepequivalences);
-#ifndef QUIET
+#ifndef CADICAL_QUIET
     equivalences = stats.sweep_equivalences - equivalences;
     solved = stats.sweep_solved - solved;
     if (equivalences)
@@ -1811,7 +1811,7 @@ void Internal::mark_incomplete (Sweeper &sweeper) {
     }
   }
   sweep_incomplete = true;
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   VERBOSE (2, "marked %u scheduled sweeping variables as incomplete",
            marked);
 #else
@@ -1824,7 +1824,7 @@ unsigned Internal::schedule_sweeping (Sweeper &sweeper) {
   const unsigned fresh = schedule_all_other_not_scheduled_yet (sweeper);
   const unsigned scheduled = fresh + rescheduled;
   const unsigned incomplete = incomplete_variables ();
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   PHASE ("sweep", stats.sweep,
          "scheduled %u variables %.0f%% "
          "(%u rescheduled %.0f%%, %u incomplete %.0f%%)",
@@ -1844,7 +1844,7 @@ unsigned Internal::schedule_sweeping (Sweeper &sweeper) {
 
 void Internal::unschedule_sweeping (Sweeper &sweeper, unsigned swept,
                                     unsigned scheduled) {
-#ifdef QUIET
+#ifdef CADICAL_QUIET
   (void) scheduled, (void) swept;
 #endif
   CADICAL_assert (sweep_schedule.empty ());
@@ -1854,7 +1854,7 @@ void Internal::unschedule_sweeping (Sweeper &sweeper, unsigned swept,
       sweep_schedule.push_back (idx);
       LOG ("untried scheduled %d", idx);
     }
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   const unsigned retained = sweep_schedule.size ();
 #endif
   VERBOSE (3, "retained %u variables %.0f%% to be swept next time",
@@ -1911,7 +1911,7 @@ bool Internal::sweep () {
     if (idx == 0)
       break;
     flags (idx).sweep = false;
-#ifndef QUIET
+#ifndef CADICAL_QUIET
     const char *res =
 #endif
         sweep_variable (sweeper, idx);

@@ -272,7 +272,7 @@ bool Internal::ternary_round (int64_t &steps_limit, int64_t &htrs_limit) {
 
   CADICAL_assert (!unsat);
 
-#ifndef QUIET
+#ifndef CADICAL_QUIET
   int64_t bincon = 0;
   int64_t terncon = 0;
 #endif
@@ -298,14 +298,14 @@ bool Internal::ternary_round (int64_t &steps_limit, int64_t &htrs_limit) {
     if (assigned)
       continue;
     if (c->size == 2) {
-#ifndef QUIET
+#ifndef CADICAL_QUIET
       bincon++;
 #endif
     } else {
       CADICAL_assert (c->size == 3);
       if (!marked)
         continue;
-#ifndef QUIET
+#ifndef CADICAL_QUIET
       terncon++;
 #endif
     }

@@ -7,7 +7,7 @@ ABC_NAMESPACE_IMPL_START
 namespace CaDiCaL {
 
 /*------------------------------------------------------------------------*/
-#ifndef QUIET
+#ifndef CADICAL_QUIET
 /*------------------------------------------------------------------------*/
 
 void Internal::print_prefix () { fputs (prefix.c_str (), stdout); }
@@ -134,7 +134,7 @@ void Internal::phase (const char *phase, int64_t count, const char *fmt,
 }
 
 /*------------------------------------------------------------------------*/
-#endif // ifndef QUIET
+#endif // ifndef CADICAL_QUIET
 /*------------------------------------------------------------------------*/
 
 void Internal::warning (const char *fmt, ...) {
