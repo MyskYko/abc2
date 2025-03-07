@@ -4,9 +4,7 @@
 #include "global.h"
 
 /*------------------------------------------------------------------------*/
-#ifdef __cplusplus
-extern "C" {
-#endif
+ABC_NAMESPACE_HEADER_START
 /*------------------------------------------------------------------------*/
 
 #include <stdint.h>
@@ -65,9 +63,7 @@ int ccadical_reserve_difference (CCaDiCaL *, int number_of_vars);
 #define ccadical_deref ccadical_val
 
 /*------------------------------------------------------------------------*/
-#ifdef __cplusplus
-}
-#endif
+ABC_NAMESPACE_HEADER_END
 /*------------------------------------------------------------------------*/
 
 #endif
