@@ -108,9 +108,9 @@ extern "C" {
 #include "watch.hpp"
 
 // c headers
-extern "C" {
+//extern "C" {
 #include "kitten.h"
-}
+//}
 /*------------------------------------------------------------------------*/
 
 ABC_NAMESPACE_CXX_HEADER_START
