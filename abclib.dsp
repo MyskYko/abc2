@@ -2891,359 +2891,359 @@ SOURCE=.\src\sat\kissat\weaken.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\kitten.c
+SOURCE=.\src\sat\cadical\cadical_kitten.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\analyze.cpp
+SOURCE=.\src\sat\cadical\cadical_analyze.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\arena.cpp
+SOURCE=.\src\sat\cadical\cadical_arena.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\assume.cpp
+SOURCE=.\src\sat\cadical\cadical_assume.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\averages.cpp
+SOURCE=.\src\sat\cadical\cadical_averages.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\backtrack.cpp
+SOURCE=.\src\sat\cadical\cadical_backtrack.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\backward.cpp
+SOURCE=.\src\sat\cadical\cadical_backward.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\bins.cpp
+SOURCE=.\src\sat\cadical\cadical_bins.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\block.cpp
+SOURCE=.\src\sat\cadical\cadical_block.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\ccadical.cpp
+SOURCE=.\src\sat\cadical\cadical_ccadical.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\checker.cpp
+SOURCE=.\src\sat\cadical\cadical_checker.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\clause.cpp
+SOURCE=.\src\sat\cadical\cadical_clause.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\collect.cpp
+SOURCE=.\src\sat\cadical\cadical_collect.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\compact.cpp
+SOURCE=.\src\sat\cadical\cadical_compact.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\condition.cpp
+SOURCE=.\src\sat\cadical\cadical_condition.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\config.cpp
+SOURCE=.\src\sat\cadical\cadical_config.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\congruence.cpp
+SOURCE=.\src\sat\cadical\cadical_congruence.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\constrain.cpp
+SOURCE=.\src\sat\cadical\cadical_constrain.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\contract.cpp
+SOURCE=.\src\sat\cadical\cadical_contract.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\cover.cpp
+SOURCE=.\src\sat\cadical\cadical_cover.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\decide.cpp
+SOURCE=.\src\sat\cadical\cadical_decide.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\decompose.cpp
+SOURCE=.\src\sat\cadical\cadical_decompose.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\deduplicate.cpp
+SOURCE=.\src\sat\cadical\cadical_deduplicate.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\definition.cpp
+SOURCE=.\src\sat\cadical\cadical_definition.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\drattracer.cpp
+SOURCE=.\src\sat\cadical\cadical_drattracer.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\elim.cpp
+SOURCE=.\src\sat\cadical\cadical_elim.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\elimfast.cpp
+SOURCE=.\src\sat\cadical\cadical_elimfast.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\ema.cpp
+SOURCE=.\src\sat\cadical\cadical_ema.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\extend.cpp
+SOURCE=.\src\sat\cadical\cadical_extend.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\external.cpp
+SOURCE=.\src\sat\cadical\cadical_external.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\external_propagate.cpp
+SOURCE=.\src\sat\cadical\cadical_external_propagate.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\factor.cpp
+SOURCE=.\src\sat\cadical\cadical_factor.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\file.cpp
+SOURCE=.\src\sat\cadical\cadical_file.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\flags.cpp
+SOURCE=.\src\sat\cadical\cadical_flags.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\flip.cpp
+SOURCE=.\src\sat\cadical\cadical_flip.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\format.cpp
+SOURCE=.\src\sat\cadical\cadical_format.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\frattracer.cpp
+SOURCE=.\src\sat\cadical\cadical_frattracer.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\gates.cpp
+SOURCE=.\src\sat\cadical\cadical_gates.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\idruptracer.cpp
+SOURCE=.\src\sat\cadical\cadical_idruptracer.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\instantiate.cpp
+SOURCE=.\src\sat\cadical\cadical_instantiate.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\internal.cpp
+SOURCE=.\src\sat\cadical\cadical_internal.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\ipasir.cpp
+SOURCE=.\src\sat\cadical\cadical_ipasir.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\lidruptracer.cpp
+SOURCE=.\src\sat\cadical\cadical_lidruptracer.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\limit.cpp
+SOURCE=.\src\sat\cadical\cadical_limit.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\logging.cpp
+SOURCE=.\src\sat\cadical\cadical_logging.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\lookahead.cpp
+SOURCE=.\src\sat\cadical\cadical_lookahead.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\lratchecker.cpp
+SOURCE=.\src\sat\cadical\cadical_lratchecker.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\lrattracer.cpp
+SOURCE=.\src\sat\cadical\cadical_lrattracer.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\lucky.cpp
+SOURCE=.\src\sat\cadical\cadical_lucky.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\message.cpp
+SOURCE=.\src\sat\cadical\cadical_message.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\minimize.cpp
+SOURCE=.\src\sat\cadical\cadical_minimize.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\occs.cpp
+SOURCE=.\src\sat\cadical\cadical_occs.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\options.cpp
+SOURCE=.\src\sat\cadical\cadical_options.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\parse.cpp
+SOURCE=.\src\sat\cadical\cadical_parse.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\phases.cpp
+SOURCE=.\src\sat\cadical\cadical_phases.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\probe.cpp
+SOURCE=.\src\sat\cadical\cadical_probe.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\profile.cpp
+SOURCE=.\src\sat\cadical\cadical_profile.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\proof.cpp
+SOURCE=.\src\sat\cadical\cadical_proof.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\propagate.cpp
+SOURCE=.\src\sat\cadical\cadical_propagate.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\queue.cpp
+SOURCE=.\src\sat\cadical\cadical_queue.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\random.cpp
+SOURCE=.\src\sat\cadical\cadical_random.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\reap.cpp
+SOURCE=.\src\sat\cadical\cadical_reap.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\reduce.cpp
+SOURCE=.\src\sat\cadical\cadical_reduce.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\rephase.cpp
+SOURCE=.\src\sat\cadical\cadical_rephase.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\report.cpp
+SOURCE=.\src\sat\cadical\cadical_report.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\resources.cpp
+SOURCE=.\src\sat\cadical\cadical_resources.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\restart.cpp
+SOURCE=.\src\sat\cadical\cadical_restart.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\restore.cpp
+SOURCE=.\src\sat\cadical\cadical_restore.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\score.cpp
+SOURCE=.\src\sat\cadical\cadical_score.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\shrink.cpp
+SOURCE=.\src\sat\cadical\cadical_shrink.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\signal.cpp
+SOURCE=.\src\sat\cadical\cadical_signal.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\solution.cpp
+SOURCE=.\src\sat\cadical\cadical_solution.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\solver.cpp
+SOURCE=.\src\sat\cadical\cadical_solver.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\stable.cpp
+SOURCE=.\src\sat\cadical\cadical_stable.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\stats.cpp
+SOURCE=.\src\sat\cadical\cadical_stats.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\subsume.cpp
+SOURCE=.\src\sat\cadical\cadical_subsume.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\sweep.cpp
+SOURCE=.\src\sat\cadical\cadical_sweep.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\terminal.cpp
+SOURCE=.\src\sat\cadical\cadical_terminal.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\ternary.cpp
+SOURCE=.\src\sat\cadical\cadical_ternary.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\tier.cpp
+SOURCE=.\src\sat\cadical\cadical_tier.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\transred.cpp
+SOURCE=.\src\sat\cadical\cadical_transred.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\unstable.cpp
+SOURCE=.\src\sat\cadical\cadical_unstable.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\util.cpp
+SOURCE=.\src\sat\cadical\cadical_util.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\var.cpp
+SOURCE=.\src\sat\cadical\cadical_var.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\veripbtracer.cpp
+SOURCE=.\src\sat\cadical\cadical_veripbtracer.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\version.cpp
+SOURCE=.\src\sat\cadical\cadical_version.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\vivify.cpp
+SOURCE=.\src\sat\cadical\cadical_vivify.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\walk.cpp
+SOURCE=.\src\sat\cadical\cadical_walk.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\src\sat\cadical\watch.cpp
+SOURCE=.\src\sat\cadical\cadical_watch.cpp
 # End Source File
 # End Group
 # End Group
