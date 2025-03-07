@@ -5,6 +5,8 @@
 
 #include <stdlib.h>
 
+ABC_NAMESPACE_HEADER_START
+
 #define STACK(TYPE) \
   struct { \
     TYPE *begin; \
@@ -108,5 +110,7 @@ typedef STACK (size_t) sizes;
 typedef STACK (unsigned) unsigneds;
 
 // clang-format on
+
+ABC_NAMESPACE_HEADER_END
 
 #endif

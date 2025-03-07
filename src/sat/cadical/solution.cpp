@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 // Sam Buss suggested to debug the case where a solver incorrectly claims
@@ -50,3 +52,5 @@ void External::check_solution_on_learned_unit_clause (int unit) {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

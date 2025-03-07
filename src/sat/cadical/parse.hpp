@@ -6,6 +6,8 @@
 #include <cassert>
 #include <vector>
 
+ABC_NAMESPACE_CXX_HEADER_START
+
 namespace CaDiCaL {
 
 // Factors out common functions for parsing of DIMACS and solution files.
@@ -70,5 +72,7 @@ public:
 };
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_CXX_HEADER_END
 
 #endif

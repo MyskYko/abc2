@@ -4,6 +4,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 // Initialize all profile counters with constant name and profiling level.
@@ -105,5 +107,7 @@ void Internal::print_profile () {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END
 
 #endif // ifndef QUIET

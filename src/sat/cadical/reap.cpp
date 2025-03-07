@@ -14,6 +14,8 @@ static inline int __builtin_clz(unsigned x) {
 }
 #endif
 
+ABC_NAMESPACE_IMPL_START
+
 void Reap::init () {
   for (auto &bucket : buckets)
     bucket = {0};
@@ -136,3 +138,5 @@ void Reap::clear () {
   min_bucket = 32;
   max_bucket = 0;
 }
+
+ABC_NAMESPACE_IMPL_END

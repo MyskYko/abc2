@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 using namespace std;
@@ -657,3 +659,5 @@ void Proof::conclude_unknown (const vector<int> &trail) {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

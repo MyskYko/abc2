@@ -7,6 +7,8 @@
 #include <cstdlib>
 #include <vector>
 
+ABC_NAMESPACE_CXX_HEADER_START
+
 namespace CaDiCaL {
 
 struct Internal;
@@ -368,5 +370,7 @@ struct Stats {
 /*------------------------------------------------------------------------*/
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_CXX_HEADER_END
 
 #endif

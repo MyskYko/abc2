@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 void Internal::init_averages () {
@@ -34,3 +36,5 @@ void Internal::swap_averages () {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

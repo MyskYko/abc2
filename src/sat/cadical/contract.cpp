@@ -4,6 +4,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 void fatal_message_start ();
@@ -25,5 +27,7 @@ void require_solver_pointer_to_be_non_zero (const void *ptr,
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END
 
 #endif

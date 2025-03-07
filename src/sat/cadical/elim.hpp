@@ -5,6 +5,8 @@
 
 #include "heap.hpp" // Alphabetically after 'elim.hpp'.
 
+ABC_NAMESPACE_CXX_HEADER_START
+
 namespace CaDiCaL {
 
 struct Internal;
@@ -51,5 +53,7 @@ struct Eliminator {
 };
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_CXX_HEADER_END
 
 #endif

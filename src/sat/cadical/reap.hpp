@@ -6,6 +6,8 @@
 #include <cstddef>
 #include <vector>
 
+ABC_NAMESPACE_CXX_HEADER_START
+
 class Reap {
 public:
   Reap ();
@@ -26,5 +28,7 @@ private:
   unsigned max_bucket;
   std::vector<unsigned> buckets[33];
 };
+
+ABC_NAMESPACE_CXX_HEADER_END
 
 #endif

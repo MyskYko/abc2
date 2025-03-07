@@ -8,6 +8,8 @@
 #include <utility>
 #include <vector>
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 Closure::Closure (Internal *i)
@@ -7561,3 +7563,5 @@ bool Internal::extract_gates () {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

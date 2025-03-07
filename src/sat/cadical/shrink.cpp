@@ -3,6 +3,8 @@
 #include "internal.hpp"
 #include "reap.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 void Internal::reset_shrinkable () {
@@ -507,3 +509,5 @@ void Internal::shrink_and_minimize_clause () {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

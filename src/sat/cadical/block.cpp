@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 /*------------------------------------------------------------------------*/
@@ -824,3 +826,5 @@ bool Internal::block () {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

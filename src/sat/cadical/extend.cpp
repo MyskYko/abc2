@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 void External::push_zero_on_extension_stack () {
@@ -281,3 +283,5 @@ void External::conclude_sat () {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

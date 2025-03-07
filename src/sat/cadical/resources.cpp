@@ -39,6 +39,8 @@ extern "C" {
 #include <string.h>
 }
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 /*------------------------------------------------------------------------*/
@@ -160,3 +162,5 @@ uint64_t current_resident_set_size () {
 /*------------------------------------------------------------------------*/
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

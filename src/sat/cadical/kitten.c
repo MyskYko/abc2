@@ -14,6 +14,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+ABC_NAMESPACE_IMPL_START
+
 typedef signed char value;
 
 static void die (const char *fmt, ...) {
@@ -2603,3 +2605,5 @@ int cadical_kitten_flip_and_implicant_for_signed_literal (cadical_kitten *cadica
   const unsigned ilit = 2 * (iidx - 1) + (kelit & 1);
   return compute_prime_implicant_for (cadical_kitten, ilit);
 }
+
+ABC_NAMESPACE_IMPL_END

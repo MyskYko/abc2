@@ -113,6 +113,8 @@ extern "C" {
 }
 /*------------------------------------------------------------------------*/
 
+ABC_NAMESPACE_CXX_HEADER_START
+
 namespace CaDiCaL {
 
 using namespace std;
@@ -1858,5 +1860,7 @@ inline bool Internal::search_limits_hit () {
 /*------------------------------------------------------------------------*/
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_CXX_HEADER_END
 
 #endif

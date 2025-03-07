@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 bool Internal::flip (int lit) {
@@ -269,3 +271,5 @@ bool Internal::flippable (int lit) {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

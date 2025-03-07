@@ -5,6 +5,8 @@
 
 #include <climits>
 
+ABC_NAMESPACE_CXX_HEADER_START
+
 namespace CaDiCaL {
 
 // For each new decision we increase the decision level and push a 'Level'
@@ -31,5 +33,7 @@ struct Level {
 };
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_CXX_HEADER_END
 
 #endif

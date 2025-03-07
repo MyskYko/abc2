@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 // This function determines the next decision variable on the queue, without
@@ -252,3 +254,5 @@ int Internal::decide () {
   return res;
 }
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

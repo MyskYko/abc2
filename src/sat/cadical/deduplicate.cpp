@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 // Equivalent literal substitution in 'decompose' and shrinking in 'subsume'
@@ -170,3 +172,5 @@ void Internal::mark_duplicated_binary_clauses_as_garbage () {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 Sweeper::Sweeper (Internal *i)
@@ -1953,3 +1955,5 @@ bool Internal::sweep () {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 void Internal::copy_phases (vector<signed char> &dst) {
@@ -44,3 +46,5 @@ void Internal::unphase (int lit) {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

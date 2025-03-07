@@ -5,6 +5,8 @@
 
 #include <cstdint>
 
+ABC_NAMESPACE_CXX_HEADER_START
+
 // Random number generator.
 
 namespace CaDiCaL {
@@ -96,5 +98,7 @@ public:
 };
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_CXX_HEADER_END
 
 #endif

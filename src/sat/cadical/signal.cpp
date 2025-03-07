@@ -17,6 +17,8 @@ extern "C" {
 }
 #endif
 
+ABC_NAMESPACE_IMPL_START
+
 /*------------------------------------------------------------------------*/
 
 // Signal handlers for printing statistics even if solver is interrupted.
@@ -138,3 +140,5 @@ void Signal::alarm (int seconds) {
 #endif
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

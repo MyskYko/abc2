@@ -3,6 +3,8 @@
 
 #include "global.h"
 
+ABC_NAMESPACE_CXX_HEADER_START
+
 namespace CaDiCaL {
 
 class LratTracer : public FileTracer {
@@ -55,5 +57,7 @@ public:
 };
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_CXX_HEADER_END
 
 #endif

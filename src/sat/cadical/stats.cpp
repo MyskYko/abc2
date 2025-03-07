@@ -4,6 +4,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 /*------------------------------------------------------------------------*/
@@ -820,3 +822,5 @@ void LratChecker::print_stats () {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

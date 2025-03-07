@@ -6,6 +6,8 @@
 #include <cstdint>
 #include <limits>
 
+ABC_NAMESPACE_CXX_HEADER_START
+
 namespace CaDiCaL {
 
 struct Internal;
@@ -154,5 +156,7 @@ struct Inc {
   } while (0)
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_CXX_HEADER_END
 
 #endif

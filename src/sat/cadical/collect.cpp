@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 /*------------------------------------------------------------------------*/
@@ -545,3 +547,5 @@ void Internal::garbage_collection () {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

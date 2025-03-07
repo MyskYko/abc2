@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 void Format::enlarge () {
@@ -89,3 +91,5 @@ const char *Format::append (const char *fmt, ...) {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

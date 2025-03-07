@@ -3,6 +3,8 @@
 
 #include "global.h"
 
+ABC_NAMESPACE_CXX_HEADER_START
+
 /*------------------------------------------------------------------------*/
 #ifndef QUIET
 /*------------------------------------------------------------------------*/
@@ -272,5 +274,7 @@ struct Profiles {
     reset_mode (WALK); \
     NON_QUIET_PROFILE_CODE (STOP (walk);) \
   } while (0)
+
+ABC_NAMESPACE_CXX_HEADER_END
 
 #endif // ifndef _profiles_h_INCLUDED

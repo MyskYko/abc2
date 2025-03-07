@@ -3,6 +3,8 @@
 
 #include "global.h"
 
+ABC_NAMESPACE_CXX_HEADER_START
+
 namespace CaDiCaL {
 
 // Helper class for handling signals in applications.
@@ -31,5 +33,7 @@ public:
 };
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_CXX_HEADER_END
 
 #endif

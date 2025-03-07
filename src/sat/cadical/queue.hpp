@@ -5,6 +5,8 @@
 
 #include <vector>
 
+ABC_NAMESPACE_CXX_HEADER_START
+
 namespace CaDiCaL {
 
 // Links for double linked decision queue.
@@ -62,5 +64,7 @@ struct Queue {
 };
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_CXX_HEADER_END
 
 #endif

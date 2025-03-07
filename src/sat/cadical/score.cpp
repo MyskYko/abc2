@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 // This initializes variables on the binary 'scores' heap also with
@@ -51,3 +53,5 @@ void Internal::shuffle_scores () {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

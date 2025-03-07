@@ -5,6 +5,8 @@
 #include <cstdlib>
 #include <cstring>
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 struct Wrapper : Learner, Terminator {
@@ -196,3 +198,5 @@ int ccadical_reserve_difference (CCaDiCaL *ptr, int number_of_vars) {
   return ((Wrapper *) ptr)->solver->reserve_difference (number_of_vars);
 }
 }
+
+ABC_NAMESPACE_IMPL_END

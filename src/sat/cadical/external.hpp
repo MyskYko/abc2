@@ -11,6 +11,8 @@
 
 /*------------------------------------------------------------------------*/
 
+ABC_NAMESPACE_CXX_HEADER_START
+
 namespace CaDiCaL {
 
 using namespace std;
@@ -459,5 +461,7 @@ struct External {
 };
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_CXX_HEADER_END
 
 #endif

@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 /*------------------------------------------------------------------------*/
 
 namespace CaDiCaL {
@@ -436,3 +438,5 @@ const char *Parser::parse_solution () {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

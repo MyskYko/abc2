@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 /*------------------------------------------------------------------------*/
@@ -359,3 +361,5 @@ void Options::copy (Options &other) const {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

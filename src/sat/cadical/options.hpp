@@ -3,6 +3,8 @@
 
 #include "global.h"
 
+ABC_NAMESPACE_CXX_HEADER_START
+
 /*------------------------------------------------------------------------*/
 
 // In order to add a new option, simply add a new line below. Make sure that
@@ -414,5 +416,7 @@ inline int &Option::val (Options *opts) {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_CXX_HEADER_END
 
 #endif

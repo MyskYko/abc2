@@ -10,6 +10,8 @@
 #include <cstdint>
 #include <vector>
 
+ABC_NAMESPACE_CXX_HEADER_START
+
 namespace CaDiCaL {
 
 // For debugging purposes and to help understanding what the solver is doing
@@ -83,6 +85,8 @@ struct Logger {
   } while (0)
 
 #define LOGLIT(lit) Logger::loglit (internal, lit).c_str ()
+
+ABC_NAMESPACE_CXX_HEADER_END
 
 /*------------------------------------------------------------------------*/
 #else // end of 'then' part of 'ifdef LOGGING'

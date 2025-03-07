@@ -50,6 +50,8 @@ extern "C" {
 
 #endif
 
+ABC_NAMESPACE_IMPL_START
+
 /*------------------------------------------------------------------------*/
 
 namespace CaDiCaL {
@@ -521,3 +523,5 @@ File::~File () {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

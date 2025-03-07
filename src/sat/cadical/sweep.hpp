@@ -3,6 +3,8 @@
 
 #include "global.h"
 
+ABC_NAMESPACE_CXX_HEADER_START
+
 namespace CaDiCaL {
 
 struct Internal;
@@ -59,5 +61,7 @@ struct Sweeper {
 };
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_CXX_HEADER_END
 
 #endif

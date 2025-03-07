@@ -7,6 +7,8 @@
 #include <cstdint>
 #include <vector>
 
+ABC_NAMESPACE_CXX_HEADER_START
+
 namespace CaDiCaL {
 
 using namespace std;
@@ -165,5 +167,7 @@ uint64_t hash_string (const char *str);
 /*------------------------------------------------------------------------*/
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_CXX_HEADER_END
 
 #endif

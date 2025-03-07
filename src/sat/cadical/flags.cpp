@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 void Internal::mark_fixed (int lit) {
@@ -135,3 +137,5 @@ void Internal::reactivate (int lit) {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

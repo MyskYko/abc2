@@ -48,6 +48,8 @@
 // does not have any effect.  TODO: add a similar machine identity hashing
 // function for other operating systems (Windows and macOS).
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 static uint64_t hash_machine_identifier () {
@@ -69,6 +71,8 @@ static uint64_t hash_machine_identifier () {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END
 
 /*------------------------------------------------------------------------*/
 
@@ -92,6 +96,8 @@ extern "C" {
 }
 
 #endif
+
+ABC_NAMESPACE_IMPL_START
 
 namespace CaDiCaL {
 
@@ -137,6 +143,8 @@ static uint64_t hash_network_addresses () {
 
 } // namespace CaDiCaL
 
+ABC_NAMESPACE_IMPL_END
+
 /*------------------------------------------------------------------------*/
 
 // Hash the current wall-clock time in seconds.
@@ -144,6 +152,8 @@ static uint64_t hash_network_addresses () {
 extern "C" {
 #include <time.h>
 }
+
+ABC_NAMESPACE_IMPL_START
 
 namespace CaDiCaL {
 
@@ -154,6 +164,8 @@ static uint64_t hash_time () {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END
 
 /*------------------------------------------------------------------------*/
 
@@ -168,6 +180,8 @@ extern "C" {
 #endif
 }
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 static uint64_t hash_process () {
@@ -178,11 +192,15 @@ static uint64_t hash_process () {
 
 } // namespace CaDiCaL
 
+ABC_NAMESPACE_IMPL_END
+
 /*------------------------------------------------------------------------*/
 
 // Hash the current number of clock cycles.
 
 #include <ctime>
+
+ABC_NAMESPACE_IMPL_START
 
 namespace CaDiCaL {
 
@@ -211,3 +229,5 @@ Random::Random () : state (1) {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

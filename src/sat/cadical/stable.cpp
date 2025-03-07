@@ -4,6 +4,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 bool Internal::propagate_stable () {
@@ -28,6 +30,10 @@ int Internal::decide_stable () {
 
 }; // namespace CaDiCaL
 
+ABC_NAMESPACE_IMPL_END
+
 #else
+ABC_NAMESPACE_IMPL_START
 int stable_if_not_profile_mode_dummy;
+ABC_NAMESPACE_IMPL_END
 #endif

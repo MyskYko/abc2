@@ -7,6 +7,8 @@
 #include <limits>
 #include <utility>
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 /*------------------------------------------------------------------------*/
@@ -1956,3 +1958,5 @@ bool Internal::vivify () {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

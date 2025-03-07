@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 Arena::Arena (Internal *i) {
@@ -30,3 +32,5 @@ void Arena::swap () {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

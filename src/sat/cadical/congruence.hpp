@@ -19,6 +19,8 @@
 #include "util.hpp"
 #include "watch.hpp"
 
+ABC_NAMESPACE_CXX_HEADER_START
+
 namespace CaDiCaL {
 
 typedef int64_t LRAT_ID;
@@ -712,5 +714,7 @@ struct Closure {
 };
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_CXX_HEADER_END
 
 #endif

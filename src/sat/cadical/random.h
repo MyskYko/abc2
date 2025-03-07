@@ -7,6 +7,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+ABC_NAMESPACE_HEADER_START
+
 typedef uint64_t generator;
 
 static inline uint64_t kissat_next_random64 (generator *rng) {
@@ -42,5 +44,7 @@ static inline bool kissat_pick_bool (generator *rng) {
 static inline double kissat_pick_double (generator *rng) {
   return kissat_next_random32 (rng) / 4294967296.0;
 }
+
+ABC_NAMESPACE_HEADER_END
 
 #endif

@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 // Slightly different than 'bump_variable' since the variable is not
@@ -90,3 +92,5 @@ void Internal::shuffle_queue () {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

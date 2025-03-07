@@ -6,6 +6,8 @@
 #include <cstdarg>
 #include <cstdint>
 
+ABC_NAMESPACE_CXX_HEADER_START
+
 namespace CaDiCaL {
 
 // This class provides a 'printf' style formatting utility.
@@ -34,5 +36,7 @@ public:
 };
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_CXX_HEADER_END
 
 #endif

@@ -5,6 +5,8 @@
 
 #include <cstdint>
 
+ABC_NAMESPACE_CXX_HEADER_START
+
 namespace CaDiCaL {
 
 struct Internal;
@@ -66,5 +68,7 @@ struct EMA {
   } while (0)
 
 /*------------------------------------------------------------------------*/
+
+ABC_NAMESPACE_CXX_HEADER_END
 
 #endif

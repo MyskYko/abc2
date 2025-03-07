@@ -3,6 +3,8 @@
 #include "internal.hpp"
 #include "options.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 // Failed literal handling as pioneered by MiniSAT.  This first function
@@ -607,3 +609,5 @@ void Internal::sort_and_reuse_assumptions () {
     stats.assumptionsreused += level;
 }
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

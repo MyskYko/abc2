@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 // Updating an exponential moving average is placed here since we want to
@@ -95,3 +97,5 @@ void EMA::update (Internal *internal, double y, const char *name) {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

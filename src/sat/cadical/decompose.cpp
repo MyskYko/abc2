@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 void Internal::decompose_analyze_binary_chain (DFS *dfs, int from) {
@@ -733,3 +735,5 @@ void Internal::decompose () {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

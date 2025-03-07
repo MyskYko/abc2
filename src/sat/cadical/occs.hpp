@@ -5,6 +5,8 @@
 
 #include <vector>
 
+ABC_NAMESPACE_CXX_HEADER_START
+
 namespace CaDiCaL {
 
 // Full occurrence lists used in a one-watch scheme for all clauses in
@@ -34,5 +36,7 @@ typedef Occs::iterator occs_iterator;
 typedef Occs::const_iterator const_occs_iterator;
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_CXX_HEADER_END
 
 #endif

@@ -7,6 +7,8 @@
 #define isatty _isatty
 #endif
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 Terminal::Terminal (FILE *f) : file (f), reset_on_exit (false) {
@@ -43,3 +45,5 @@ Terminal tout (stdout);
 Terminal terr (stderr);
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

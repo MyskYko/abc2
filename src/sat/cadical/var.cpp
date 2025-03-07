@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 void Internal::reset_subsume_bits () {
@@ -39,3 +41,5 @@ void Internal::check_var_stats () {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

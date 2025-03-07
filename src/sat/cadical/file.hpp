@@ -28,6 +28,8 @@
 #endif
 /*------------------------------------------------------------------------*/
 
+ABC_NAMESPACE_CXX_HEADER_START
+
 namespace CaDiCaL {
 
 // Wraps a 'C' file 'FILE' with name and supports zipped reading and writing
@@ -213,5 +215,7 @@ public:
 };
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_CXX_HEADER_END
 
 #endif

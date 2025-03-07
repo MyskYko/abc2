@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 /*------------------------------------------------------------------------*/
@@ -336,3 +338,5 @@ void Internal::rephase () {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 /*------------------------------------------------------------------------*/
@@ -1190,3 +1192,5 @@ bool Internal::traverse_clauses (ClauseIterator &it) {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

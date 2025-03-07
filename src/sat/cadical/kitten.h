@@ -8,9 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+ABC_NAMESPACE_HEADER_START
 
 typedef struct cadical_kitten cadical_kitten;
 
@@ -92,8 +90,6 @@ void cadical_kitten_add_prime_implicant (cadical_kitten *cadical_kitten, void *s
 
 int cadical_kitten_flip_and_implicant_for_signed_literal (cadical_kitten *cadical_kitten, int elit);
 
-#ifdef __cplusplus
-}
-#endif
+ABC_NAMESPACE_HEADER_END
 
 #endif

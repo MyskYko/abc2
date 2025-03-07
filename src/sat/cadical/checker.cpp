@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 /*------------------------------------------------------------------------*/
@@ -648,3 +650,5 @@ void Checker::dump () {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

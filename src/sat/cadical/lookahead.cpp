@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 struct literal_occ {
@@ -520,3 +522,5 @@ CubesWithStatus Internal::generate_cubes (int depth, int min_depth) {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

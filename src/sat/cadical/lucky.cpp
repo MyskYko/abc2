@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 // It turns out that even in the competition there are formulas which are
@@ -434,3 +436,5 @@ int Internal::lucky_phases () {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

@@ -5,6 +5,8 @@
 
 #include "tracer.hpp"
 
+ABC_NAMESPACE_CXX_HEADER_START
+
 namespace CaDiCaL {
 
 class DratTracer : public FileTracer {
@@ -51,5 +53,7 @@ public:
 };
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_CXX_HEADER_END
 
 #endif

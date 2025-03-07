@@ -8,6 +8,8 @@
 #include <iterator>
 #include <vector>
 
+ABC_NAMESPACE_CXX_HEADER_START
+
 namespace CaDiCaL {
 
 using namespace std;
@@ -178,5 +180,7 @@ template <class I, class Rank> void rsort (I first, I last, Rank rank) {
   } while (0)
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_CXX_HEADER_END
 
 #endif

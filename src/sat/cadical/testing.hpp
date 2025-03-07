@@ -9,6 +9,8 @@
 
 #include "cadical.hpp"
 
+ABC_NAMESPACE_CXX_HEADER_START
+
 namespace CaDiCaL {
 
 class Testing {
@@ -22,5 +24,7 @@ public:
 };
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_CXX_HEADER_END
 
 #endif

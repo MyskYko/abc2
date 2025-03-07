@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 /*------------------------------------------------------------------------*/
@@ -643,3 +645,5 @@ Clause *Internal::new_resolved_irredundant_clause () {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

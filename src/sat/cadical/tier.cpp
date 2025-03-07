@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 void Internal::recompute_tier () {
@@ -53,3 +55,5 @@ void Internal::recompute_tier () {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

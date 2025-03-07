@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 /*------------------------------------------------------------------------*/
@@ -129,3 +131,5 @@ uint64_t hash_string (const char *str) {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

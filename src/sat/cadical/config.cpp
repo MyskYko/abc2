@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 /*------------------------------------------------------------------------*/
@@ -101,3 +103,5 @@ const char **Config::begin () { return configs; }
 const char **Config::end () { return &configs[num_configs]; }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

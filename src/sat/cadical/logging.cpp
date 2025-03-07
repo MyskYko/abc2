@@ -4,6 +4,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 void Logger::print_log_prefix (Internal *internal) {
@@ -213,5 +215,7 @@ string Logger::loglit (Internal *internal, int lit) {
   return v;
 }
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END
 
 #endif

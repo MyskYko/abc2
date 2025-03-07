@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 #define FACTORS 1
@@ -921,3 +923,5 @@ bool Internal::factor () {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 // Functions for learned clause minimization. We only have the recursive
@@ -224,3 +226,5 @@ void Internal::clear_minimized_literals () {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

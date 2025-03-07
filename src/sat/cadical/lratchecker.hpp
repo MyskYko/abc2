@@ -6,6 +6,8 @@
 /*------------------------------------------------------------------------*/
 #include <unordered_map>
 
+ABC_NAMESPACE_CXX_HEADER_START
+
 namespace CaDiCaL {
 
 /*------------------------------------------------------------------------*/
@@ -162,5 +164,7 @@ public:
 };
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_CXX_HEADER_END
 
 #endif

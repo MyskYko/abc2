@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 /*------------------------------------------------------------------------*/
@@ -278,3 +280,5 @@ DONE:
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

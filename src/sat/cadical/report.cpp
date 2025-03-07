@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 #ifndef QUIET
@@ -296,3 +298,5 @@ void Internal::report (char, int) {}
 #endif
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

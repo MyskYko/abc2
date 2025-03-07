@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 Limit::Limit () { memset (this, 0, sizeof *this); }
@@ -129,3 +131,5 @@ void Internal::reset_limits () {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

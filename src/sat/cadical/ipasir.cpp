@@ -3,7 +3,7 @@
 #include "ipasir.h"
 #include "ccadical.h"
 
-extern "C" {
+ABC_NAMESPACE_IMPL_START
 
 const char *ipasir_signature () { return ccadical_signature (); }
 
@@ -42,4 +42,5 @@ void ipasir_set_learn (void *solver, void *state, int max_length,
                        void (*learn) (void *state, int *clause)) {
   ccadical_set_learn ((CCaDiCaL *) solver, state, max_length, learn);
 }
-}
+
+ABC_NAMESPACE_IMPL_END

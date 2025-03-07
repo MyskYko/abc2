@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 /*------------------------------------------------------------------------*/
@@ -829,3 +831,5 @@ void LratChecker::dump () {
 void LratChecker::begin_proof (int64_t id) { current_id = id; }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

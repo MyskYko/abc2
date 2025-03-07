@@ -6,6 +6,8 @@
 #include <cassert>
 #include <cstdint>
 
+ABC_NAMESPACE_CXX_HEADER_START
+
 namespace CaDiCaL {
 
 // This is Donald Knuth's version of the Luby restart sequence which he
@@ -80,5 +82,7 @@ public:
 };
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_CXX_HEADER_END
 
 #endif

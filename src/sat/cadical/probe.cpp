@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 /*------------------------------------------------------------------------*/
@@ -987,3 +989,5 @@ void CaDiCaL::Internal::inprobe (bool update_limits) {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

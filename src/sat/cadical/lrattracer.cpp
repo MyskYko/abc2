@@ -4,6 +4,8 @@
 
 #include <limits.h>
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 /*------------------------------------------------------------------------*/
@@ -200,3 +202,5 @@ void LratTracer::flush (bool print) {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

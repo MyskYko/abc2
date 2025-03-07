@@ -3,6 +3,8 @@
 #include "internal.hpp"
 #include <cstdint>
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 External::External (Internal *i)
@@ -1022,3 +1024,5 @@ void External::export_learned_large_clause (const vector<int> &clause) {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

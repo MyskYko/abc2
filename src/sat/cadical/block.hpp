@@ -5,6 +5,8 @@
 
 #include "heap.hpp" // Alphabetically after 'block.hpp'.
 
+ABC_NAMESPACE_CXX_HEADER_START
+
 namespace CaDiCaL {
 
 struct Internal;
@@ -35,5 +37,7 @@ class Blocker {
 };
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_CXX_HEADER_END
 
 #endif

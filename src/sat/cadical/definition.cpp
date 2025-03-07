@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 #define INVALID_LIT UINT_MAX
@@ -283,3 +285,5 @@ void Internal::find_definition (Eliminator &eliminator, int lit) {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

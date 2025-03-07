@@ -94,6 +94,8 @@ static const char *AFFILIATIONS =
 
 #include "version.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 const char *version () { return VERSION; }
@@ -107,3 +109,5 @@ const char *date () { return DATE; }
 const char *flags () { return FLAGS; }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

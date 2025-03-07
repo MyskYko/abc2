@@ -6,6 +6,8 @@
 #include <cstdint>
 #include <limits>
 
+ABC_NAMESPACE_CXX_HEADER_START
+
 namespace CaDiCaL {
 struct Delay {
   unsigned count;
@@ -36,5 +38,7 @@ struct Delay {
 };
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_CXX_HEADER_END
 
 #endif

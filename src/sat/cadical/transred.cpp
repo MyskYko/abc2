@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 // Implement transitive reduction in the binary implication graph.  This is
@@ -253,3 +255,5 @@ void Internal::transred () {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

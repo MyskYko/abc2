@@ -2,6 +2,8 @@
 
 #include "internal.hpp"
 
+ABC_NAMESPACE_IMPL_START
+
 namespace CaDiCaL {
 
 // The global assignment stack can only be (partially) reset through
@@ -173,3 +175,5 @@ void Internal::backtrack_without_updating_phases (int new_level) {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_IMPL_END

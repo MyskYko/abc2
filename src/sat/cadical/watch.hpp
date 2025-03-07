@@ -6,6 +6,8 @@
 #include <cassert>
 #include <vector>
 
+ABC_NAMESPACE_CXX_HEADER_START
+
 namespace CaDiCaL {
 
 // Watch lists for CDCL search.  The blocking literal (see also comments
@@ -70,5 +72,7 @@ inline void update_watch_size (Watches &ws, int blit, Clause *conflict) {
 }
 
 } // namespace CaDiCaL
+
+ABC_NAMESPACE_CXX_HEADER_END
 
 #endif
