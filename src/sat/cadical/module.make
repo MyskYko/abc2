@@ -1,4 +1,6 @@
-SRC += src/sat/cadical/cadical_analyze.cpp \
+SRC +=src/sat/cadical/cadicalSolver.c \
+src/sat/cadical/cadicalTest.c \
+src/sat/cadical/cadical_analyze.cpp \
 src/sat/cadical/cadical_arena.cpp \
 src/sat/cadical/cadical_assume.cpp \
 src/sat/cadical/cadical_averages.cpp \

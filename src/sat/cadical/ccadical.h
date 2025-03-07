@@ -54,6 +54,11 @@ int ccadical_simplify (CCaDiCaL *);
 int ccadical_vars (CCaDiCaL *);
 int ccadical_reserve_difference (CCaDiCaL *, int number_of_vars);
 
+// Extra
+
+void ccadical_reserve(CCaDiCaL *, int min_max_var);
+int ccadical_is_inconsistent(CCaDiCaL *);
+
 /*------------------------------------------------------------------------*/
 
 // Support legacy names used before moving to more IPASIR conforming names.

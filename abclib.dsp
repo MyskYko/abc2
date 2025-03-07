@@ -3245,6 +3245,14 @@ SOURCE=.\src\sat\cadical\cadical_walk.cpp
 
 SOURCE=.\src\sat\cadical\cadical_watch.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\cadicalSolver.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\sat\cadical\cadicalTest.c
+# End Source File
 # End Group
 # End Group
 # Begin Group "opt"

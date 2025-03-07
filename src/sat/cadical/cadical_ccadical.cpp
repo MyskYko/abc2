@@ -200,4 +200,12 @@ int ccadical_reserve_difference (CCaDiCaL *ptr, int number_of_vars) {
   return ((Wrapper *) ptr)->solver->reserve_difference (number_of_vars);
 }
 
+void ccadical_reserve(CCaDiCaL *ptr, int min_max_var) {
+  ((Wrapper *) ptr)->solver->reserve(min_max_var);
+}
+
+int ccadical_is_inconsistent(CCaDiCaL *ptr) {
+  return ((Wrapper *) ptr)->solver->inconsistent ();
+}
+
 ABC_NAMESPACE_IMPL_END
