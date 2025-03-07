@@ -2,7 +2,7 @@
 #define ABC_SAT_CADICAL_GLOBAL_HPP_
 
 // comment out next line to enable cadical debug mode
-//#define CADICAL_NDEBUG
+#define CADICAL_NDEBUG
 
 #define CADICAL_NBUILD
 #define CADICAL_QUIET
