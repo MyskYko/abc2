@@ -102,9 +102,9 @@ namespace rrr {
     int  FindFanin(int id, int fi) const;
     bool IsReconvergent(int id);
     std::vector<int> GetNeighbors(int id, bool fPis, int nHops);
-    template <template <typename...> typename Container, typename ... Ts, template <typename...> typename Container2, typename ... Ts2>
+    template <template <typename...> typename Container, typename... Ts, template <typename...> typename Container2, typename... Ts2>
     bool IsReachable(Container<Ts...> const &srcs, Container2<Ts2...> const &dsts);
-    template <template <typename...> typename Container, typename ... Ts, template <typename...> typename Container2, typename ... Ts2>
+    template <template <typename...> typename Container, typename... Ts, template <typename...> typename Container2, typename... Ts2>
     std::vector<int> GetInners(Container<Ts...> const &srcs, Container2<Ts2...> const &dsts);
 
     // network traversal
@@ -124,18 +124,18 @@ namespace rrr {
     template <typename Func>
     void ForEachFanoutRidx(int id, bool fPos, Func const &func) const; // func(fo[, c], index of id in fanin list of fo)
     void ForEachTfi(int id, bool fPis, std::function<void(int)> const &func);
-    template <template <typename...> typename Container, typename ... Ts>
+    template <template <typename...> typename Container, typename... Ts>
     void ForEachTfiEnd(int id, Container<Ts...> const &ends, std::function<void(int)> const &func);
     void ForEachTfo(int id, bool fPos, std::function<void(int)> const &func);
     void ForEachTfoReverse(int id, bool fPos, std::function<void(int)> const &func);
     void ForEachTfoUpdate(int id, bool fPos, std::function<bool(int)> const &func);
-    template <template <typename...> typename Container, typename ... Ts>
+    template <template <typename...> typename Container, typename... Ts>
     void ForEachTfos(Container<Ts...> const &ids, bool fPos, std::function<void(int)> const &func);
-    template <template <typename...> typename Container, typename ... Ts>
+    template <template <typename...> typename Container, typename... Ts>
     void ForEachTfosUpdate(Container<Ts...> const &ids, bool fPos, std::function<bool(int)> const &func);
 
     // extraction
-    template <template <typename...> typename Container, typename ... Ts>
+    template <template <typename...> typename Container, typename... Ts>
     AndNetwork *Extract(Container<Ts...> const &ids, std::vector<int> const &vInputs, std::vector<int> const &vOutputs);
 
     // actions
@@ -552,7 +552,7 @@ namespace rrr {
     return v;
   }
 
-  template <template <typename...> typename Container, typename ... Ts, template <typename...> typename Container2, typename ... Ts2>
+  template <template <typename...> typename Container, typename... Ts, template <typename...> typename Container2, typename... Ts2>
   inline bool AndNetwork::IsReachable(Container<Ts...> const &srcs, Container2<Ts2...> const &dsts) {
     if(srcs.empty() || dsts.empty()) {
       return false;
@@ -607,7 +607,7 @@ namespace rrr {
     return false;
   }
 
-  template <template <typename...> typename Container, typename ... Ts, template <typename...> typename Container2, typename ... Ts2>
+  template <template <typename...> typename Container, typename... Ts, template <typename...> typename Container2, typename... Ts2>
   inline std::vector<int> AndNetwork::GetInners(Container<Ts...> const &srcs, Container2<Ts2...> const &dsts) {
     // this includes sources and destinations that are connected
     if(srcs.empty() || dsts.empty()) {
@@ -834,7 +834,7 @@ namespace rrr {
     EndTraversal();
   }
 
-  template <template <typename...> typename Container, typename ... Ts>
+  template <template <typename...> typename Container, typename... Ts>
   inline void AndNetwork::ForEachTfiEnd(int id, Container<Ts...> const &ends, std::function<void(int)> const &func) {
     // this does not include id itself
     StartTraversal();
@@ -951,7 +951,7 @@ namespace rrr {
     EndTraversal();
   }
 
-  template <template <typename...> typename Container, typename ... Ts>
+  template <template <typename...> typename Container, typename... Ts>
   inline void AndNetwork::ForEachTfos(Container<Ts...> const &ids, bool fPos, std::function<void(int)> const &func) {
     // this includes ids themselves
     StartTraversal();
@@ -986,7 +986,7 @@ namespace rrr {
     EndTraversal();
   }
   
-  template <template <typename...> typename Container, typename ... Ts>
+  template <template <typename...> typename Container, typename... Ts>
   inline void AndNetwork::ForEachTfosUpdate(Container<Ts...> const &ids, bool fPos, std::function<bool(int)> const &func) {
     // this includes ids themselves
     StartTraversal();
@@ -1033,7 +1033,7 @@ namespace rrr {
 
   /* {{{ Extraction */
 
-  template <template <typename...> typename Container, typename ... Ts>
+  template <template <typename...> typename Container, typename... Ts>
   AndNetwork *AndNetwork::Extract(Container<Ts...> const &ids, std::vector<int> const &vInputs, std::vector<int> const &vOutputs) {
     AndNetwork *pNtk = new AndNetwork;
     pNtk->Reserve(int_size(vInputs) + int_size(ids) + int_size(vOutputs));
