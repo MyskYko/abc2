@@ -12,6 +12,7 @@ ABC_NAMESPACE_CXX_HEADER_START
 
 namespace rrr {
 
+  // it is assumed that removing redundancy never degrades the cost in this optimizer
   template <typename Ntk, typename Ana>
   class Optimizer {
   private:
@@ -27,12 +28,14 @@ namespace rrr {
     // parameters
     int nVerbose;
     std::function<double(Ntk *)> CostFunction;
+    int nSortTypeOriginal;
     int nSortType;
     int nFlow;
     int nDistance;
     bool fCompatible;
+    bool fGreedy;
     seconds nTimeout; // assigned upon Run
-    std::string verbose_prefix;
+    std::string strVerbosePrefix;
 
     // data
     Ana ana;
@@ -86,11 +89,21 @@ namespace rrr {
     int  MultiAdd(int id, std::vector<int> const &vCands, int nMax = 0);
 
     // resub
-    void SingleResub(int id, std::vector<int> const &vCands, bool fGreedy = true);
-    void MultiResub(int id, std::vector<int> const &vCands, bool fGreedy = true, int nMax = 0);
+    void SingleResub(int id, std::vector<int> const &vCands);
+    void MultiResub(int id, std::vector<int> const &vCands, int nMax = 0);
+
+    // resub stop
+    bool SingleResubStop(int id, std::vector<int> const &vCands);
+    bool MultiResubStop(int id, std::vector<int> const &vCands, int nMax = 0);
+
+    // multi-target resub
+    bool MultiTargetResub(std::vector<int> vTargets, int nMax = 0);
     
     // apply
     void ApplyReverseTopologically(std::function<void(int)> const &func);
+    void ApplyRandomlyStop(std::function<bool(int)> const &func);
+    void ApplyCombinationRandomlyStop(int k, std::function<bool(std::vector<int> const &)> const &func);
+    void ApplyCombinationSampledRandomlyStop(int k, int nSamples, std::function<bool(std::vector<int> const &)> const &func);
     
   public:
     // constructors
@@ -98,9 +111,7 @@ namespace rrr {
     void UpdateNetwork(Ntk *pNtk_, bool fSame = false);
 
     // run
-    void Run(seconds nTimeout_ = 0);
-    void ResetSeed(int iSeed);
-    void Randomize(int iSeed);
+    void Run(int iSeed = 0, seconds nTimeout_ = 0);
     
   };
 
@@ -110,7 +121,7 @@ namespace rrr {
   template <typename... Args>
   inline void Optimizer<Ntk, Ana>::Print(int nVerboseLevel, Args... args) {
     if(nVerbose > nVerboseLevel) {
-      std::cout << verbose_prefix;
+      std::cout << strVerbosePrefix;
       for(int i = 0; i < nVerboseLevel; i++) {
         std::cout << "\t";
       }
@@ -711,7 +722,7 @@ namespace rrr {
   /* {{{ Resub */
 
   template <typename Ntk, typename Ana>
-  void Optimizer<Ntk, Ana>::SingleResub(int id, std::vector<int> const &vCands, bool fGreedy) {
+  void Optimizer<Ntk, Ana>::SingleResub(int id, std::vector<int> const &vCands) {
     // NOTE: this assumes trivial collapse/decompose does not change cost
     // let us assume the node is not trivially redundant for now
     assert(pNtk->GetNumFanouts(id) != 0);
@@ -719,7 +730,7 @@ namespace rrr {
     // collapse
     pNtk->TrivialCollapse(id);
     // save if wanted
-    int slot;
+    int slot = -2;
     if(fGreedy) {
       slot = pNtk->Save();
     }
@@ -765,13 +776,13 @@ namespace rrr {
   }
 
   template <typename Ntk, typename Ana>
-  void Optimizer<Ntk, Ana>::MultiResub(int id, std::vector<int> const &vCands, bool fGreedy, int nMax) {
+  void Optimizer<Ntk, Ana>::MultiResub(int id, std::vector<int> const &vCands, int nMax) {
     // NOTE: this assumes trivial collapse/decompose does not change cost
     // let us assume the node is not trivially redundant for now
     assert(pNtk->GetNumFanouts(id) != 0);
     assert(pNtk->GetNumFanins(id) > 1);
     // save if wanted
-    int slot;
+    int slot = -2;
     if(fGreedy) {
       slot = pNtk->Save();
     }
@@ -782,6 +793,7 @@ namespace rrr {
     MultiAdd(id, vCands, nMax);
     RemoveRedundancy();
     mapNewFanins.clear();
+    // TODO: we could quit here if nothing has been removed
     RemoveRedundancy();
     double dNewCost = CostFunction(pNtk);
     Print(1, "cost:", dCost, "->", dNewCost);
@@ -790,6 +802,10 @@ namespace rrr {
     }
     if(pNtk->IsInt(id)) {
       pNtk->TrivialDecompose(id);
+      SortFanins();
+      if(fCompatible) {
+        RemoveRedundancy();
+      }
     }
     if(fGreedy) {
       pNtk->PopBack();
@@ -798,6 +814,201 @@ namespace rrr {
   
   /* }}} */
 
+  /* {{{ Resub stop */
+
+  template <typename Ntk, typename Ana>
+  bool Optimizer<Ntk, Ana>::SingleResubStop(int id, std::vector<int> const &vCands) {
+    // stop whenever structure has changed without increasing cost and return true
+    // return false if no candidates are effective
+    // NOTE: this assumes trivial collapse/decompose does not change cost
+    // let us assume the node is not trivially redundant for now
+    assert(pNtk->GetNumFanouts(id) != 0);
+    assert(pNtk->GetNumFanins(id) > 1);
+    // save before trivial collapse
+    int slot0 = pNtk->Save();
+    // collapse
+    pNtk->TrivialCollapse(id);
+    // save after trivial collapse
+    int slot = pNtk->Save();
+    double dCost = CostFunction(pNtk);
+    // remember fanins
+    std::set<int> sFanins = pNtk->GetExtendedFanins(id);
+    Print(2, "extended fanins:", sFanins);
+    // main loop
+    for(citr it = vCands.begin(); it != vCands.end(); it++) {
+      if(Timeout()) {
+        break;
+      }
+      assert(pNtk->IsInt(id));
+      it = SingleAdd<citr>(id, it, vCands.end());
+      if(it == vCands.end()) {
+        break;
+      }
+      Print(1, "cand", *it, "(", int_distance(vCands.begin(), it) + 1, "/", int_size(vCands), "):", "cost", "=", dCost);
+      RemoveRedundancy();
+      mapNewFanins.clear();
+      double dNewCost = CostFunction(pNtk);
+      Print(2, "cost:", dCost, "->", dNewCost);
+      if(dNewCost <= dCost) {
+        bool fChanged = false;
+        if(dNewCost < dCost || !pNtk->IsInt(id)) {
+          fChanged = true;
+        } else {
+          std::set<int> sNewFanins = pNtk->GetExtendedFanins(id);
+          Print(2, "new extended fanins:", sNewFanins);
+          if(sFanins != sNewFanins) {
+            fChanged = true;
+          }
+        }
+        if(fChanged) {
+          if(pNtk->IsInt(id)) {
+            pNtk->TrivialDecompose(id);
+          }
+          pNtk->PopBack(); // slot
+          pNtk->PopBack(); // slot0
+          return true;
+        }
+      }
+      pNtk->Load(slot);
+    }
+    pNtk->PopBack(); // slot
+    pNtk->Load(slot0);
+    pNtk->PopBack(); // slot0
+    return false;
+  }
+
+  template <typename Ntk, typename Ana>
+  bool Optimizer<Ntk, Ana>::MultiResubStop(int id, std::vector<int> const &vCands, int nMax) {
+    // if structure has changed without increasing cost, return true
+    // otherwise, return false
+    // NOTE: this assumes trivial collapse/decompose does not change cost
+    // let us assume the node is not trivially redundant for now
+    assert(pNtk->GetNumFanouts(id) != 0);
+    assert(pNtk->GetNumFanins(id) > 1);
+    // save
+    int slot = pNtk->Save();
+    double dCost = CostFunction(pNtk);
+    // remember fanins
+    std::set<int> sFanins = pNtk->GetExtendedFanins(id);
+    Print(2, "extended fanins:", sFanins);
+    // collapse
+    pNtk->TrivialCollapse(id);
+    // resub
+    MultiAdd(id, vCands, nMax);
+    RemoveRedundancy();
+    mapNewFanins.clear();
+    // TODO: we could quit here if nothing has been removed
+    RemoveRedundancy();
+    double dNewCost = CostFunction(pNtk);
+    Print(1, "cost:", dCost, "->", dNewCost);
+    if(!fGreedy || dNewCost <= dCost) {
+      bool fChanged = false;
+      if(dNewCost < dCost || !pNtk->IsInt(id)) {
+        fChanged = true;
+      } else {
+        std::set<int> sNewFanins = pNtk->GetExtendedFanins(id);
+        Print(2, "new extended fanins:", sNewFanins);
+        if(sFanins != sNewFanins) {
+          fChanged = true;
+        }
+      }
+      if(fChanged) {
+        if(pNtk->IsInt(id)) {
+          pNtk->TrivialDecompose(id);
+        }
+        pNtk->PopBack();
+        return true;
+      }
+    }
+    pNtk->Load(slot);
+    pNtk->PopBack();
+    return false;
+  }
+  
+  /* }}} */
+
+  /* {{{ Multi-target resub */
+
+  template <typename Ntk, typename Ana>
+  bool Optimizer<Ntk, Ana>::MultiTargetResub(std::vector<int> vTargets, int nMax) {
+    // save
+    int slot = pNtk->Save();
+    double dCost = CostFunction(pNtk);
+    // remove targets that are trivially collapsed together
+    for(int id: vTargets) {
+      if(pNtk->IsInt(id)) {
+        pNtk->TrivialCollapse(id);
+      }
+    }
+    for(itr it = vTargets.begin(); it != vTargets.end();) {
+      if(!pNtk->IsInt(*it)) {
+        it = vTargets.erase(it);
+      } else {
+        it++;
+      }
+    }
+    // add while remembering extended fanins
+    Print(1, "targets:", vTargets);
+    std::vector<std::set<int>> vsFanins;
+    for(int id: vTargets) {
+      // get candidates
+      std::vector<int> vCands;
+      if(nDistance) {
+        vCands = pNtk->GetNeighbors(id, true, nDistance);
+      } else {
+        vCands = pNtk->GetPisInts();
+      }
+      std::shuffle(vCands.begin(), vCands.end(), rng);
+      // remember fanins
+      std::set<int> sFanins = pNtk->GetExtendedFanins(id);
+      Print(2, "extended fanins:", sFanins);
+      vsFanins.push_back(std::move(sFanins));
+      // add
+      MultiAdd(id, vCands, nMax);
+    }
+    // reduce
+    RemoveRedundancy();
+    mapNewFanins.clear();
+    // TODO: we could quit here if nothing has been removed
+    RemoveRedundancy();
+    double dNewCost = CostFunction(pNtk);
+    Print(1, "cost:", dCost, "->", dNewCost);
+    if(!fGreedy || dNewCost <= dCost) {
+      bool fChanged = false;
+      if(dNewCost < dCost) {
+        fChanged = true;
+      } else {
+        for(int id: vTargets) {
+          if(!pNtk->IsInt(id)) {
+            fChanged = true;
+            break;
+          }
+        }
+        for(int i = 0; !fChanged && i < int_size(vTargets); i++) {
+          std::set<int> sNewFanins = pNtk->GetExtendedFanins(vTargets[i]);
+          Print(2, "new extended fanins:", sNewFanins);
+          if(vsFanins[i] != sNewFanins) {
+            fChanged = true;
+          }
+        }
+      }
+      if(fChanged) {
+        for(int id: vTargets) {
+          if(pNtk->IsInt(id)) {
+            pNtk->TrivialDecompose(id);
+          }
+        }
+        pNtk->PopBack();
+        return true;
+      }
+    }
+    pNtk->Load(slot);
+    pNtk->PopBack();
+    return false;
+  }
+  
+  /* }}} */
+  
   /* {{{ Apply */
 
   template <typename Ntk, typename Ana>
@@ -814,6 +1025,69 @@ namespace rrr {
       func(*it);
     }
   }
+
+  template <typename Ntk, typename Ana>
+  void Optimizer<Ntk, Ana>::ApplyRandomlyStop(std::function<bool(int)> const &func) {
+    std::vector<int> vInts = pNtk->GetInts();
+    std::shuffle(vInts.begin(), vInts.end(), rng);
+    for(citr it = vInts.begin(); it != vInts.end(); it++) {
+      if(Timeout()) {
+        break;
+      }
+      if(!pNtk->IsInt(*it)) {
+        continue;
+      }
+      Print(0, "node", *it, "(", int_distance(vInts.cbegin(), it) + 1, "/", int_size(vInts), "):", "cost", "=", CostFunction(pNtk));
+      if(func(*it)) {
+        break;
+      }
+    }
+  }
+
+  template <typename Ntk, typename Ana>
+  void Optimizer<Ntk, Ana>::ApplyCombinationRandomlyStop(int k, std::function<bool(std::vector<int> const &)> const &func) {
+    std::vector<int> vInts = pNtk->GetInts();
+    std::shuffle(vInts.begin(), vInts.end(), rng); // order is decided here, so it's not truely exhaustive
+    int nTried = 0;
+    int nCombs = k * (k - 1) / 2;
+    ForEachCombinationStop(int_size(vInts), k, [&](std::vector<int> const &vIdxs) {
+      Print(0, "comb", vIdxs, "(", ++nTried, "/", nCombs, ")");
+      assert(int_size(vIdxs) == k);
+      if(Timeout()) {
+        return true;
+      }
+      std::vector<int> vTargets(k);
+      for(int i = 0; i < k; i++) {
+        vTargets[i] = vInts[vIdxs[i]];
+      }
+      return func(vTargets);
+    });
+  }
+  
+  template <typename Ntk, typename Ana>
+  void Optimizer<Ntk, Ana>::ApplyCombinationSampledRandomlyStop(int k, int nSamples, std::function<bool(std::vector<int> const &)> const &func) {
+    std::vector<int> vInts = pNtk->GetInts();
+    for(int i = 0; i < nSamples; i++) {
+      if(Timeout()) {
+        break;
+      }
+      std::set<int> sIdxs;
+      while(int_size(sIdxs) < k) {
+        int idx = rng() % pNtk->GetNumInts();
+        sIdxs.insert(idx);
+      }
+      std::vector<int> vIdxs(sIdxs.begin(), sIdxs.end());
+      std::shuffle(vIdxs.begin(), vIdxs.end(), rng);
+      Print(0, "comb", vIdxs, "(", i + 1, "/", nSamples, ")");
+      std::vector<int> vTargets(k);
+      for(int i = 0; i < k; i++) {
+        vTargets[i] = vInts[vIdxs[i]];
+      }
+      if(func(vTargets)) {
+        break;
+      }
+    }
+  }
   
   /* }}} */
   
@@ -824,10 +1098,12 @@ namespace rrr {
     pNtk(NULL),
     nVerbose(pPar->nOptimizerVerbose),
     CostFunction(CostFunction),
+    nSortTypeOriginal(pPar->nSortType),
     nSortType(pPar->nSortType),
     nFlow(pPar->nOptimizerFlow),
     nDistance(pPar->nDistance),
     fCompatible(pPar->fUseBddCspf),
+    fGreedy(pPar->fGreedy),
     ana(pPar),
     target(-1) {
   }
@@ -845,7 +1121,14 @@ namespace rrr {
   /* {{{ Run */
 
   template <typename Ntk, typename Ana>
-  void Optimizer<Ntk, Ana>::Run(seconds nTimeout_) {
+  void Optimizer<Ntk, Ana>::Run(int iSeed, seconds nTimeout_) {
+    rng.seed(iSeed);
+    vRandPiOrder.clear();
+    vRandCosts.clear();
+    if(nSortTypeOriginal < 0) {
+      nSortType = rng() % 18;
+      Print(0, "sorttype =", nSortType);
+    }
     nTimeout = nTimeout_;
     start = GetCurrentTime();
     switch(nFlow) {
@@ -905,22 +1188,36 @@ namespace rrr {
       }
       break;
     }
+    case 3: {
+      RemoveRedundancy();
+      std::vector<int> vCands;
+      if(!nDistance) {
+        vCands = pNtk->GetPisInts();
+        std::shuffle(vCands.begin(), vCands.end(), rng);
+      }
+      ApplyRandomlyStop([&](int id) {
+        if(nDistance) {
+          vCands = pNtk->GetNeighbors(id, true, nDistance);
+          std::shuffle(vCands.begin(), vCands.end(), rng);
+        }
+        if(rng() & 1) {
+          return SingleResubStop(id, vCands);
+        } else {
+          return MultiResubStop(id, vCands);
+        }
+      });
+      break;
+    }
+    case 4: {
+      RemoveRedundancy();
+      ApplyCombinationSampledRandomlyStop(3, 100, [&](std::vector<int> const &vTargets) {
+        return MultiTargetResub(vTargets);
+      });
+      break;
+    }
     default:
       assert(0);
     }
-  }
-
-  template <typename Ntk, typename Ana>
-  void Optimizer<Ntk, Ana>::ResetSeed(int iSeed) {
-    rng.seed(iSeed);
-    vRandPiOrder.clear();
-    vRandCosts.clear();
-  }
-  
-  template <typename Ntk, typename Ana>
-  void Optimizer<Ntk, Ana>::Randomize(int iSeed) {
-    ResetSeed(iSeed);
-    nSortType = rng() % 18;
   }
   
   /* }}} */

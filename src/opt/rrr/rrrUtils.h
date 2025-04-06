@@ -100,6 +100,8 @@ namespace rrr {
     int width;
   };
 
+  struct NS {}; // no space
+
   template <typename T>
   void PrintNext(std::ostream &os, T t);
   template <typename T, typename... Args>
@@ -149,9 +151,16 @@ namespace rrr {
     os << std::setw(sw.width) << arg << " ";
     PrintNext(os, args...);
   }
-  
+
   template <typename T, typename... Args>
-  static inline void PrintNext(std::ostream& os, std::vector<T> const &arg, Args... args) {
+  static inline void PrintNext(std::ostream &os, NS ns, T arg, Args... args) {
+    (void)ns;
+    os << arg;
+    PrintNext(os, args...);
+  }
+  
+  template <typename T>
+  static inline void PrintNext(std::ostream& os, std::vector<T> const &arg) {
     std::string delim;
     os << "[";
     for(T const &e: arg) {
@@ -161,9 +170,22 @@ namespace rrr {
     }
     os << "]";
   }
-  
+
   template <typename T, typename... Args>
-  static inline void PrintNext(std::ostream& os, std::set<T> const &arg, Args... args) {
+  static inline void PrintNext(std::ostream& os, std::vector<T> const &arg, Args... args) {
+    std::string delim;
+    os << "[";
+    for(T const &e: arg) {
+      os << delim;
+      PrintNext(os, e);
+      delim = ", ";
+    }
+    os << "] ";
+    PrintNext(os, args...);
+  }
+
+  template <typename T>
+  static inline void PrintNext(std::ostream& os, std::set<T> const &arg) {
     std::string delim;
     os << "{";
     for(T const &e: arg) {
@@ -174,6 +196,19 @@ namespace rrr {
     os << "}";
   }
 
+  template <typename T, typename... Args>
+  static inline void PrintNext(std::ostream& os, std::set<T> const &arg, Args... args) {
+    std::string delim;
+    os << "{";
+    for(T const &e: arg) {
+      os << delim;
+      PrintNext(os, e);
+      delim = ", ";
+    }
+    os << "} ";
+    PrintNext(os, args...);
+  }
+  
   template <typename T>
   void PrintNext(std::ostream &os, T t) {
     os << t;
@@ -184,6 +219,30 @@ namespace rrr {
     os << t << " ";
     PrintNext(os, args...);
   }  
+  
+  /* }}} */
+
+  /* {{{ Combination */
+
+  bool ForEachCombinationStopRec(std::vector<int> &v, int n, int k, std::function<bool(std::vector<int> const &)> const &func) {
+    if(k == 0) {
+      return func(v);
+    }
+    for(int i = v.back() + 1; i < n - k + 1; i++) {
+      v.push_back(i);
+      if(ForEachCombinationStopRec(v, n, k-1, func)) {
+        return true;
+      }
+      v.pop_back();
+    }
+    return false;
+  }
+  
+  static inline void ForEachCombinationStop(int n, int k, std::function<bool(std::vector<int> const &)> const &func) {
+    std::vector<int> v;
+    v.reserve(k);
+    ForEachCombinationStopRec(v, n, k, func);
+  }
   
   /* }}} */
   
